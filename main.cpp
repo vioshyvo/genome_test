@@ -10,6 +10,12 @@
 #include <stdint.h>
 #include <omp.h>
 
+#include <algorithm>
+#include <functional>
+#include <numeric>
+#include <queue>
+#include <random>
+#include <string>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -94,17 +100,28 @@ Matrix<float, Dynamic, Dynamic, RowMajor> build_dense_random_matrix(int n_pool, 
 
 
 
-int main()
-{
+int main(int argc, char **argv) {
+    char *data_path = argv[1];
+    char *data_name = argv[2];
+    int n = atoi(argv[3]);
+    int n_test = atoi(argv[4]);
+    int k = atoi(argv[5]);
+
+    int n_trees = atoi(argv[6]);
+    int depth = atoi(argv[7]);
+
+    char *result_path = argv[8];
+
+    int last_arg = 8;
+    int n_points = n - n_test;
 
     Timer tmr;
 
     // std::ifstream infile("/home/hyvi/HYVI/programs/fsm-lite-master/Ecol_short100_21_41");
-    std::ifstream infile("/home/hyvi/HYVI/programs/fsm-lite-master/Ecol_short100_short");
+    // std::ifstream infile("/home/hyvi/HYVI/programs/fsm-lite-master/Ecol_short100_short");
+    std::ifstream infile(data_path);
 
-    int n = 100;
     int kmer_count = 0;
-
 
     while (infile)
         {
@@ -116,7 +133,9 @@ int main()
 
         }
 
-    std::cout << kmer_count << " different kmers.\n\n";
+    // std::cout << kmer_count << " different kmers.\n\n";
+
+    int dim = kmer_count;
 
     // row = variable (k-mer)
     // col = data point (bacterial sample)
@@ -129,15 +148,15 @@ int main()
 
     typedef Eigen::Triplet<float> T;
     std::vector<T> tripletList;
-    std::cout << "max_size: " << tripletList.max_size() << "\n";
+    // std::cout << "max_size: " << tripletList.max_size() << "\n";
 
-    std::cout << "memory required: " << 4.0 * n * kmer_count / 2 / 1000000000 << " GB\n\n";
+    // std::cout << "memory required: " << 4.0 * n * kmer_count / 2 / 1000000000 << " GB\n\n";
 
     tripletList.reserve(n * kmer_count / 2);
 
-    std::cout << "size: " << tripletList.size() << "\n";
-    std::cout << "capacity: " << tripletList.capacity() << "\n";
-    std::cout << "n * kmer_count: " << n * kmer_count << "\n\n";
+//    std::cout << "size: " << tripletList.size() << "\n";
+//    std::cout << "capacity: " << tripletList.capacity() << "\n";
+//    std::cout << "n * kmer_count: " << n * kmer_count << "\n\n";
 
     while(infile) {
         std::string strInput;
@@ -148,7 +167,7 @@ int main()
             int colon_position = strInput.find(':');
             int observation = std::stoi(strInput.substr(1, colon_position - 1)) - 1;
             float value = std::stof(strInput.substr(colon_position + 1));
-            tripletList.push_back(T(kmer, observation, value)); // tsekkaa meneekö oikein päin!!!
+            tripletList.push_back(T(kmer, observation, value));
         }
 
     }
@@ -157,50 +176,24 @@ int main()
     X.makeCompressed();
 
     double t = tmr.elapsed();
-    std::cout << "Time to read the file: " << t << " seconds.\n\n";
+    // std::cout << "Time to read the file: " << t << " seconds.\n\n";
     tmr.reset();
 
     // std::cout << X.block(0,0,20,20) << std::endl << std::endl;
-    std::cout << "Rivejä: " << X.rows() << ", Sarakkeita: " << X.cols() << "\n";
+    // std::cout << "Rivejä: " << X.rows() << ", Sarakkeita: " << X.cols() << "\n\n";
 
-    Timer tmr2;
 
-    std::vector<float> dist(n-1);
-    for(int i = 0; i < n-1; i++)
-        dist[i] = (X.col(i) - X.col(n-1)).squaredNorm();
 
-    std::sort(dist.begin(), dist.end());
 
-    std::cout << "Ten nearest squared distances: ";
-    for(int i = 0; i < 10; i++)
-        std::cout << dist[i] << ", ";
-
-    t = tmr2.elapsed();
-    std::cout << "\n\nTime for query for one query point: " << t << " seconds."<< std::endl;
-
-    // compute the proportion of non-zeros
-    int nonzero_count = 0;
-    for (int i=0; i < X.outerSize(); ++i)
-        for (SparseMatrix<float>::InnerIterator it(X,i); it; ++it)
-            nonzero_count++;
-
-    std::cout << "proportion of non-zeros: " << nonzero_count / (1.0 * kmer_count * n) << "\n";
-    std::cout << "proportion of non-zeros: " << X.nonZeros() / (1.0 * kmer_count * n) << "\n\n";
 
     // read test points into a dense matrix
-    int n_test = 5;
-    int n_points = X.cols() - n_test;
-    int dim = X.rows();  // = kmer_count
-
-    std::cout << "n_points: " << n_points << "\n";
-
     MatrixXf X_test = MatrixXf::Zero(dim, n_test);
 
     for (int i = n_points; i < X.outerSize(); ++i)
         for (SparseMatrix<float>::InnerIterator it(X,i); it; ++it)
             X_test(it.row(), i - n_points) = it.value();
 
-    std::cout << "Rivejä: " << X_test.rows() << ", sarakkeita: " << X_test.cols() << "\n\n";
+//    std::cout << "Rivejä: " << X_test.rows() << ", sarakkeita: " << X_test.cols() << "\n\n";
 //    std::cout << X.block(0,95,20,5) << std::endl << std::endl;
 //    std::cout << X_test.block(0,0,20,5) << std::endl << std::endl;
 
@@ -214,33 +207,62 @@ int main()
 
     const SparseMatrix<float> *Xtrain = new SparseMatrix<float>(X.leftCols(n_points));
 
+//    for(int j = 0; j < n_test; j++) {
+//
+//        Timer tmr2;
+//
+//        VectorXf dist(n_points);
+//        for(int i = 0; i < n_points; i++)
+//            dist[i] = (X.col(i) - X_test.col(j)).squaredNorm();
+//
+//        VectorXi idx(n_points);
+//        std::iota(idx.data(), idx.data() + n_points, 0);
+//        std::nth_element(idx.data(), idx.data() + k, idx.data() + n_points,
+//                         [&dist](int i1, int i2) {return dist(i1) < dist(i2);});
+//        std::sort(dist.data(), dist.data() + dist.size());
+
+        // std::cout << "Ten nearest points: ";
+//        for(int i = 0; i < k; i++)
+//        std::cout << idx(i) << ", ";
+//        std::cout << std::endl;
+
+        // std::cout << "Ten nearest squared distances: ";
+//        for(int i = 0; i < k; i++)
+//            std::cout << dist[i] << ", ";
+
+ //       t = tmr2.elapsed();
+        // std::cout << "\nTime for query for one query point: " << t << " seconds.\n"<< std::endl;
+    //}
+
+
+    // std::cout << "proportion of non-zeros: " << X.nonZeros() / (1.0 * kmer_count * n) << "\n\n";
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // test Sanger data
 
-    std::string sanger_path = "/home/hyvi/HYVI/git/Sanger/results";
-
+    // std::string sanger_path = "/home/hyvi/HYVI/git/Sanger/results/sanger/";
 
     // set the parameters
-    int n_trees = 100;
-    int depth = 4;
-    int k = 10;
-    bool verbose = true;
+    // int n_trees = 20;
+    // int depth = 4;
+    bool verbose = false;
 
     float sparsity = 1 / sqrt(dim);
-    std::vector<int> vote = {1,2,3,4,5};
+    // std::vector<int> vote = {1,2,3,4,5};
 
 
     Mrpt index(Xtrain, n_trees, depth, sparsity);
     index.grow();
 
-    std::cout << "Index grown\n";
+    // std::cout << "Index grown\n";
 
 
-    for(int j = 0; j < vote.size(); j++) {
-        std::cout << "Ready for query " << j << "\n";
+    // for(int j = 0; j < vote.size(); j++) {
+    for (int arg = last_arg + 1; arg < argc; ++arg) {
+        int votes = atoi(argv[arg]);
 
-        int votes = vote[j];
+        // int votes = vote[j];
         if (votes > n_trees) continue;
 
         std::vector<double> times;
@@ -262,7 +284,7 @@ int main()
             std::cout << "k: " << k << ", # of trees: " << n_trees << ", depth: " << depth << ", sparsity: " << sparsity << ", votes: " << votes << "\n";
         else
             std::cout << k << " " << n_trees << " " << depth << " " << sparsity << " " << votes << "\n";
-        // results(k, times, idx, (std::string(sanger_path) + "/truth_" + std::to_string(k)).c_str(), verbose);
+        results(k, times, idx, (std::string(result_path) + "/truth_" + std::to_string(k)).c_str(), verbose);
 
     }
 

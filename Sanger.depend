@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1489154271 source:/home/hyvi/HYVI/git/Sanger/main.cpp
+1489412080 source:/home/hyvi/HYVI/git/Sanger/main.cpp
 	<iostream>
 	<fstream>
 	<Eigen/Dense>
@@ -10,6 +10,12 @@
 	<cstdio>
 	<stdint.h>
 	<omp.h>
+	<algorithm>
+	<functional>
+	<numeric>
+	<queue>
+	<random>
+	<string>
 	<sys/types.h>
 	<sys/stat.h>
 	<unistd.h>

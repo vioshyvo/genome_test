@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+DATASET_NAME=sanger
+DIM=573
+N_TEST=5 
+
+

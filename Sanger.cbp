@@ -23,9 +23,10 @@
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
-					<Add option="-O2" />
+					<Add option="-O3" />
 					<Add option="-std=c++11" />
 					<Add directory="/usr/local/include/eigen_3.3.3" />
+					<Add directory="/home/hyvi/HYVI/git/MRPT_new" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -38,6 +39,7 @@
 			<Add option="-fexceptions" />
 		</Compiler>
 		<Unit filename="Mrpt.h" />
+		<Unit filename="common.h" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<envvars />
