@@ -114,6 +114,8 @@ int main(int argc, char **argv) {
 
     int last_arg = 8;
     int n_points = n - n_test;
+    bool verbose = false;
+
 
     Timer tmr;
 
@@ -246,7 +248,6 @@ int main(int argc, char **argv) {
     // set the parameters
     // int n_trees = 20;
     // int depth = 4;
-    bool verbose = false;
 
     float sparsity = 1 / sqrt(dim);
     // std::vector<int> vote = {1,2,3,4,5};
