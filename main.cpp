@@ -2,8 +2,9 @@
 #include <fstream>
 #include <Eigen/Dense>
 #include <Eigen/SparseCore>
+#include <bench/BenchTimer.h>
+#include <unsupported/Eigen/SparseExtra>
 #include <typeinfo>
-#include <chrono>
 
 #include <vector>
 #include <cstdio>
@@ -26,79 +27,6 @@
 
 using namespace Eigen;
 
-class Timer
-{
-public:
-    Timer() : beg_(clock_::now()) {}
-    void reset() { beg_ = clock_::now(); }
-    double elapsed() const {
-        return std::chrono::duration_cast<second_>
-            (clock_::now() - beg_).count(); }
-
-private:
-    typedef std::chrono::high_resolution_clock clock_;
-    typedef std::chrono::duration<double, std::ratio<1> > second_;
-    std::chrono::time_point<clock_> beg_;
-};
-
-  SparseMatrix<float, RowMajor> build_sparse_random_matrix(int n_pool, int dim, float density) {
-        SparseMatrix<float, RowMajor>  sparse_random_matrix(n_pool, dim);
-
-        std::random_device rd;
-        std::mt19937 gen(rd());
-        std::uniform_real_distribution<float> uni_dist(0, 1);
-        std::normal_distribution<float> norm_dist(0, 1);
-
-        std::vector<Triplet<float>> triplets;
-        for (int j = 0; j < n_pool; ++j) {
-            for (int i = 0; i < dim; ++i) {
-                if (uni_dist(gen) > density) continue;
-                triplets.push_back(Triplet<float>(j, i, norm_dist(gen)));
-            }
-        }
-
-        sparse_random_matrix.setFromTriplets(triplets.begin(), triplets.end());
-        sparse_random_matrix.makeCompressed();
-        return sparse_random_matrix;
-    }
-
-SparseMatrix<float> build_colwise_sparse_random_matrix(int n_row, int n_col, float density) {
-        SparseMatrix<float>  sparse_random_matrix(n_row, n_col);
-
-        std::random_device rd;
-        std::mt19937 gen(rd());
-        std::uniform_real_distribution<float> uni_dist(0, 1);
-        std::normal_distribution<float> norm_dist(0, 1);
-
-        std::vector<Triplet<float>> triplets;
-        for (int j = 0; j < n_row; ++j) {
-            for (int i = 0; i < n_col; ++i) {
-                if (uni_dist(gen) > density) continue;
-                triplets.push_back(Triplet<float>(j, i, norm_dist(gen)));
-            }
-        }
-
-        sparse_random_matrix.setFromTriplets(triplets.begin(), triplets.end());
-        sparse_random_matrix.makeCompressed();
-        return sparse_random_matrix;
-    }
-
-
-
-
-Matrix<float, Dynamic, Dynamic, RowMajor> build_dense_random_matrix(int n_pool, int dim) {
-        Matrix<float, Dynamic, Dynamic, RowMajor> dense_random_matrix(n_pool, dim);
-
-        std::random_device rd;
-        std::mt19937 gen(rd());
-        std::normal_distribution<float> normal_dist(0, 1);
-
-        std::generate(dense_random_matrix.data(), dense_random_matrix.data() + n_pool * dim,
-                      [&normal_dist, &gen] { return normal_dist(gen); });
-        return dense_random_matrix;
-}
-
-
 
 int main(int argc, char **argv) {
     char *data_path = argv[1];
@@ -115,9 +43,6 @@ int main(int argc, char **argv) {
     int last_arg = 8;
     int n_points = n - n_test;
     bool verbose = false;
-
-
-    Timer tmr;
 
     // std::ifstream infile("/home/hyvi/HYVI/programs/fsm-lite-master/Ecol_short100_21_41");
     // std::ifstream infile("/home/hyvi/HYVI/programs/fsm-lite-master/Ecol_short100_short");
@@ -145,6 +70,9 @@ int main(int argc, char **argv) {
 
     infile.clear();
     infile.seekg(0, std::ios::beg);
+
+    BenchTimer etr;
+    etr.start();
 
     int kmer = -1;
 
@@ -177,15 +105,13 @@ int main(int argc, char **argv) {
     X.setFromTriplets(tripletList.begin(), tripletList.end());
     X.makeCompressed();
 
-    double t = tmr.elapsed();
-    // std::cout << "Time to read the file: " << t << " seconds.\n\n";
-    tmr.reset();
+
+    etr.stop();
+    std::cout << "Eigen time to read the file: " << etr.value() << " seconds.\n\n";
+    etr.reset();
 
     // std::cout << X.block(0,0,20,20) << std::endl << std::endl;
     // std::cout << "Rivejä: " << X.rows() << ", Sarakkeita: " << X.cols() << "\n\n";
-
-
-
 
 
     // read test points into a dense matrix
@@ -284,7 +210,7 @@ int main(int argc, char **argv) {
         if(verbose)
             std::cout << "k: " << k << ", # of trees: " << n_trees << ", depth: " << depth << ", sparsity: " << sparsity << ", votes: " << votes << "\n";
         else
-            std::cout << k << " " << n_trees << " " << depth << " " << sparsity << " " << votes << "\n";
+            std::cout << k << " " << n_trees << " " << depth << " " << sparsity << " " << votes << " ";
         results(k, times, idx, (std::string(result_path) + "/truth_" + std::to_string(k)).c_str(), verbose);
 
     }
@@ -470,80 +396,6 @@ int main(int argc, char **argv) {
 
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////////
-// time sparse/dense matrix operations
-
-
-//    SparseMatrix<float, RowMajor> rm_sparse = build_sparse_random_matrix(depth, dim, sparsity);
-//    Matrix<float, Dynamic, Dynamic, RowMajor> rm_dense = build_dense_random_matrix(depth, dim);
-//
-//    std::cout << "Sparse, rivejä: " << rm_sparse.rows() << ", sarakkeita: " << rm_sparse.cols() << "\n";
-//    std::cout << "Dense, rivejä: " << rm_dense.rows() << ", sarakkeita: " << rm_dense.cols() << "\n";
-//
-//    double strt = omp_get_wtime();
-//    SparseMatrix<float> tree_projections = rm_sparse * *X_train;
-//    double nd = omp_get_wtime();
-//
-//    std::cout << "Sparse rm x sparse data: " << nd - strt << " seconds. \n";
-//
-//    strt = omp_get_wtime();
-//    SparseMatrix<float> tree_projections_pruned = (rm_sparse * *X_train).pruned();
-//    nd = omp_get_wtime();
-//
-//    std::cout << "Sparse rm x sparse data (pruned): " << nd - strt << " seconds. \n";
-//
-//    strt = omp_get_wtime();
-//    MatrixXf dense_projections = rm_sparse * *M;
-//    nd = omp_get_wtime();
-//
-//    std::cout << "Sparse rm x dense data: " << nd - strt << " seconds. \n";
-//
-//    strt = omp_get_wtime();
-//    MatrixXf dense_dense = rm_dense * *M;
-//    nd = omp_get_wtime();
-//
-//    std::cout << "Dense rm x dense data: " << nd - strt << " seconds. \n";
-//
-//    strt = omp_get_wtime();
-//    MatrixXf dense_sparse = rm_dense * *X_train;
-//    nd = omp_get_wtime();
-//
-//    std::cout << "Dense rm x sparse data: " << nd - strt << " seconds. \n\n";
-//
-//
-////////////////////////////////////////////////////////////////////////////////////////////////////
-//// time sparse/dense matrix operations with different sparsities
-//
-//    std::vector<float> sparsities = {1, 0.5, 0.25, 0.1, 0.075, 0.05, 0.025, 0.01, 0.001};
-//
-//
-//    for(int i = 0; i < sparsities.size(); ++i) {
-//        std::cout << "Sparsity: " << sparsities[i] << "\n";
-//
-//        SparseMatrix<float> X_sparse = build_colwise_sparse_random_matrix(dim, n_points, sparsities[i]);
-//
-//        double strt = omp_get_wtime();
-//        SparseMatrix<float> tree_projections = rm_sparse * X_sparse;
-//        double nd = omp_get_wtime();
-//
-//        std::cout << "Sparse rm x sparse data: " << nd - strt << " seconds. \n";
-//
-//        strt = omp_get_wtime();
-//        SparseMatrix<float> tree_projections_pruned = (rm_sparse * X_sparse).pruned();
-//        nd = omp_get_wtime();
-//
-//        std::cout << "Sparse rm x sparse data (pruned): " << nd - strt << " seconds. \n";
-//
-//        strt = omp_get_wtime();
-//        MatrixXf dense_sparse = rm_dense * X_sparse;
-//        nd = omp_get_wtime();
-//
-//        std::cout << "Dense rm x sparse data: " << nd - strt << " seconds. \n";
-//
-//        std::cout << "\n";
-//
-//    }
-//
 
     return 0;
 }
