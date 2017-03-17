@@ -48,6 +48,20 @@ int main(int argc, char **argv) {
     // std::ifstream infile("/home/hyvi/HYVI/programs/fsm-lite-master/Ecol_short100_short");
     std::ifstream infile(data_path);
 
+    if(!infile) {
+        std::cerr << "Error: could not open file " << data_path << "\n";
+        return -1;
+    }
+
+    std::string outfile_path = "/home/hyvi/HYVI/data/Sanger/Ecoli/Ecoli100/Ecoli100";
+    FILE *outfile;
+    outfile = fopen((outfile_path + "_rowwise.bin").c_str(), "wb");
+
+    if(!outfile) {
+        std::cerr << "Error: could not open output file " << outfile_path << "_rowwise.bin" << "\n";
+        return -1;
+    }
+
     int kmer_count = 0;
 
     while (infile)
@@ -88,19 +102,29 @@ int main(int argc, char **argv) {
 //    std::cout << "capacity: " << tripletList.capacity() << "\n";
 //    std::cout << "n * kmer_count: " << n * kmer_count << "\n\n";
 
+    float *kmer_buffer = nullptr;
+
     while(infile) {
         std::string strInput;
         infile >> strInput;
         if(std::isupper(strInput[0])) {
+            if(kmer_buffer) fwrite(kmer_buffer, sizeof(float), n, outfile);
+            kmer_buffer = new float[n]();
             kmer++;
         } else if(strInput[0] == 'f') {
             int colon_position = strInput.find(':');
             int observation = std::stoi(strInput.substr(1, colon_position - 1)) - 1;
             float value = std::stof(strInput.substr(colon_position + 1));
             tripletList.push_back(T(kmer, observation, value));
+            kmer_buffer[observation] = value;
         }
 
     }
+
+    fwrite(kmer_buffer, sizeof(float), n, outfile);
+    fclose(outfile);
+    delete[] kmer_buffer;
+    kmer_buffer = nullptr;
 
     X.setFromTriplets(tripletList.begin(), tripletList.end());
     X.makeCompressed();
@@ -110,8 +134,60 @@ int main(int argc, char **argv) {
     std::cout << "Eigen time to read the file: " << etr.value() << " seconds.\n\n";
     etr.reset();
 
-    // std::cout << X.block(0,0,20,20) << std::endl << std::endl;
-    // std::cout << "Rivejä: " << X.rows() << ", Sarakkeita: " << X.cols() << "\n\n";
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    // reopen the rowwise written binary file and write it into colwise form
+
+    // reopen the rowwise binary file
+    FILE *inf;
+    inf = fopen((outfile_path + "_rowwise.bin").c_str(), "rb");
+
+     // obtain file size:
+    fseek (inf, 0, SEEK_END);
+    int inf_size = ftell(inf);
+    rewind (inf);
+
+    if(inf_size != n * dim * sizeof(float)) {
+        std::cerr << "Error: size of the input data is " << inf_size << ", while the expected size is " << n * dim * sizeof(float) << "\n";
+        return -1;
+    }
+
+    // open file for writing the matrix into colwise form
+    outfile = fopen((outfile_path + ".bin").c_str(), "wb");
+
+    if(!outfile) {
+        std::cerr << "Error: could not open output file " << outfile_path << ".bin" << "\n";
+        return -1;
+    }
+
+
+    float *obs_buffer;
+
+    for(int i = 0; i < n; i++) {
+        obs_buffer = new float[dim]();
+        for(int j = 0; j < dim; j++) {
+            fseek(inf, (j * n + i) * sizeof(float), SEEK_SET);
+            fread(obs_buffer + j, sizeof(float), 1, inf);
+        }
+        fwrite(obs_buffer, sizeof(float), dim, outfile);
+    }
+
+    fclose(outfile);
+    delete[] obs_buffer;
+    obs_buffer = nullptr;
+
+    // read the colwise matrix from the binary file
+    float *train_data = get_data((outfile_path + ".bin").c_str(), dim, &n_points);
+    float *train_data_rowwise = get_data((outfile_path + "_rowwise.bin").c_str(), dim, &n_points);
+    const Map<const MatrixXf> *M1 = new Map<const MatrixXf>(train_data, dim, n_points);
+    const Map<const Matrix<float, Dynamic, Dynamic,RowMajor>> *M = new Map<const Matrix<float, Dynamic, Dynamic,RowMajor>>(train_data_rowwise, dim, n_points);
+
+
+    std::cout << X.block(0,0,20,20) << std::endl << std::endl;
+    std::cout << M->block(0,0,20,20) << std::endl << std::endl;
+    std::cout << M1->block(0,0,20,20) << std::endl << std::endl;
+    std::cout << "Alkuperäinen matriisi, rivejä: " << X.rows() << ", Sarakkeita: " << X.cols() << "\n\n";
+    std::cout << "Riveittäisestä versiosta luettu matriisi, rivejä: " << M->rows() << ", Sarakkeita: " << M->cols() << "\n\n";
+    std::cout << "Uudelleen luettu matriisi, rivejä: " << M1->rows() << ", Sarakkeita: " << M1->cols() << "\n\n";
 
 
     // read test points into a dense matrix
