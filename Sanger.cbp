@@ -22,11 +22,11 @@
 				<Option object_output="obj/Release/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
-				<Option parameters='&quot;/home/hyvi/HYVI/programs/fsm-lite-master/Ecol_short100_short&quot;  sanger100_short 100 5 10 10 5 &quot;/home/hyvi/HYVI/git/Sanger/results/sanger100_short/&quot; 1 2 3 4 5 10' />
+				<Option parameters='&quot;/home/hyvi/HYVI/programs/fsm-lite-master/Ecol_short100_21_41&quot;  sanger100_short 100 5 10 10 5 &quot;/home/hyvi/HYVI/git/Sanger/results/sanger100_short/&quot; 1 2 3 4 5 10' />
 				<Compiler>
 					<Add option="-O3" />
 					<Add option="-std=c++11" />
-					<Add directory="/usr/local/include/eigen_3.3.3" />
+					<Add directory="/home/hyvi/Downloads/eigen_3.3.3" />
 					<Add directory="/home/hyvi/HYVI/git/MRPT_new" />
 				</Compiler>
 				<Linker>

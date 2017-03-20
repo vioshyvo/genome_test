@@ -27,6 +27,184 @@
 
 using namespace Eigen;
 
+int write_binary(char *data_path, std::string outfile_path, int n, int *dim) {
+    std::ifstream infile(data_path);
+
+    if(!infile) {
+        std::cerr << "Error: could not open file " << data_path << "\n";
+        return -1;
+    }
+
+    FILE *outfile;
+    outfile = fopen((outfile_path + "_rowwise.bin").c_str(), "wb");
+
+    if(!outfile) {
+        std::cerr << "Error: could not open output file " << outfile_path << "_rowwise.bin" << "\n";
+        return -1;
+    }
+
+    // count number of kmers / dimensions of the data
+    int kmer_count = 0;
+
+    while (infile)
+        {
+            std::string strInput;
+            infile >> strInput;
+
+            if(strInput.find('|') != std::string::npos) kmer_count++;
+        }
+
+    infile.clear();
+    infile.seekg(0, std::ios::beg);
+    *dim = kmer_count;
+
+    // read the data into a binary file in a rowwise form
+    BenchTimer etr;
+    etr.start();
+
+    int kmer = -1;
+    float *kmer_buffer = nullptr;
+
+    while(infile) {
+        std::string strInput;
+        infile >> strInput;
+        if(std::isupper(strInput[0])) {
+            if(kmer_buffer) {
+                fwrite(kmer_buffer, sizeof(float), n, outfile);
+                delete[] kmer_buffer;
+                kmer_buffer = nullptr;
+            }
+            kmer_buffer = new float[n]();
+            kmer++;
+        } else if(strInput[0] == 'f') {
+            int colon_position = strInput.find(':');
+            int observation = std::stoi(strInput.substr(1, colon_position - 1)) - 1;
+            float value = std::stof(strInput.substr(colon_position + 1));
+            kmer_buffer[observation] = value;
+        }
+
+    }
+
+    fwrite(kmer_buffer, sizeof(float), n, outfile);
+    fclose(outfile);
+    delete[] kmer_buffer;
+    kmer_buffer = nullptr;
+
+    etr.stop();
+    std::cout << "Time to read the original file: " << etr.value() << " seconds.\n\n";
+    etr.reset();
+
+    // read the data from the rowwise binary file into the colwise binary file
+    // reopen the rowwise binary file
+    FILE *inf;
+    inf = fopen((outfile_path + "_rowwise.bin").c_str(), "rb");
+
+     // obtain file size:
+    fseek (inf, 0, SEEK_END);
+    size_t inf_size = ftell(inf);
+    rewind (inf);
+
+    struct stat sb;
+    stat((outfile_path + "_rowwise.bin").c_str(), &sb);
+
+    std::cout << "N: " << sb.st_size / (sizeof(float) * kmer_count) << "\n";
+    std::cout << "size of input file: " << sb.st_size << "\n";
+    std::cout << "inf_size: " << inf_size << "\n";
+    std::cout << "n * kmer_count * sizeof(float): " << n * kmer_count * sizeof(float) << "\n";
+
+//    if(inf_size != n * kmer_count * sizeof(float)) {
+//        std::cerr << "Error: size of the input data is " << inf_size << ", while the expected size is " << n * kmer_count * sizeof(float) << "\n";
+//        return -1;
+//    }
+
+    // open file for writing the matrix into colwise form
+    outfile = fopen((outfile_path + ".bin").c_str(), "wb");
+
+    if(!outfile) {
+        std::cerr << "Error: could not open output file " << outfile_path << ".bin" << "\n";
+        return -1;
+    }
+
+    // write the data in colwise format
+    float *obs_buffer;
+
+    for(int i = 0; i < n; i++) {
+        obs_buffer = new float[kmer_count]();
+        for(int j = 0; j < kmer_count; j++) {
+            fseek(inf, (j * n + i) * sizeof(float), SEEK_SET);
+            fread(obs_buffer + j, sizeof(float), 1, inf);
+        }
+        fwrite(obs_buffer, sizeof(float), kmer_count, outfile);
+        delete[] obs_buffer;
+        obs_buffer = nullptr;
+    }
+
+    fclose(outfile);
+
+    return 0;
+}
+
+int read_into_sparse(Eigen::SparseMatrix<float> &X, char *data_path, int n, int *dim) {
+    std::ifstream infile(data_path);
+
+    if(!infile) {
+        std::cerr << "Error: could not open file " << data_path << "\n";
+        return -1;
+    }
+
+    int kmer_count = 0;
+    while (infile)
+        {
+            std::string strInput;
+            infile >> strInput;
+
+            if(strInput.find('|') != std::string::npos) kmer_count++;
+
+        }
+
+    *dim = kmer_count;
+    infile.clear();
+    infile.seekg(0, std::ios::beg);
+
+    // row = variable (k-mer)
+    // col = data point (bacterial sample)
+    X = Eigen::SparseMatrix<float>(kmer_count, n);
+
+    BenchTimer etr;
+    etr.start();
+
+    int kmer = -1;
+
+    typedef Eigen::Triplet<float> T;
+    std::vector<T> tripletList;
+
+    tripletList.reserve(n * kmer_count / 2);
+
+    while(infile) {
+        std::string strInput;
+        infile >> strInput;
+        if(std::isupper(strInput[0])) {
+            kmer++;
+        } else if(strInput[0] == 'f') {
+            int colon_position = strInput.find(':');
+            int observation = std::stoi(strInput.substr(1, colon_position - 1)) - 1;
+            float value = std::stof(strInput.substr(colon_position + 1));
+            tripletList.push_back(T(kmer, observation, value));
+        }
+
+    }
+
+    X.setFromTriplets(tripletList.begin(), tripletList.end());
+    X.makeCompressed();
+
+
+    etr.stop();
+    std::cout << "Time to read the file into a sparse matrix: " << etr.value() << " seconds.\n\n";
+    etr.reset();
+
+    return 0;
+}
+
 
 int main(int argc, char **argv) {
     char *data_path = argv[1];
@@ -46,148 +224,47 @@ int main(int argc, char **argv) {
 
     // std::ifstream infile("/home/hyvi/HYVI/programs/fsm-lite-master/Ecol_short100_21_41");
     // std::ifstream infile("/home/hyvi/HYVI/programs/fsm-lite-master/Ecol_short100_short");
-    std::ifstream infile(data_path);
-
-    if(!infile) {
-        std::cerr << "Error: could not open file " << data_path << "\n";
-        return -1;
-    }
-
     std::string outfile_path = "/home/hyvi/HYVI/data/Sanger/Ecoli/Ecoli100/Ecoli100";
-    FILE *outfile;
-    outfile = fopen((outfile_path + "_rowwise.bin").c_str(), "wb");
+    Eigen::SparseMatrix<float> X;
 
-    if(!outfile) {
-        std::cerr << "Error: could not open output file " << outfile_path << "_rowwise.bin" << "\n";
-        return -1;
-    }
+    int dim;
 
-    int kmer_count = 0;
-
-    while (infile)
-        {
-            // read stuff from the file into a string and print it
-            std::string strInput;
-            infile >> strInput;
-
-            if(strInput.find('|') != std::string::npos) kmer_count++;
-
-        }
-
-    // std::cout << kmer_count << " different kmers.\n\n";
-
-    int dim = kmer_count;
-
-    // row = variable (k-mer)
-    // col = data point (bacterial sample)
-    Eigen::SparseMatrix<float> X(kmer_count, n);
-
-    infile.clear();
-    infile.seekg(0, std::ios::beg);
-
-    BenchTimer etr;
-    etr.start();
-
-    int kmer = -1;
-
-    typedef Eigen::Triplet<float> T;
-    std::vector<T> tripletList;
-    // std::cout << "max_size: " << tripletList.max_size() << "\n";
-
-    // std::cout << "memory required: " << 4.0 * n * kmer_count / 2 / 1000000000 << " GB\n\n";
-
-    tripletList.reserve(n * kmer_count / 2);
-
-//    std::cout << "size: " << tripletList.size() << "\n";
-//    std::cout << "capacity: " << tripletList.capacity() << "\n";
-//    std::cout << "n * kmer_count: " << n * kmer_count << "\n\n";
-
-    float *kmer_buffer = nullptr;
-
-    while(infile) {
-        std::string strInput;
-        infile >> strInput;
-        if(std::isupper(strInput[0])) {
-            if(kmer_buffer) fwrite(kmer_buffer, sizeof(float), n, outfile);
-            kmer_buffer = new float[n]();
-            kmer++;
-        } else if(strInput[0] == 'f') {
-            int colon_position = strInput.find(':');
-            int observation = std::stoi(strInput.substr(1, colon_position - 1)) - 1;
-            float value = std::stof(strInput.substr(colon_position + 1));
-            tripletList.push_back(T(kmer, observation, value));
-            kmer_buffer[observation] = value;
-        }
-
-    }
-
-    fwrite(kmer_buffer, sizeof(float), n, outfile);
-    fclose(outfile);
-    delete[] kmer_buffer;
-    kmer_buffer = nullptr;
-
-    X.setFromTriplets(tripletList.begin(), tripletList.end());
-    X.makeCompressed();
-
-
-    etr.stop();
-    std::cout << "Eigen time to read the file: " << etr.value() << " seconds.\n\n";
-    etr.reset();
-
-    ////////////////////////////////////////////////////////////////////////////////////////////
-    // reopen the rowwise written binary file and write it into colwise form
-
-    // reopen the rowwise binary file
-    FILE *inf;
-    inf = fopen((outfile_path + "_rowwise.bin").c_str(), "rb");
-
-     // obtain file size:
-    fseek (inf, 0, SEEK_END);
-    int inf_size = ftell(inf);
-    rewind (inf);
-
-    if(inf_size != n * dim * sizeof(float)) {
-        std::cerr << "Error: size of the input data is " << inf_size << ", while the expected size is " << n * dim * sizeof(float) << "\n";
-        return -1;
-    }
-
-    // open file for writing the matrix into colwise form
-    outfile = fopen((outfile_path + ".bin").c_str(), "wb");
-
-    if(!outfile) {
-        std::cerr << "Error: could not open output file " << outfile_path << ".bin" << "\n";
-        return -1;
-    }
-
-
-    float *obs_buffer;
-
-    for(int i = 0; i < n; i++) {
-        obs_buffer = new float[dim]();
-        for(int j = 0; j < dim; j++) {
-            fseek(inf, (j * n + i) * sizeof(float), SEEK_SET);
-            fread(obs_buffer + j, sizeof(float), 1, inf);
-        }
-        fwrite(obs_buffer, sizeof(float), dim, outfile);
-    }
-
-    fclose(outfile);
-    delete[] obs_buffer;
-    obs_buffer = nullptr;
-
-    // read the colwise matrix from the binary file
-    float *train_data = get_data((outfile_path + ".bin").c_str(), dim, &n_points);
-    float *train_data_rowwise = get_data((outfile_path + "_rowwise.bin").c_str(), dim, &n_points);
-    const Map<const MatrixXf> *M1 = new Map<const MatrixXf>(train_data, dim, n_points);
-    const Map<const Matrix<float, Dynamic, Dynamic,RowMajor>> *M = new Map<const Matrix<float, Dynamic, Dynamic,RowMajor>>(train_data_rowwise, dim, n_points);
+   //  std::cout << "Write binary: " << write_binary(data_path, outfile_path, n, &dim) << "\n";
+   //  std::cout << "dim: " << dim << "\n";
+    std::cout << "Read into a sparse matrix: " << read_into_sparse(X, data_path, n, &dim) << "\n";
+    std::cout << "dim: " << dim << "\n";
 
 
     std::cout << X.block(0,0,20,20) << std::endl << std::endl;
-    std::cout << M->block(0,0,20,20) << std::endl << std::endl;
-    std::cout << M1->block(0,0,20,20) << std::endl << std::endl;
     std::cout << "Alkuperäinen matriisi, rivejä: " << X.rows() << ", Sarakkeita: " << X.cols() << "\n\n";
-    std::cout << "Riveittäisestä versiosta luettu matriisi, rivejä: " << M->rows() << ", Sarakkeita: " << M->cols() << "\n\n";
-    std::cout << "Uudelleen luettu matriisi, rivejä: " << M1->rows() << ", Sarakkeita: " << M1->cols() << "\n\n";
+
+    // read the colwise matrix from the binary file
+//    BenchTimer etr;
+//    etr.start();
+//
+//    float *train_data_rowwise = get_data((outfile_path + "_rowwise.bin").c_str(), dim, &n_points);
+//    const Map<const Matrix<float, Dynamic, Dynamic,RowMajor>> *M = new Map<const Matrix<float, Dynamic, Dynamic,RowMajor>>(train_data_rowwise, dim, n_points);
+//    std::cout << M->block(0,0,20,20) << std::endl << std::endl;
+//    std::cout << "Riveittäisestä versiosta luettu matriisi, rivejä: " << M->rows() << ", Sarakkeita: " << M->cols() << "\n\n";
+//    delete[] train_data_rowwise;
+//    delete M;
+//
+//    etr.stop();
+//    std::cout << "Time to read the binary: " << etr.value() << " seconds.\n\n";
+//    etr.reset();
+//
+//    etr.start();
+//
+//    float *train_data = get_data((outfile_path + ".bin").c_str(), dim, &n_points);
+//    const Map<const MatrixXf> *M1 = new Map<const MatrixXf>(train_data, dim, n_points);
+//    std::cout << M1->block(0,0,20,20) << std::endl << std::endl;
+//    std::cout << "Uudelleen luettu matriisi, rivejä: " << M1->rows() << ", Sarakkeita: " << M1->cols() << "\n\n";
+//    delete[] train_data;
+//    delete M1;
+//
+//    etr.stop();
+//    std::cout << "Time to read the binary: " << etr.value() << " seconds.\n\n";
+//    etr.reset();
 
 
     // read test points into a dense matrix
