@@ -22,10 +22,39 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include "cpp/Mrpt.h" // sparse version on of Mrpt
+#include "cpp/Mrpt.h"
 #include "common.h"
 
 using namespace Eigen;
+
+int read_memory(const char *file, int n_train, int n_test, int dim, float *train, float *test) {
+//    train = new float[n_train * dim];
+//    test = new float[n_test * dim];
+
+    struct stat sb;
+    stat(file, &sb);
+
+    if(sb.st_size != (n_test + n_train) * dim * sizeof(float)) {
+        std::cerr << "Size of the file is " << sb.st_size << ", while the expected size is: " << (n_test + n_train) * dim * sizeof(float) << "\n";
+        return -1;
+    }
+
+    FILE *fd;
+    if ((fd = fopen(file, "rb")) == NULL)
+        return -1;
+
+    int read = fread(train, sizeof(float), n_train * dim, fd);
+    if (read != n_train * dim)
+        return -1;
+
+    read = fread(test, sizeof(float), n_test * dim, fd);
+    if (read != n_test * dim)
+        return -1;
+
+    fclose(fd);
+    return 0;
+}
+
 
 int write_binary(char *data_path, std::string outfile_path, int n, int *dim) {
     std::ifstream infile(data_path);
@@ -227,16 +256,16 @@ int main(int argc, char **argv) {
     std::string outfile_path = "/home/hyvi/HYVI/data/Sanger/Ecoli/Ecoli100/Ecoli100";
     Eigen::SparseMatrix<float> X;
 
-    int dim;
+    int dim = 14541768;
 
    //  std::cout << "Write binary: " << write_binary(data_path, outfile_path, n, &dim) << "\n";
    //  std::cout << "dim: " << dim << "\n";
-    std::cout << "Read into a sparse matrix: " << read_into_sparse(X, data_path, n, &dim) << "\n";
-    std::cout << "dim: " << dim << "\n";
-
-
-    std::cout << X.block(0,0,20,20) << std::endl << std::endl;
-    std::cout << "Alkuperäinen matriisi, rivejä: " << X.rows() << ", Sarakkeita: " << X.cols() << "\n\n";
+//    std::cout << "Read into a sparse matrix: " << read_into_sparse(X, data_path, n, &dim) << "\n";
+//    std::cout << "dim: " << dim << "\n";
+//
+//
+//    std::cout << X.block(0,0,20,20) << std::endl << std::endl;
+//    std::cout << "Alkuperäinen matriisi, rivejä: " << X.rows() << ", Sarakkeita: " << X.cols() << "\n\n";
 
     // read the colwise matrix from the binary file
 //    BenchTimer etr;
@@ -266,83 +295,22 @@ int main(int argc, char **argv) {
 //    std::cout << "Time to read the binary: " << etr.value() << " seconds.\n\n";
 //    etr.reset();
 
+    // float *train, *test;
+    float *train = new float[n_points * dim];
+    float *test = new float[n_test * dim];
 
-    // read test points into a dense matrix
-    MatrixXf X_test = MatrixXf::Zero(dim, n_test);
-
-    for (int i = n_points; i < X.outerSize(); ++i)
-        for (SparseMatrix<float>::InnerIterator it(X,i); it; ++it)
-            X_test(it.row(), i - n_points) = it.value();
-
-//    std::cout << "Rivejä: " << X_test.rows() << ", sarakkeita: " << X_test.cols() << "\n\n";
-//    std::cout << X.block(0,95,20,5) << std::endl << std::endl;
-//    std::cout << X_test.block(0,0,20,5) << std::endl << std::endl;
+    read_memory((outfile_path + ".bin").c_str(), n_points, n_test, dim, train, test);
 
 
-    // copy data buffer into X_test_ptr
-//    float *X_test_ptr;
-//    Map<MatrixXf>(X_test_ptr, X_test.rows(), X_test.cols()) = X_test;
-
-    float *X_test_ptr = &X_test(0,0);            // get the address storing the data for m2
-    // Map<MatrixXf> X_test_map(X_test_ptr, X_test.rows(), X_test.cols());   // m2map shares data with m2
-
-    const SparseMatrix<float> *Xtrain = new SparseMatrix<float>(X.leftCols(n_points));
-
-//    for(int j = 0; j < n_test; j++) {
-//
-//        Timer tmr2;
-//
-//        VectorXf dist(n_points);
-//        for(int i = 0; i < n_points; i++)
-//            dist[i] = (X.col(i) - X_test.col(j)).squaredNorm();
-//
-//        VectorXi idx(n_points);
-//        std::iota(idx.data(), idx.data() + n_points, 0);
-//        std::nth_element(idx.data(), idx.data() + k, idx.data() + n_points,
-//                         [&dist](int i1, int i2) {return dist(i1) < dist(i2);});
-//        std::sort(dist.data(), dist.data() + dist.size());
-
-        // std::cout << "Ten nearest points: ";
-//        for(int i = 0; i < k; i++)
-//        std::cout << idx(i) << ", ";
-//        std::cout << std::endl;
-
-        // std::cout << "Ten nearest squared distances: ";
-//        for(int i = 0; i < k; i++)
-//            std::cout << dist[i] << ", ";
-
- //       t = tmr2.elapsed();
-        // std::cout << "\nTime for query for one query point: " << t << " seconds.\n"<< std::endl;
-    //}
+    const Map<const MatrixXf> *M = new Map<const MatrixXf>(train, dim, n_points);
 
 
-    // std::cout << "proportion of non-zeros: " << X.nonZeros() / (1.0 * kmer_count * n) << "\n\n";
+    float sparsity = sqrt(dim);
+    Mrpt index_dense(M, n_trees, depth, sparsity);
+    index_dense.grow();
 
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// test Sanger data
-
-    // std::string sanger_path = "/home/hyvi/HYVI/git/Sanger/results/sanger/";
-
-    // set the parameters
-    // int n_trees = 20;
-    // int depth = 4;
-
-    float sparsity = 1 / sqrt(dim);
-    // std::vector<int> vote = {1,2,3,4,5};
-
-
-    Mrpt index(Xtrain, n_trees, depth, sparsity);
-    index.grow();
-
-    // std::cout << "Index grown\n";
-
-
-    // for(int j = 0; j < vote.size(); j++) {
     for (int arg = last_arg + 1; arg < argc; ++arg) {
         int votes = atoi(argv[arg]);
-
-        // int votes = vote[j];
         if (votes > n_trees) continue;
 
         std::vector<double> times;
@@ -351,13 +319,11 @@ int main(int argc, char **argv) {
         for (int i = 0; i < n_test; ++i) {
                 std::vector<int> result(k);
                 double start = omp_get_wtime();
-                int nn = index.query(Map<VectorXf>(&X_test_ptr[i * dim], dim), k, votes, &result[0]); // <- index.query
+                index_dense.query(Map<VectorXf>(&test[i * dim], dim), k, votes, &result[0]);
 
                 double end = omp_get_wtime();
-
-
                 times.push_back(end - start);
-                idx.push_back(std::set<int>(result.begin(), result.begin() + nn));
+                idx.push_back(std::set<int>(result.begin(), result.end()));
             }
 
         if(verbose)
@@ -369,130 +335,86 @@ int main(int argc, char **argv) {
     }
 
 
+    delete[] test;
+    delete[] train;
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// read mnist data & set the parameters
 
-
-//    int n_test;
-//    int n_points;
-//    int dim = 784;
-//    int n_trees = 256;
-//    int depth = 10;
-//    int k = 10;
-//    bool verbose = true;
+//    // read test points into a dense matrix
+//    MatrixXf X_test = MatrixXf::Zero(dim, n_test);
 //
-//    float sparsity = 0.035;
-//    std::vector<int> vote = {1,2,3,4,5,10};
-
-
-//    std::string path = "/home/hyvi/HYVI/git/MRPT_test/data/mnist";
-//    float *train_data = get_data((path + "/train.bin").c_str(), dim, &n_points);
-//    float *test_data = get_data((path + "/test.bin").c_str(), dim, &n_test);
+//    for (int i = n_points; i < X.outerSize(); ++i)
+//        for (SparseMatrix<float>::InnerIterator it(X,i); it; ++it)
+//            X_test(it.row(), i - n_points) = it.value();
+//
+////    std::cout << "Rivejä: " << X_test.rows() << ", sarakkeita: " << X_test.cols() << "\n\n";
+////    std::cout << X.block(0,95,20,5) << std::endl << std::endl;
+////    std::cout << X_test.block(0,0,20,5) << std::endl << std::endl;
 //
 //
-////    std::cout << "n_test: " << n_test << "\n";
-////    std::cout << "n_train: " << n << "\n";
+//    // copy data buffer into X_test_ptr
+////    float *X_test_ptr;
+////    Map<MatrixXf>(X_test_ptr, X_test.rows(), X_test.cols()) = X_test;
+//
+//    float *X_test_ptr = &X_test(0,0);            // get the address storing the data for m2
+//    // Map<MatrixXf> X_test_map(X_test_ptr, X_test.rows(), X_test.cols());   // m2map shares data with m2
+//
+//    const SparseMatrix<float> *Xtrain = new SparseMatrix<float>(X.leftCols(n_points));
+//
+////    for(int j = 0; j < n_test; j++) {
+////
+////        Timer tmr2;
+////
+////        VectorXf dist(n_points);
+////        for(int i = 0; i < n_points; i++)
+////            dist[i] = (X.col(i) - X_test.col(j)).squaredNorm();
+////
+////        VectorXi idx(n_points);
+////        std::iota(idx.data(), idx.data() + n_points, 0);
+////        std::nth_element(idx.data(), idx.data() + k, idx.data() + n_points,
+////                         [&dist](int i1, int i2) {return dist(i1) < dist(i2);});
+////        std::sort(dist.data(), dist.data() + dist.size());
+//
+//        // std::cout << "Ten nearest points: ";
+////        for(int i = 0; i < k; i++)
+////        std::cout << idx(i) << ", ";
+////        std::cout << std::endl;
+//
+//        // std::cout << "Ten nearest squared distances: ";
+////        for(int i = 0; i < k; i++)
+////            std::cout << dist[i] << ", ";
+//
+// //       t = tmr2.elapsed();
+//        // std::cout << "\nTime for query for one query point: " << t << " seconds.\n"<< std::endl;
+//    //}
+//
+//
+//    // std::cout << "proportion of non-zeros: " << X.nonZeros() / (1.0 * kmer_count * n) << "\n\n";
 //
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//// test dense version with mnist
+//// test Sanger data
+//
+//    // std::string sanger_path = "/home/hyvi/HYVI/git/Sanger/results/sanger/";
+//
+//    // set the parameters
+//    // int n_trees = 20;
+//    // int depth = 4;
+//
+//    float sparsity = 1 / sqrt(dim);
+//    // std::vector<int> vote = {1,2,3,4,5};
 //
 //
-//    const Map<const MatrixXf> *M = new Map<const MatrixXf>(train_data, dim, n_points);
-//
-//    std::cout << "Data read.\n";
-//    std::cout << "Rivejä: " << M->rows() << "\nSarakkeita: " << M->cols() << "\n";
-//    // std::cout << M->block(200,200,20,20) << std::endl << std::endl;
-//
-//
-//
-//
-//    Mrpt index_dense(M, n_trees, depth, sparsity);
-//    index_dense.grow();
-//
-//    std::cout << "Index grown\n";
-//
-//
-//
-//    for(int j = 0; j < vote.size(); j++) {
-//        int votes = vote[j];
-//        if (votes > n_trees) continue;
-//
-//        std::vector<double> times;
-//        std::vector<std::set<int>> idx;
-//
-//        for (int i = 0; i < n_test; ++i) {
-//                std::vector<int> result(k);
-//                double start = omp_get_wtime();
-//                index_dense.query(Map<VectorXf>(&test_data[i * dim], dim), k, votes, &result[0]);
-//
-//                double end = omp_get_wtime();
-//                times.push_back(end - start);
-//                idx.push_back(std::set<int>(result.begin(), result.end()));
-//            }
-//
-//        if(verbose)
-//            std::cout << "k: " << k << ", # of trees: " << n_trees << ", depth: " << depth << ", sparsity: " << sparsity << ", votes: " << votes << "\n";
-//        else
-//            std::cout << k << " " << n_trees << " " << depth << " " << sparsity << " " << votes << "\n";
-//        results(k, times, idx, (std::string(path) + "/truth_" + std::to_string(k)).c_str(), verbose);
-//
-//    }
-//
-//
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//// test sparse version with mnist
-//
-//    // read training data into a sparse matrix
-//    Eigen::SparseMatrix<float> *X_train = new Eigen::SparseMatrix<float>(dim, n_points);
-//
-//    typedef Eigen::Triplet<float> t;
-//    std::vector<t> tripletList2;
-//
-//    tripletList2.reserve(n_points * dim / 2);
-//
-//    for(int col = 0; col < n_points; ++col) {
-//        for(int row = 0; row < dim; ++row) {
-//            float value = train_data[col * dim + row];
-//            if(value) tripletList2.push_back(t(row, col, value));
-//        }
-//    }
-//
-//    X_train->setFromTriplets(tripletList2.begin(), tripletList2.end());
-//    X_train->makeCompressed();
-//
-//    // read test data into a sparse matrix
-//    Eigen::SparseMatrix<float> *X_test = new Eigen::SparseMatrix<float>(dim, n_test);
-//
-//    std::vector<t> tripletList3;
-//
-//    tripletList3.reserve(n_test * dim / 2);
-//
-//    for(int col = 0; col < n_test; ++col) {
-//        for(int row = 0; row < dim; ++row) {
-//            float value = test_data[col * dim + row];
-//            if(value) tripletList3.push_back(t(row, col, value));
-//        }
-//    }
-//
-//    X_test->setFromTriplets(tripletList3.begin(), tripletList3.end());
-//    X_test->makeCompressed();
-//
-//
-//
-//
-///////////////////////////////////////////////////////////////////////////////////////////////////////
-//// index grown with sparse data, queries done with dense query points
-//
-//    Mrpt index(X_train, n_trees, depth, sparsity);
+//    Mrpt index(Xtrain, n_trees, depth, sparsity);
 //    index.grow();
 //
-//    std::cout << "Index grown\n";
+//    // std::cout << "Index grown\n";
 //
 //
-//    for(int j = 0; j < vote.size(); j++) {
-//        int votes = vote[j];
+//    // for(int j = 0; j < vote.size(); j++) {
+//    for (int arg = last_arg + 1; arg < argc; ++arg) {
+//        int votes = atoi(argv[arg]);
+//
+//        // int votes = vote[j];
 //        if (votes > n_trees) continue;
 //
 //        std::vector<double> times;
@@ -501,7 +423,7 @@ int main(int argc, char **argv) {
 //        for (int i = 0; i < n_test; ++i) {
 //                std::vector<int> result(k);
 //                double start = omp_get_wtime();
-//                int nn = index.query(Map<VectorXf>(&test_data[i * dim], dim), k, votes, &result[0]); // <- index.query
+//                int nn = index.query(Map<VectorXf>(&X_test_ptr[i * dim], dim), k, votes, &result[0]); // <- index.query
 //
 //                double end = omp_get_wtime();
 //
@@ -513,38 +435,188 @@ int main(int argc, char **argv) {
 //        if(verbose)
 //            std::cout << "k: " << k << ", # of trees: " << n_trees << ", depth: " << depth << ", sparsity: " << sparsity << ", votes: " << votes << "\n";
 //        else
-//            std::cout << k << " " << n_trees << " " << depth << " " << sparsity << " " << votes << "\n";
-//        results(k, times, idx, (std::string(path) + "/truth_" + std::to_string(k)).c_str(), verbose);
+//            std::cout << k << " " << n_trees << " " << depth << " " << sparsity << " " << votes << " ";
+//        results(k, times, idx, (std::string(result_path) + "/truth_" + std::to_string(k)).c_str(), verbose);
 //
 //    }
 //
-///////////////////////////////////////////////////////////////////////////////////////////////////////
-//// index grown with sparse data, queries done with sparse query points
-//    for(int j = 0; j < vote.size(); j++) {
-//        int votes2 = vote[j];
-//        if (votes2 > n_trees) continue;
 //
-//        std::vector<double> times2;
-//        std::vector<std::set<int>> idx2;
 //
-//        for (int i = 0; i < n_test; ++i) {
-//                std::vector<int> result2(k);
-//                double start2 = omp_get_wtime();
-//                int nn = index.sparse_query(X_test->col(i), k, votes2, &result2[0]);    // <- index.sparse_query
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//// read mnist data & set the parameters
 //
-//                double end2 = omp_get_wtime();
-//                times2.push_back(end2 - start2);
-//                idx2.push_back(std::set<int>(result2.begin(), result2.begin() + nn));
-//            }
 //
-//        if(verbose)
-//            std::cout << "k: " << k << ", # of trees: " << n_trees << ", depth: " << depth << ", sparsity: " << sparsity << ", votes: " << votes2 << "\n";
-//        else
-//            std::cout << k << " " << n_trees << " " << depth << " " << sparsity << " " << votes2 << "\n";
-//        results(k, times2, idx2, (std::string(path) + "/truth_" + std::to_string(k)).c_str(), verbose);
+////    int n_test;
+////    int n_points;
+////    int dim = 784;
+////    int n_trees = 256;
+////    int depth = 10;
+////    int k = 10;
+////    bool verbose = true;
+////
+////    float sparsity = 0.035;
+////    std::vector<int> vote = {1,2,3,4,5,10};
 //
-//    }
-
+//
+////    std::string path = "/home/hyvi/HYVI/git/MRPT_test/data/mnist";
+////    float *train_data = get_data((path + "/train.bin").c_str(), dim, &n_points);
+////    float *test_data = get_data((path + "/test.bin").c_str(), dim, &n_test);
+////
+////
+//////    std::cout << "n_test: " << n_test << "\n";
+//////    std::cout << "n_train: " << n << "\n";
+////
+////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////// test dense version with mnist
+////
+////
+////    const Map<const MatrixXf> *M = new Map<const MatrixXf>(train_data, dim, n_points);
+////
+////    std::cout << "Data read.\n";
+////    std::cout << "Rivejä: " << M->rows() << "\nSarakkeita: " << M->cols() << "\n";
+////    // std::cout << M->block(200,200,20,20) << std::endl << std::endl;
+////
+////
+////
+////
+////    Mrpt index_dense(M, n_trees, depth, sparsity);
+////    index_dense.grow();
+////
+////    std::cout << "Index grown\n";
+////
+////
+////
+////    for(int j = 0; j < vote.size(); j++) {
+////        int votes = vote[j];
+////        if (votes > n_trees) continue;
+////
+////        std::vector<double> times;
+////        std::vector<std::set<int>> idx;
+////
+////        for (int i = 0; i < n_test; ++i) {
+////                std::vector<int> result(k);
+////                double start = omp_get_wtime();
+////                index_dense.query(Map<VectorXf>(&test_data[i * dim], dim), k, votes, &result[0]);
+////
+////                double end = omp_get_wtime();
+////                times.push_back(end - start);
+////                idx.push_back(std::set<int>(result.begin(), result.end()));
+////            }
+////
+////        if(verbose)
+////            std::cout << "k: " << k << ", # of trees: " << n_trees << ", depth: " << depth << ", sparsity: " << sparsity << ", votes: " << votes << "\n";
+////        else
+////            std::cout << k << " " << n_trees << " " << depth << " " << sparsity << " " << votes << "\n";
+////        results(k, times, idx, (std::string(path) + "/truth_" + std::to_string(k)).c_str(), verbose);
+////
+////    }
+////
+////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////// test sparse version with mnist
+////
+////    // read training data into a sparse matrix
+////    Eigen::SparseMatrix<float> *X_train = new Eigen::SparseMatrix<float>(dim, n_points);
+////
+////    typedef Eigen::Triplet<float> t;
+////    std::vector<t> tripletList2;
+////
+////    tripletList2.reserve(n_points * dim / 2);
+////
+////    for(int col = 0; col < n_points; ++col) {
+////        for(int row = 0; row < dim; ++row) {
+////            float value = train_data[col * dim + row];
+////            if(value) tripletList2.push_back(t(row, col, value));
+////        }
+////    }
+////
+////    X_train->setFromTriplets(tripletList2.begin(), tripletList2.end());
+////    X_train->makeCompressed();
+////
+////    // read test data into a sparse matrix
+////    Eigen::SparseMatrix<float> *X_test = new Eigen::SparseMatrix<float>(dim, n_test);
+////
+////    std::vector<t> tripletList3;
+////
+////    tripletList3.reserve(n_test * dim / 2);
+////
+////    for(int col = 0; col < n_test; ++col) {
+////        for(int row = 0; row < dim; ++row) {
+////            float value = test_data[col * dim + row];
+////            if(value) tripletList3.push_back(t(row, col, value));
+////        }
+////    }
+////
+////    X_test->setFromTriplets(tripletList3.begin(), tripletList3.end());
+////    X_test->makeCompressed();
+////
+////
+////
+////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+////// index grown with sparse data, queries done with dense query points
+////
+////    Mrpt index(X_train, n_trees, depth, sparsity);
+////    index.grow();
+////
+////    std::cout << "Index grown\n";
+////
+////
+////    for(int j = 0; j < vote.size(); j++) {
+////        int votes = vote[j];
+////        if (votes > n_trees) continue;
+////
+////        std::vector<double> times;
+////        std::vector<std::set<int>> idx;
+////
+////        for (int i = 0; i < n_test; ++i) {
+////                std::vector<int> result(k);
+////                double start = omp_get_wtime();
+////                int nn = index.query(Map<VectorXf>(&test_data[i * dim], dim), k, votes, &result[0]); // <- index.query
+////
+////                double end = omp_get_wtime();
+////
+////
+////                times.push_back(end - start);
+////                idx.push_back(std::set<int>(result.begin(), result.begin() + nn));
+////            }
+////
+////        if(verbose)
+////            std::cout << "k: " << k << ", # of trees: " << n_trees << ", depth: " << depth << ", sparsity: " << sparsity << ", votes: " << votes << "\n";
+////        else
+////            std::cout << k << " " << n_trees << " " << depth << " " << sparsity << " " << votes << "\n";
+////        results(k, times, idx, (std::string(path) + "/truth_" + std::to_string(k)).c_str(), verbose);
+////
+////    }
+////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+////// index grown with sparse data, queries done with sparse query points
+////    for(int j = 0; j < vote.size(); j++) {
+////        int votes2 = vote[j];
+////        if (votes2 > n_trees) continue;
+////
+////        std::vector<double> times2;
+////        std::vector<std::set<int>> idx2;
+////
+////        for (int i = 0; i < n_test; ++i) {
+////                std::vector<int> result2(k);
+////                double start2 = omp_get_wtime();
+////                int nn = index.sparse_query(X_test->col(i), k, votes2, &result2[0]);    // <- index.sparse_query
+////
+////                double end2 = omp_get_wtime();
+////                times2.push_back(end2 - start2);
+////                idx2.push_back(std::set<int>(result2.begin(), result2.begin() + nn));
+////            }
+////
+////        if(verbose)
+////            std::cout << "k: " << k << ", # of trees: " << n_trees << ", depth: " << depth << ", sparsity: " << sparsity << ", votes: " << votes2 << "\n";
+////        else
+////            std::cout << k << " " << n_trees << " " << depth << " " << sparsity << " " << votes2 << "\n";
+////        results(k, times2, idx2, (std::string(path) + "/truth_" + std::to_string(k)).c_str(), verbose);
+////
+////    }
+//
 
 
 
