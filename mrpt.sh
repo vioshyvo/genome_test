@@ -6,10 +6,10 @@ fi
 . "parameters/$1.sh"
 
 
-echo -n > "results/$DATASET_NAME/mrpt-voting.txt"
+echo -n > "results/$DATASET_NAME/mrpt-voting_dense.txt"
 for n_trees in $MRPT_VOTING_N_TREES; do
     for depth in $MRPT_DEPTH; do
-        ./bin/Release/Sanger $DATA_FILE $DATASET_NAME $N $N_TEST 10 $n_trees $depth "/home/hyvi/HYVI/git/Sanger/results/$DATASET_NAME/" $MRPT_VOTES  >> "results/$DATASET_NAME/mrpt-voting.txt"
+        ./bin/Release/Sanger $DATA_FILE $DATASET_NAME $N $N_TEST 10 $n_trees $depth $DIM "/home/hyvi/HYVI/git/Sanger/results/$DATASET_NAME/" $MRPT_VOTES  >> "results/$DATASET_NAME/mrpt-voting_dense.txt"
     done
 done
 

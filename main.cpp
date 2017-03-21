@@ -141,10 +141,10 @@ int write_binary(char *data_path, std::string outfile_path, int n, int *dim) {
     std::cout << "inf_size: " << inf_size << "\n";
     std::cout << "n * kmer_count * sizeof(float): " << n * kmer_count * sizeof(float) << "\n";
 
-//    if(inf_size != n * kmer_count * sizeof(float)) {
-//        std::cerr << "Error: size of the input data is " << inf_size << ", while the expected size is " << n * kmer_count * sizeof(float) << "\n";
-//        return -1;
-//    }
+    if(sb.st_size != n * kmer_count * sizeof(float)) {
+        std::cerr << "Error: size of the input data is " << inf_size << ", while the expected size is " << n * kmer_count * sizeof(float) << "\n";
+        return -1;
+    }
 
     // open file for writing the matrix into colwise form
     outfile = fopen((outfile_path + ".bin").c_str(), "wb");
@@ -235,39 +235,43 @@ int read_into_sparse(Eigen::SparseMatrix<float> &X, char *data_path, int n, int 
 }
 
 
+
+
 int main(int argc, char **argv) {
     char *data_path = argv[1];
     char *data_name = argv[2];
     int n = atoi(argv[3]);
     int n_test = atoi(argv[4]);
     int k = atoi(argv[5]);
-
     int n_trees = atoi(argv[6]);
     int depth = atoi(argv[7]);
+    int dim = atoi(argv[8]);
+    int mmap = atoi(argv[9]);
+    char *result_path = argv[10];
 
-    char *result_path = argv[8];
-
-    int last_arg = 8;
+    std::cout << "argc: " << argc << "\n";
+    std::cout << "dim: " << dim << "\n";
+    int last_arg = 10;
     int n_points = n - n_test;
     bool verbose = false;
 
-    // std::ifstream infile("/home/hyvi/HYVI/programs/fsm-lite-master/Ecol_short100_21_41");
-    // std::ifstream infile("/home/hyvi/HYVI/programs/fsm-lite-master/Ecol_short100_short");
-    std::string outfile_path = "/home/hyvi/HYVI/data/Sanger/Ecoli/Ecoli100/Ecoli100";
-    Eigen::SparseMatrix<float> X;
+    std::string outfile_path = "/home/hyvi/HYVI/data/Sanger/Ecoli/Ecoli100_short/Ecoli100_short";
 
-    int dim = 14541768;
+    // int dim = 14541768;
+    // int dim = 573;
 
-   //  std::cout << "Write binary: " << write_binary(data_path, outfile_path, n, &dim) << "\n";
-   //  std::cout << "dim: " << dim << "\n";
+//    std::cout << "Write binary: " << write_binary(data_path, outfile_path, n, &dim) << "\n";
+//    std::cout << "dim: " << dim << "\n";
+//
+//    Eigen::SparseMatrix<float> X;
 //    std::cout << "Read into a sparse matrix: " << read_into_sparse(X, data_path, n, &dim) << "\n";
 //    std::cout << "dim: " << dim << "\n";
 //
 //
 //    std::cout << X.block(0,0,20,20) << std::endl << std::endl;
 //    std::cout << "Alkuperäinen matriisi, rivejä: " << X.rows() << ", Sarakkeita: " << X.cols() << "\n\n";
-
-    // read the colwise matrix from the binary file
+//
+//    //  read the colwise matrix from the binary file
 //    BenchTimer etr;
 //    etr.start();
 //
@@ -295,17 +299,22 @@ int main(int argc, char **argv) {
 //    std::cout << "Time to read the binary: " << etr.value() << " seconds.\n\n";
 //    etr.reset();
 
-    // float *train, *test;
-    float *train = new float[n_points * dim];
-    float *test = new float[n_test * dim];
 
-    read_memory((outfile_path + ".bin").c_str(), n_points, n_test, dim, train, test);
+    /////////////////////////////////////////////////////////////////////////////////////////
+    // test mrpt
+    float *train;
+    float *test;
 
+    if(mmap) {
+    } else {
+        train = new float[n_points * dim];
+        test = new float[n_test * dim];
+        read_memory((outfile_path + ".bin").c_str(), n_points, n_test, dim, train, test);
+    }
 
     const Map<const MatrixXf> *M = new Map<const MatrixXf>(train, dim, n_points);
-
-
     float sparsity = sqrt(dim);
+
     Mrpt index_dense(M, n_trees, depth, sparsity);
     index_dense.grow();
 
@@ -330,15 +339,22 @@ int main(int argc, char **argv) {
             std::cout << "k: " << k << ", # of trees: " << n_trees << ", depth: " << depth << ", sparsity: " << sparsity << ", votes: " << votes << "\n";
         else
             std::cout << k << " " << n_trees << " " << depth << " " << sparsity << " " << votes << " ";
+
         results(k, times, idx, (std::string(result_path) + "/truth_" + std::to_string(k)).c_str(), verbose);
 
     }
-
 
     delete[] test;
     delete[] train;
 
 
+
+
+
+
+///////////////////////////////////////////////////////////////////////7
+//
+//
 //    // read test points into a dense matrix
 //    MatrixXf X_test = MatrixXf::Zero(dim, n_test);
 //
@@ -389,8 +405,8 @@ int main(int argc, char **argv) {
 //
 //
 //    // std::cout << "proportion of non-zeros: " << X.nonZeros() / (1.0 * kmer_count * n) << "\n\n";
-//
-//
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //// test Sanger data
 //
