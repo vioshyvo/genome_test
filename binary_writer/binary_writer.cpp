@@ -25,9 +25,17 @@
 #include "../Mrpt.h"
 #include "../common.h"
 
-int main(char *data_path, std::string outfile_path, int n_train, int n_test, int *dim) {
+int main(int argc, char **argv) {
+    if (argc != 5) {
+        std::cerr << "Usage: " << argv[0] << " data_path outfile_path n_train n_test" << std::endl;
+        return 1;
+    }
+
     char *data_path = argv[1];
-    char *outfile_path = argv[2];
+    std::string outfile_path(argv[2]);
+    int n_train = atoi(argv[3]);
+    int n_test = atoi(argv[4]);
+
     std::ifstream infile(data_path);
     int n = n_train + n_test;
 
@@ -44,7 +52,7 @@ int main(char *data_path, std::string outfile_path, int n_train, int n_test, int
         return -1;
     }
 
-    // count number of kmers / dimensions of the data
+    // count number of kmers /data
     int kmer_count = 0;
 
     while (infile)
@@ -57,7 +65,6 @@ int main(char *data_path, std::string outfile_path, int n_train, int n_test, int
 
     infile.clear();
     infile.seekg(0, std::ios::beg);
-    *dim = kmer_count;
 
     // read the data into a binary file in a rowwise form
     BenchTimer etr;
@@ -179,5 +186,6 @@ int main(char *data_path, std::string outfile_path, int n_train, int n_test, int
     std::cout << "Time to write the test data with " << n_test << " points: " << etr.value() << " seconds.\n";
     etr.reset();
 
+    std::cout << "Dimension: " << kmer_count << "\n";
     return 0;
 }
