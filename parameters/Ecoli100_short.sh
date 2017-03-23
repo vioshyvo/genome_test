@@ -5,6 +5,7 @@ DATASET_NAME="Ecoli100_short"
 N=100
 N_TEST=5
 DIM=573
+MMAP=1
 
 MRPT_DEPTH="1 2 3 4 5"
 

@@ -8,6 +8,12 @@
 #include <cstdlib>
 #include <utility>
 
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <cstdlib>
+
+
 using namespace std;
 
 int Ks[] = {1, 10, 100, -1};
@@ -27,6 +33,56 @@ float *get_data(const char *file, int dim, int *n) {
 
     return data;
 }
+
+float *read_memory(const char *file, int n, int dim) {
+    float *data = new float[n * dim];
+
+    struct stat sb;
+    stat(file, &sb);
+
+    if(sb.st_size != n * dim * sizeof(float)) {
+        std::cerr << "Size of the file is " << sb.st_size << ", while the expected size is: " << n * dim * sizeof(float) << "\n";
+        return NULL;
+    }
+
+    FILE *fd;
+    if ((fd = fopen(file, "rb")) == NULL) {
+        std::cerr << "Could not open file " << file << " for reading.\n";
+        return NULL;
+    }
+
+    int read = fread(data, sizeof(float), n * dim, fd);
+    if (read != n * dim) {
+        std::cerr << "Expected size of the read was " << n * dim << ", but " << read << " was read.\n";
+        return NULL;
+    }
+
+    fclose(fd);
+    return data;
+}
+
+float *read_mmap(const char *file, int n, int dim) {
+    FILE *fd;
+    if ((fd = fopen(file, "rb")) == NULL)
+        return NULL;
+
+    float *data;
+
+    if ((data = reinterpret_cast<float *> (
+#ifdef MAP_POPULATE
+            mmap(0, n * dim * sizeof(float), PROT_READ,
+            MAP_SHARED | MAP_POPULATE, fileno(fd), 0))) == MAP_FAILED) {
+#else
+            mmap(0, n * dim * sizeof(float), PROT_READ,
+            MAP_SHARED, fileno(fd), 0))) == MAP_FAILED) {
+#endif
+            return NULL;
+    }
+
+    fclose(fd);
+    return data;
+}
+
 
 void results(int k, const vector<double> &times, const vector<set<int>> &idx, const char *truth, bool verbose) {
     double time;
