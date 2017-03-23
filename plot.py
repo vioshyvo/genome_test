@@ -12,9 +12,9 @@ plt.rcParams['ytick.labelsize'] = 18
 
 def pareto_frontier(Xs, Ys, maxX=True, maxY=True):
     myList = sorted([[Xs[i], Ys[i]] for i in range(len(Xs))], reverse=maxX)
-    p_front = [myList[0]]    
+    p_front = [myList[0]]
     for pair in myList[1:]:
-        if maxY: 
+        if maxY:
             if pair[1] >= p_front[-1][1]:
                 p_front.append(pair)
         else:
@@ -56,16 +56,16 @@ def main(k, files):
     ax.set_ylabel('time (s)', fontsize=22)
     ax.set_xlabel('recall', fontsize=22)
     ax.set_xlim((0, 1))
-    # ax.set_ylim((minY / 1.25, maxY * 1.25))
-    ax.set_ylim((0,1))
+    ax.set_ylim((minY / 1.25, maxY * 1.25))
+    # ax.set_ylim((0,1))
     ax.xaxis.labelpad = 15
     ax.yaxis.labelpad = 15
     ax.set_yscale('linear')
     # ax.set_title('title', fontsize=28, y=1.05)
     # ax.set_yticks(np.linspace(0, 1, 100))
 
-	
-    	
+
+
     # ax.legend(LSD, labels=[a[0] for a in A], loc="upper left")
     plt.show()
     # plt.savefig('plot.png', bbox_inches='tight')

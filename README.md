@@ -1,4 +1,4 @@
-Pipeline:
+## Pipeline
 
 rm_names.sh `<path-to-data> `
   - removes spades.fa - files, and renames rest fasta-files into f0001, f0002,...
