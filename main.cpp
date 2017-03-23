@@ -162,18 +162,22 @@ int write_binary(char *data_path, std::string outfile_path, int n_train, int n_t
     }
 
     // write the data in colwise format
-    float *obs_buffer;
+    // float *obs_buffer;
+    float *obs_buffer = new float[kmer_count]();
+
 
     for(int i = 0; i < n_train; i++) {
-        obs_buffer = new float[kmer_count]();
+        // obs_buffer = new float[kmer_count]();
         for(int j = 0; j < kmer_count; j++) {
             fseek(inf, (j * n + i) * sizeof(float), SEEK_SET);
             fread(obs_buffer + j, sizeof(float), 1, inf);
         }
         fwrite(obs_buffer, sizeof(float), kmer_count, outfile_train);
-        delete[] obs_buffer;
-        obs_buffer = nullptr;
+        memset(obs_buffer, 0, kmer_count * sizeof(float));
+        //delete[] obs_buffer;
+        //obs_buffer = nullptr;
     }
+
 
     fclose(outfile_train);
 
@@ -185,16 +189,19 @@ int write_binary(char *data_path, std::string outfile_path, int n_train, int n_t
 
 
     for(int i = n_train; i < n; i++) {
-        obs_buffer = new float[kmer_count]();
+        // obs_buffer = new float[kmer_count]();
         for(int j = 0; j < kmer_count; j++) {
             fseek(inf, (j * n + i) * sizeof(float), SEEK_SET);
             fread(obs_buffer + j, sizeof(float), 1, inf);
         }
         fwrite(obs_buffer, sizeof(float), kmer_count, outfile_test);
-        delete[] obs_buffer;
-        obs_buffer = nullptr;
+        memset(obs_buffer, 0, kmer_count * sizeof(float));
+        //delete[] obs_buffer;
+        //obs_buffer = nullptr;
     }
 
+    delete[] obs_buffer;
+    obs_buffer = nullptr;
     fclose(outfile_test);
 
     etr.stop();
