@@ -5,12 +5,13 @@ fi
 
 . "parameters/$1.sh"
 
+
 ADD=""
 if [[ $MMAP -eq 1 ]]
 then
   ADD="_mmap"
+  echo "memory mapping on"
 fi
-
 
 echo -n > "results/$DATASET_NAME$ADD/mrpt-voting_dense.txt"
 for n_trees in $MRPT_VOTING_N_TREES; do
