@@ -16,6 +16,6 @@ fi
 echo -n > "results/$DATASET_NAME$ADD/mrpt-voting_dense.txt"
 for n_trees in $MRPT_VOTING_N_TREES; do
     for depth in $MRPT_DEPTH; do
-        ./bin/Release/Sanger $N $N_TEST 10 $n_trees $depth $DIM $MMAP "/home/hyvi/HYVI/git/Sanger/results/$DATASET_NAME" "/home/hyvi/HYVI/data/Sanger/Ecoli/$DATASET_NAME/$DATASET_NAME" $MRPT_VOTES  >> "results/$DATASET_NAME$ADD/mrpt-voting_dense.txt"
+        ./bin/Release/Sanger $N $N_TEST 10 $n_trees $depth $DIM $MMAP "results/$DATASET_NAME$ADD" "data/$DATASET_NAME/$DATASET_NAME" $MRPT_VOTES  >> "results/$DATASET_NAME$ADD/mrpt-voting_dense.txt"
     done
 done
