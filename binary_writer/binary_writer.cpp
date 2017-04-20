@@ -26,15 +26,16 @@
 #include "../common.h"
 
 int main(int argc, char **argv) {
-    if (argc != 5) {
-        std::cerr << "Usage: " << argv[0] << " data_path outfile_path n_train n_test" << std::endl;
+    if (argc != 6) {
+        std::cerr << "Usage: " << argv[0] << " data_name data_path outfile_path n_train n_test" << std::endl;
         return 1;
     }
 
-    char *data_path = argv[1];
-    std::string outfile_path(argv[2]);
-    int n_train = atoi(argv[3]);
-    int n_test = atoi(argv[4]);
+    std::string data_name(argv[1]);
+    char *data_path = argv[2];
+    std::string outfile_path(argv[3]);
+    int n_train = atoi(argv[4]);
+    int n_test = atoi(argv[5]);
 
     std::ifstream infile(data_path);
     int n = n_train + n_test;
@@ -45,10 +46,10 @@ int main(int argc, char **argv) {
     }
 
     FILE *outfile;
-    outfile = fopen((outfile_path + "_rowwise.bin").c_str(), "wb");
+    outfile = fopen((outfile_path + "rowwise.bin").c_str(), "wb");
 
     if(!outfile) {
-        std::cerr << "Error: could not open output file " << outfile_path << "_rowwise.bin" << "\n";
+        std::cerr << "Error: could not open output file " << outfile_path << "rowwise.bin" << "\n";
         return -1;
     }
 
@@ -99,7 +100,7 @@ int main(int argc, char **argv) {
     kmer_buffer = nullptr;
 
     etr.stop();
-    std::cout << "Time to read the original file: " << etr.value() << " seconds.\n";
+    // std::cout << "Time to read the original file: " << etr.value() << " seconds.\n";
     etr.reset();
 
     etr.start();
@@ -107,7 +108,7 @@ int main(int argc, char **argv) {
     // read the data from the rowwise binary file into the colwise binary file
     // reopen the rowwise binary file
     FILE *inf;
-    inf = fopen((outfile_path + "_rowwise.bin").c_str(), "rb");
+    inf = fopen((outfile_path + "rowwise.bin").c_str(), "rb");
 
      // obtain file size:
     fseek (inf, 0, SEEK_END);
@@ -115,7 +116,7 @@ int main(int argc, char **argv) {
     rewind (inf);
 
     struct stat sb;
-    stat((outfile_path + "_rowwise.bin").c_str(), &sb);
+    stat((outfile_path + "rowwise.bin").c_str(), &sb);
 
     if(sb.st_size != n * kmer_count * sizeof(float)) {
         std::cerr << "Error: size of the input data is " << inf_size << ", while the expected size is " << n * kmer_count * sizeof(float) << "\n";
@@ -124,18 +125,18 @@ int main(int argc, char **argv) {
 
     // open file for writing the matrix into colwise form
     FILE *outfile_train;
-    outfile_train = fopen((outfile_path + "_train.bin").c_str(), "wb");
+    outfile_train = fopen((outfile_path + "train.bin").c_str(), "wb");
 
     if(!outfile_train) {
-        std::cerr << "Error: could not open output file " << outfile_path << "_train.bin" << "\n";
+        std::cerr << "Error: could not open output file " << outfile_path << "train.bin" << "\n";
         return -1;
     }
 
     FILE *outfile_test;
-    outfile_test = fopen((outfile_path + "_test.bin").c_str(), "wb");
+    outfile_test = fopen((outfile_path + "test.bin").c_str(), "wb");
 
     if(!outfile_test) {
-        std::cerr << "Error: could not open output file " << outfile_path << "_test.bin" << "\n";
+        std::cerr << "Error: could not open output file " << outfile_path << "test.bin" << "\n";
         return -1;
     }
 
@@ -160,7 +161,7 @@ int main(int argc, char **argv) {
     fclose(outfile_train);
 
     etr.stop();
-    std::cout << "Time to write the training data with " << n_train << " points: " << etr.value() << " seconds.\n";
+    // std::cout << "Time to write the training data with " << n_train << " points: " << etr.value() << " seconds.\n";
     etr.reset();
 
     etr.start();
@@ -183,9 +184,14 @@ int main(int argc, char **argv) {
     fclose(outfile_test);
 
     etr.stop();
-    std::cout << "Time to write the test data with " << n_test << " points: " << etr.value() << " seconds.\n";
+    //std::cout << "Time to write the test data with " << n_test << " points: " << etr.value() << " seconds.\n";
     etr.reset();
 
-    std::cout << "Dimension: " << kmer_count << "\n";
+    std::cout << "#!/usr/bin/env bash\n\n";
+    std::cout << "DATASET_NAME=" << data_name << "\n";
+    std::cout << "N=" << n_train + n_test << "\n";
+    std::cout << "N_TEST=" << n_test << "\n";
+    std::cout << "DIM=" << kmer_count << "\n";
+
     return 0;
 }

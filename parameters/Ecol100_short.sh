@@ -2,9 +2,9 @@
 
 DATASET_NAME="Ecol100_short"
 #DATA_FILE="/home/hyvi/HYVI/programs/fsm-lite-master/Ecol_short100_short"
-N=100
-N_TEST=5
-DIM=573
+# N=100
+# N_TEST=5
+# DIM=573
 MMAP=1
 
 MRPT_DEPTH="1 2 3 4 5"

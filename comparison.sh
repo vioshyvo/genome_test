@@ -1,10 +1,15 @@
+if [ ! -f "data/$1/dimensions.sh" ]; then
+    echo Invalid data set 1>&2
+    exit
+fi
+
 if [ ! -f "parameters/$1.sh" ]; then
     echo Invalid data set 1>&2
     exit
 fi
 
 . "parameters/$1.sh"
-
+. "data/$1/dimensions.sh"
 
 ADD=""
 if [[ $MMAP -eq 1 ]]
