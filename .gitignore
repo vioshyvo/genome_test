@@ -27,5 +27,6 @@ python
 *~
 /parameters/*~
 /binary_writer/binary_writer
+/wrapper-SLURM/*.txt
 
 *.aalto.fi
