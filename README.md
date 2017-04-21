@@ -12,5 +12,5 @@ list_files.sh `<path-to-data>` `<name-of-output-list>`
 fsm_ukko.sh `<list-of-files>` `<name-of-output-file>`
   - uses fsm-lite to make read kmers counts into the sparse matrix from the specified fasta-files
 
-binary_writer `<path-to-data>` `<name-of-output-file>` `<n_train>` `<n_test>`
-  - divides the data set into a training set with n_train points and test set with n_test points and writes these to the specified directory
+writer.sh `<data-set-name>` `<n_train>` `<n_test>`
+  - Divides the data set into a training set with n_train points and test set with n_test points and writes these to directory data/data-set-name/ as files train.bin and test.bin. Dimensions of the data set are written to dimensions.sh
