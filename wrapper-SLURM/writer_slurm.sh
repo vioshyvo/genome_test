@@ -16,7 +16,7 @@ fi
 #SBATCH --mail-user=ville.o.hyvonen@helsinki.fi
 
 # move data and binary_writer into the local disc of the node
-mkdir "/tmp/$SLURM_JOB_ID/$1"
+mkdir -p "/tmp/$SLURM_JOB_ID/$1"
 cp -a "$BASE_DIR/data/$1/$1.mat" "$BASE_DIR/binary_writer/binary_writer" "/tmp/$SLURM_JOB_ID/$1/"
 
 srun binary_writer "$1" "/tmp/$SLURM_JOB_ID/$1/$1.mat" "/tmp/$SLURM_JOB_ID/$1/" $2 $3 > dimensions.sh
