@@ -1,4 +1,12 @@
 #!/bin/bash
+#SBATCH --time=01:00:00
+#SBATCH --mem=50G
+#SBATCH --cpus-per-task=1
+
+#SBATCH -e errors_writer_$SLURM_JOB_ID.txt
+#SBATCH --mail-type=END
+#SBATCH --mail-user=ville.o.hyvonen@helsinki.fi
+
 BASE_DIR="$WRKDIR/Sanger/genome_test"  # set to the path of the repo
 
 if [ "$#" -ne "3" ]; then
@@ -7,13 +15,6 @@ if [ "$#" -ne "3" ]; then
    exit 1
 fi
 
-#SBATCH --time=01:00:00
-#SBATCH --mem=5G
-#SBATCH --cpus-per-task=1
-
-#SBATCH -e errors_writer_$SLURM_JOB_ID.txt
-#SBATCH --mail-type=END
-#SBATCH --mail-user=ville.o.hyvonen@helsinki.fi
 
 # move data and binary_writer into the local disc of the node
 mkdir -p "/tmp/$SLURM_JOB_ID/$1"
