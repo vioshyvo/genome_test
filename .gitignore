@@ -22,7 +22,6 @@ python
 /bin/*
 /obj/*
 /exact/*
-/results/*
 /data/*
 *~
 /parameters/*~

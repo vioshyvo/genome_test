@@ -23,7 +23,7 @@
 #include <unistd.h>
 
 #include "../Mrpt.h"
-#include "../common.h" 
+#include "../common.h"
 
 int main(int argc, char **argv) {
     if (argc != 6) {
@@ -34,11 +34,11 @@ int main(int argc, char **argv) {
     std::string data_name(argv[1]);
     char *data_path = argv[2];
     std::string outfile_path(argv[3]);
-    int n_train = atoi(argv[4]);
-    int n_test = atoi(argv[5]);
+    size_t n_train = atoi(argv[4]);
+    size_t n_test = atoi(argv[5]);
 
     std::ifstream infile(data_path);
-    int n = n_train + n_test;
+    size_t n = n_train + n_test;
 
     if(!infile) {
         std::cerr << "Error: could not open file " << data_path << "\n";
@@ -54,7 +54,7 @@ int main(int argc, char **argv) {
     }
 
     // count number of kmers /data
-    int kmer_count = 0;
+    size_t kmer_count = 0;
 
     while (infile)
         {
@@ -71,7 +71,7 @@ int main(int argc, char **argv) {
     BenchTimer etr;
     etr.start();
 
-    int kmer = -1;
+    size_t kmer = -1;
     float *kmer_buffer = nullptr;
 
     while(infile) {
@@ -145,9 +145,9 @@ int main(int argc, char **argv) {
     float *obs_buffer = new float[kmer_count]();
 
 
-    for(int i = 0; i < n_train; i++) {
+    for(size_t i = 0; i < n_train; i++) {
         // obs_buffer = new float[kmer_count]();
-        for(int j = 0; j < kmer_count; j++) {
+        for(size_t j = 0; j < kmer_count; j++) {
             fseek(inf, (j * n + i) * sizeof(float), SEEK_SET);
             fread(obs_buffer + j, sizeof(float), 1, inf);
         }
@@ -167,9 +167,9 @@ int main(int argc, char **argv) {
     etr.start();
 
 
-    for(int i = n_train; i < n; i++) {
+    for(size_t i = n_train; i < n; i++) {
         // obs_buffer = new float[kmer_count]();
-        for(int j = 0; j < kmer_count; j++) {
+        for(size_t j = 0; j < kmer_count; j++) {
             fseek(inf, (j * n + i) * sizeof(float), SEEK_SET);
             fread(obs_buffer + j, sizeof(float), 1, inf);
         }
@@ -187,7 +187,7 @@ int main(int argc, char **argv) {
     //std::cout << "Time to write the test data with " << n_test << " points: " << etr.value() << " seconds.\n";
     etr.reset();
 
-    std::cout << "#!/usr/bin/env bash\n\n";
+    std::cout << "#!/bin/bash\n\n";
     std::cout << "DATASET_NAME=" << data_name << "\n";
     std::cout << "N=" << n_train + n_test << "\n";
     std::cout << "N_TEST=" << n_test << "\n";

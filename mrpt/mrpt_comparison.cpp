@@ -33,7 +33,7 @@ using namespace Eigen;
 
 int main(int argc, char **argv) {
     int n = atoi(argv[1]);
-    int n_test = atoi(argv[2]);
+    int ntest = atoi(argv[2]);
     int k = atoi(argv[3]);
     int n_trees = atoi(argv[4]);
     int depth = atoi(argv[5]);
@@ -43,7 +43,7 @@ int main(int argc, char **argv) {
     std::string outfile_path(argv[9]);
 
     int last_arg = 9;
-    int n_points = n - n_test;
+    int n_points = n - ntest;
     bool verbose = false;
 
 
@@ -51,20 +51,20 @@ int main(int argc, char **argv) {
     // test mrpt
     float *train, *test;
 
-    test = read_memory((outfile_path + "_test.bin").c_str(), n_test, dim);
+    test = read_memory((outfile_path + "test.bin").c_str(), ntest, dim);
     if(!test) {
-        std::cerr << "Test data " << outfile_path + "_test.bin" << " could not be read\n";
+        std::cerr << "Test data " << outfile_path + "test.bin" << " could not be read\n";
         return -1;
     }
 
     if(mmap) {
-        train = read_mmap((outfile_path + "_train.bin").c_str(), n_points, dim);
+        train = read_mmap((outfile_path + "train.bin").c_str(), n_points, dim);
     } else {
-        train = read_memory((outfile_path + "_train.bin").c_str(), n_points, dim);
+        train = read_memory((outfile_path + "train.bin").c_str(), n_points, dim);
     }
 
     if(!test) {
-        std::cerr << "Training data " << outfile_path + "_train.bin" << " could not be read\n";
+        std::cerr << "Training data " << outfile_path + "train.bin" << " could not be read\n";
         return -1;
     }
 
@@ -82,7 +82,7 @@ int main(int argc, char **argv) {
         std::vector<double> times;
         std::vector<std::set<int>> idx;
 
-        for (int i = 0; i < n_test; ++i) {
+        for (int i = 0; i < ntest; ++i) {
                 std::vector<int> result(k);
                 double start = omp_get_wtime();
                 index_dense.query(Map<VectorXf>(&test[i * dim], dim), k, votes, &result[0]);
@@ -97,7 +97,7 @@ int main(int argc, char **argv) {
         else
             std::cout << k << " " << n_trees << " " << depth << " " << sparsity << " " << votes << " ";
 
-        results(k, times, idx, (std::string(result_path) + "/truth_" + std::to_string(k)).c_str(), verbose);
+        results(k, times, idx, (std::string(result_path) + "truth_" + std::to_string(k)).c_str(), verbose);
 
     }
 
