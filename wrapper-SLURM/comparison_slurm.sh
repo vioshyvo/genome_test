@@ -10,12 +10,12 @@
 BASE_DIR="$WRKDIR/Sanger/genome_test"  # set to the path of the repo
 
 if [ ! -f "$BASE_DIR/data/$1/dimensions.sh" ]; then
-    echo Invalid data set 1>&2
+    echo "Invalid data set $1">&2
     exit
 fi
 
 if [ ! -f "$BASE_DIR/parameters/$1.sh" ]; then
-    echo Invalid data set 1>&2
+    echo "Invalid data set $1">&2
     exit
 fi
 

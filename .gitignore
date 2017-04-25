@@ -28,5 +28,6 @@ python
 /binary_writer/binary_writer
 /mrpt/mrpt_comparison
 /wrapper-SLURM/*.txt
+/wrapper-SLURM/*.out
 
 *.aalto.fi
