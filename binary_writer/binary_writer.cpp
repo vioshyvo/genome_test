@@ -22,7 +22,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include "../Mrpt.h"
+#include "cpp/Mrpt.h"
 #include "../common.h"
 
 int main(int argc, char **argv) {

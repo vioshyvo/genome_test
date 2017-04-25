@@ -1,7 +1,12 @@
-CC=g++
-CXX=g++
-CFLAGS+=-std=c++11 -O3 -march=native -fno-rtti -fno-stack-protector -fno-exceptions -ffast-math -DNDEBUG -DEIGEN_DONT_PARALLELIZE -fopenmp -I./ -I/usr/local/include/eigen_3.3.3 -I/home/hyvi/HYVI/git/MRPT_new
-LDFLAGS+=-lgomp
+EIGEN_PATH=../../eigen_3.3.3
+MRPT_PATH=..
 
-all:
-	$(CC) -o tester tester.cpp $(CFLAGS) $(LDFLAGS)
+CPPFLAGS=-I$(EIGEN_PATH) -I$(MRPT_PATH) -I./
+CXXFLAGS=-O3 -std=c++11 -march=native -fno-rtti -fno-stack-protector -fno-exceptions -ffast-math -DNDEBUG -DEIGEN_DONT_PARALLELIZE -fopenmp
+LDLIBS=-lgomp
+
+tester : ../common.h
+
+.PHONY: clean
+clean:
+	$(RM) tester *.o
