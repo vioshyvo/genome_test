@@ -23,7 +23,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include "cpp/Mrpt.h"
+#include "Mrpt.h"
 #include "../common.h"
 
 

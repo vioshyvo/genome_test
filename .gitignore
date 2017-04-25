@@ -26,6 +26,7 @@ python
 *~
 /parameters/*~
 /binary_writer/binary_writer
+/mrpt_comparison/mrpt_comparison
 /wrapper-SLURM/*.txt
 
 *.aalto.fi

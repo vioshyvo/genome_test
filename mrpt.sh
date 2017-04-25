@@ -21,6 +21,6 @@ fi
 echo -n > "results/$DATASET_NAME$ADD/mrpt.txt"
 for n_trees in $MRPT_VOTING_N_TREES; do
     for depth in $MRPT_DEPTH; do
-        bin/mrpt_comparison $N $N_TEST 10 $n_trees $depth $DIM $MMAP "results/$DATASET_NAME$ADD/" "data/$DATASET_NAME/" $MRPT_VOTES  >> "results/$DATASET_NAME$ADD/mrpt.txt"
+        mrpt/mrpt_comparison $N $N_TEST 10 $n_trees $depth $DIM $MMAP "results/$DATASET_NAME$ADD/" "data/$DATASET_NAME/" $MRPT_VOTES  >> "results/$DATASET_NAME$ADD/mrpt.txt"
     done
 done
