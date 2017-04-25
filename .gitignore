@@ -21,7 +21,7 @@ datasets
 python
 /bin/*
 /obj/*
-/exact/*
+/exact/tester
 /data/*
 *~
 /parameters/*~
