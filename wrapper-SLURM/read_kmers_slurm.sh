@@ -19,7 +19,7 @@ DATA_NAME="$1$2"
 mkdir -p ../tmp
 mkdir -p "../data/$DATA_NAME"
 
-for f in data/$1/f*
+for f in ../data/$1/f*
 do
   id=$(basename $f)
   echo $id $(readlink -f $f)
