@@ -27,6 +27,6 @@ done > "../tmp/$1_list"
 
 head -$2 "../tmp/$1_list" > "../tmp/$1_list$2"
 
-sbatch $FSM_PATH/fsm-lite -l ../tmp/$1_list$2 -t tmp -m 21 -M 41 -s 5 -S 95 > data/$DATA_NAME/$DATA_NAME.mat
+srun $FSM_PATH/fsm-lite -l ../tmp/$1_list$2 -t tmp -m 21 -M 41 -s 5 -S 95 > data/$DATA_NAME/$DATA_NAME.mat
 rm ../tmp/$1_list
 rm ../tmp/$1_list$2
