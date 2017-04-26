@@ -1,3 +1,5 @@
+#!/bin/bash
+
 if [ ! -f "data/$1/dimensions.sh" ]; then
     echo Invalid data set 1>&2
     exit
@@ -20,5 +22,5 @@ fi
 
 mkdir -p "results/$DATASET_NAME$ADD"
 for K in 1 10 100; do
-    ./exact/tester $N $N_TEST 10 $DIM $MMAP "data/$DATASET_NAME/" > "results/$DATASET_NAME$ADD/truth_$K"
+    ./exact/tester $N $N_TEST $K $DIM $MMAP "data/$DATASET_NAME/" > "results/$DATASET_NAME$ADD/truth_$K"
 done

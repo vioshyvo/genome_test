@@ -30,4 +30,6 @@ python
 /wrapper-SLURM/*.txt
 /wrapper-SLURM/*.out
 
+/results/*
+
 *.aalto.fi

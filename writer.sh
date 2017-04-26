@@ -1,4 +1,5 @@
 #!/bin/bash
+
 if [ "$#" -ne "3" ]; then
    echo "error: Expecting parameters: <input file> <n_test> <n_train>"
    echo "error: Expecting parameters: <input file> <n_test> <n_train>" > /dev/stderr
