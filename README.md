@@ -31,4 +31,5 @@ writer_slurm.sh `<data-set-name>` `<n_train>` `<n_test>`
 | run time (days:hours:minutes)| 00:00:42     | 00:00:00   |
 | RAM (G)                      | 8.7          | 0.0        |
 | dimension                    | 14 541 647   | 16 775 795 |
+
 Running times and RAM consumption for `fsm-lite` in Aalto Triton cluster.
