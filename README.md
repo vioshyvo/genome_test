@@ -25,3 +25,10 @@ writer_slurm.sh `<data-set-name>` `<n_train>` `<n_test>`
  - Remember to set
     - upper limit for memory, for example 5 gigabytes: `#SBATCH --mem=5G`
     - upper limit for computing time, for example one hour: `#SBATCH --time=01:00:00`
+
+| Data points                  | 100          | 250        |
+|------------------------------| ------------ | ---------- |  
+| run time (days:hours:minutes)| 00:00:42     | 00:00:00   |
+| RAM (G)                      | 8.7          | 0.0        |
+| dimension                    | 14 541 647   | 16 775 795 |
+Running times and RAM consumption for `fsm-lite` in Aalto Triton cluster.

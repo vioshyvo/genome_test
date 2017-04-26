@@ -29,6 +29,8 @@ python
 /mrpt/mrpt_comparison
 /wrapper-SLURM/*.txt
 /wrapper-SLURM/*.out
+/tmp/*
+tmp.*
 
 /results/*
 
