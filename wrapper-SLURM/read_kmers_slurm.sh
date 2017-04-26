@@ -16,7 +16,7 @@ if [ "$#" -ne "2" ]; then
 fi
 
 DATA_NAME="$1$2"
-mkdir -p tmp
+mkdir -p ../tmp
 mkdir -p "data/$DATA_NAME"
 
 for f in data/$1/f*
