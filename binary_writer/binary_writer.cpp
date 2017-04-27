@@ -27,21 +27,24 @@
 
 int main(int argc, char **argv) {
     if (argc != 6) {
-        std::cerr << "Usage: " << argv[0] << " data_name data_path outfile_path n_train n_test" << std::endl;
+        std::cerr << "Usage: " << argv[0] << " data_name data_file outfile_path n_train n_test" << std::endl;
         return 1;
     }
 
     std::string data_name(argv[1]);
-    char *data_path = argv[2];
+    char *data_file = argv[2];
     std::string outfile_path(argv[3]);
+    if (!outfile_path.empty() && outfile_path.back() != '/')
+      outfile_path += '/';
+
     size_t n_train = atoi(argv[4]);
     size_t n_test = atoi(argv[5]);
 
-    std::ifstream infile(data_path);
+    std::ifstream infile(data_file);
     size_t n = n_train + n_test;
 
     if(!infile) {
-        std::cerr << "Error: could not open file " << data_path << "\n";
+        std::cerr << "Error: could not open file " << data_file << "\n";
         return -1;
     }
 

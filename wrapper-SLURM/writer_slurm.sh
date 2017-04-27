@@ -10,17 +10,29 @@
 BASE_DIR="$WRKDIR/Sanger/genome_test"  # set to the path of the repo
 
 if [ "$#" -ne "3" ]; then
-   echo "error: Expecting parameters: <input file> <n_train> <n_test>"
-   echo "error: Expecting parameters: <input file> <n_train> <n_test>" > /dev/stderr
+   echo "error: Expecting parameters: <data-name> <n_train> <n_test>"
+   echo "error: Expecting parameters: <data-name> <n_train> <n_test>" > /dev/stderr
    exit 1
 fi
 
+((N = $2 + $3))
+DATA_NAME="$1$N"
+DATA_DIR="$BASE_DIR/data/$DATA_NAME"
+DATA_FILE="$DATA_NAME.mat"
+
+TMP_DIR="/tmp/$SLURM_JOB_ID"
+
+
+if [ ! -f "$DATA_DIR/$DATA_FILE" ]; then
+  echo File $DATA_DIR/$DATA_FILE does not exist
+  exit
+fi
 
 # move data and binary_writer into the local disc of the node
-mkdir -p "/tmp/$SLURM_JOB_ID"
-cp -a "$BASE_DIR/data/$1/$1.mat" "$BASE_DIR/binary_writer/binary_writer" "/tmp/$SLURM_JOB_ID/"
-cd "/tmp/$SLURM_JOB_ID"
+mkdir -p "$TMP_DIR"
+cp -a "$DATA_DIR/$DATA_FILE" "$BASE_DIR/binary_writer/binary_writer" "$TMP_DIR"
+cd "$TMP_DIR"
 
-srun ./binary_writer "$1" "$1.mat" "/tmp/$SLURM_JOB_ID/" $2 $3 > dimensions.sh
+srun ./binary_writer "$DATA_NAME" "$DATA_FILE" "$TMP_DIR" $2 $3 > dimensions.sh
 
-cp train.bin test.bin dimensions.sh "$BASE_DIR/data/$1/"
+cp train.bin test.bin dimensions.sh "$DATA_DIR"
