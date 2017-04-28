@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
     int dim = atoi(argv[6]);
     int mmap = atoi(argv[7]);
     char *result_path = argv[8];
-    std::string outfile_path(argv[9]);
+    std::string infile_path(argv[9]);
 
     int last_arg = 9;
     int n_points = n - ntest;
@@ -51,20 +51,20 @@ int main(int argc, char **argv) {
     // test mrpt
     float *train, *test;
 
-    test = read_memory((outfile_path + "test.bin").c_str(), ntest, dim);
+    test = read_memory((infile_path + "test.bin").c_str(), ntest, dim);
     if(!test) {
-        std::cerr << "Test data " << outfile_path + "test.bin" << " could not be read\n";
+        std::cerr << "Test data " << infile_path + "test.bin" << " could not be read\n";
         return -1;
     }
 
     if(mmap) {
-        train = read_mmap((outfile_path + "train.bin").c_str(), n_points, dim);
+        train = read_mmap((infile_path + "train.bin").c_str(), n_points, dim);
     } else {
-        train = read_memory((outfile_path + "train.bin").c_str(), n_points, dim);
+        train = read_memory((infile_path + "train.bin").c_str(), n_points, dim);
     }
 
     if(!test) {
-        std::cerr << "Training data " << outfile_path + "train.bin" << " could not be read\n";
+        std::cerr << "Training data " << infile_path + "train.bin" << " could not be read\n";
         return -1;
     }
 
