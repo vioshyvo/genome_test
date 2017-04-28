@@ -68,7 +68,7 @@ int main(int argc, char **argv) {
         train = read_memory((infile_path + "train.bin").c_str(), n_points, dim);
     }
 
-    if(!test) {
+    if(!train) {
         std::cerr << "Training data " << infile_path + "train.bin" << " could not be read\n";
         return -1;
     }
