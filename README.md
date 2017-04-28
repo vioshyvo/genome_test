@@ -2,9 +2,10 @@
 ![](Lentua.jpg)
 
 
-`rm_names.sh <path-to-data> `
+`prepare_data.sh <zip-file> <data-name> `
+  - unzip data from `zip-file`, preprocess it for `fsm-lite`, and save the files to `data/data-name`
   - Removes `spades.fa` - files, and renames rest fasta-files into `f0001`, `f0002`,...
-  - Outputs the names of the original files as `file_list` into the directory where called.
+  - Outputs the names of the original files as `data_name_file_list` into the `data` directory.
 
 `read_kmers.sh <data-name> <n-points>`
   - Wrapper for `fsm-lite`, reads  kmers counts into the sparse matrix `data/<data-name><n_points>/<data-name><n_points>.mat` from the specified fasta-files, that reside in the directory `data/data-name`.
