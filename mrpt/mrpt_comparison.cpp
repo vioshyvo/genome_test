@@ -39,8 +39,13 @@ int main(int argc, char **argv) {
     int depth = atoi(argv[5]);
     int dim = atoi(argv[6]);
     int mmap = atoi(argv[7]);
-    char *result_path = argv[8];
+    std::string result_path(argv[8]);
+    if (!result_path.empty() && result_path.back() != '/')
+      result_path += '/';
+
     std::string infile_path(argv[9]);
+    if (!infile_path.empty() && infile_path.back() != '/')
+      infile_path += '/';
 
     int last_arg = 9;
     int n_points = n - ntest;
@@ -97,7 +102,7 @@ int main(int argc, char **argv) {
         else
             std::cout << k << " " << n_trees << " " << depth << " " << sparsity << " " << votes << " ";
 
-        results(k, times, idx, (std::string(result_path) + "truth_" + std::to_string(k)).c_str(), verbose);
+        results(k, times, idx, (result_path + "truth_" + std::to_string(k)).c_str(), verbose);
 
     }
 
