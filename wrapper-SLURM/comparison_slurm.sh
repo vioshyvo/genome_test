@@ -42,17 +42,17 @@ mkdir -p "$OUTPUT_DIR"
 
 # move data and tester into the local disc of the node
 mkdir -p "$TMP_DIR"
-cp -a "$INPUT_DIR/train.bin" "$INPUT_DIR/test.bin" "$BASE_DIR/exact/tester" "$TMP_DIR"
+cp -a "$INPUT_DIR/train.bin" "$INPUT_DIR/test.bin" "$BASE_DIR/exact/tester" "$BASE_DIR/mrpt/mrpt_comparison" "$TMP_DIR"
 cd "$TMP_DIR"
 
 for K in 1 10 100; do
-    srun ./tester $N $N_TEST 10 $DIM $MMAP "$TMP_DIR" > "$OUTPUT_DIR/truth_$K"
+    srun tester $N $N_TEST 10 $DIM $MMAP "$TMP_DIR" > "$OUTPUT_DIR/truth_$K"
 done
 
 
 echo -n > "$OUTPUT_DIR/mrpt.txt"
 for n_trees in $MRPT_VOTING_N_TREES; do
     for depth in $MRPT_DEPTH; do
-        mrpt/mrpt_comparison $N $N_TEST 10 $n_trees $depth $DIM $MMAP "$OUTPUT_DIR" "$TMP_DIR" $MRPT_VOTES  >> "$OUTPUT_DIR/mrpt.txt"
+        srun mrpt_comparison $N $N_TEST 10 $n_trees $depth $DIM $MMAP "$OUTPUT_DIR" "$TMP_DIR" $MRPT_VOTES  >> "$OUTPUT_DIR/mrpt.txt"
     done
 done
