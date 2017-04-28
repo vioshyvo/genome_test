@@ -70,6 +70,9 @@ int main(int argc, char **argv) {
     infile.clear();
     infile.seekg(0, std::ios::beg);
 
+    std::cout << "Dimension of data: " << kmer_count << "\n";
+
+
     // read the data into a binary file in a rowwise form
     BenchTimer etr;
     etr.start();
@@ -103,7 +106,7 @@ int main(int argc, char **argv) {
     kmer_buffer = nullptr;
 
     etr.stop();
-    // std::cout << "Time to read the original file: " << etr.value() << " seconds.\n";
+    std::cout << "Time to read the original file: " << etr.value() << " seconds.\n";
     etr.reset();
 
     etr.start();
@@ -164,7 +167,7 @@ int main(int argc, char **argv) {
     fclose(outfile_train);
 
     etr.stop();
-    // std::cout << "Time to write the training data with " << n_train << " points: " << etr.value() << " seconds.\n";
+    std::cout << "Time to write the training data with " << n_train << " points: " << etr.value() << " seconds.\n";
     etr.reset();
 
     etr.start();
