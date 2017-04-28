@@ -7,7 +7,9 @@
 #SBATCH --mail-type=END
 #SBATCH --mail-user=ville.o.hyvonen@helsinki.fi
 
-FSM_PATH=$WRKDIR/Sanger/fsm-lite
+FSM_PATH="$WRKDIR/Sanger/fsm-lite"     # set to the dir where fsm-litei is installed
+BASE_DIR="$WRKDIR/Sanger/genome_test"  # set to the path of the repo
+
 
 if [ "$#" -ne "2" ]; then
    echo "error: Expecting parameters: <data name> <n_points>"
@@ -16,14 +18,14 @@ if [ "$#" -ne "2" ]; then
 fi
 
 DATA_NAME="$1$2"
-OUTPUT_DIR="../data/$DATA_NAME"
+OUTPUT_DIR="$BASE_DIR/data/$DATA_NAME"
 DATA_FILE="$DATA_NAME.mat"
 TMP_DIR="/tmp/$SLURM_JOB_ID"
 
 # move input data and fsm-lite into the local disc of the node
 mkdir -p "$OUTPUT_DIR"
 mkdir -p "$TMP_DIR"
-cp -a "../data/$1" "$FSM_PATH/fsm-lite" "$TMP_DIR"
+cp -a "$BASE_DIR/data/$1" "$FSM_PATH/fsm-lite" "$TMP_DIR"
 cd "$TMP_DIR"
 
 
