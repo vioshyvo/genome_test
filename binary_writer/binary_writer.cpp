@@ -31,6 +31,8 @@ int main(int argc, char **argv) {
         return 1;
     }
 
+    std::cout << "#!/bin/bash\n\n";
+
     std::string data_name(argv[1]);
     char *data_file = argv[2];
     std::string outfile_path(argv[3]);
@@ -70,7 +72,7 @@ int main(int argc, char **argv) {
     infile.clear();
     infile.seekg(0, std::ios::beg);
 
-    std::cout << "Dimension of data: " << kmer_count << "\n";
+    std::cout << "# Dimension of data: " << kmer_count << "\n";
 
 
     // read the data into a binary file in a rowwise form
@@ -106,7 +108,7 @@ int main(int argc, char **argv) {
     kmer_buffer = nullptr;
 
     etr.stop();
-    std::cout << "Time to read the original file: " << etr.value() << " seconds.\n";
+    std::cout << "# Time to read the original file: " << etr.value() << " seconds.\n";
     etr.reset();
 
     etr.start();
@@ -167,7 +169,7 @@ int main(int argc, char **argv) {
     fclose(outfile_train);
 
     etr.stop();
-    std::cout << "Time to write the training data with " << n_train << " points: " << etr.value() << " seconds.\n";
+    std::cout << "# Time to write the training data with " << n_train << " points: " << etr.value() << " seconds.\n";
     etr.reset();
 
     etr.start();
@@ -190,10 +192,10 @@ int main(int argc, char **argv) {
     fclose(outfile_test);
 
     etr.stop();
-    //std::cout << "Time to write the test data with " << n_test << " points: " << etr.value() << " seconds.\n";
+    std::cout << "# Time to write the test data with " << n_test << " points: " << etr.value() << " seconds.\n";
     etr.reset();
 
-    std::cout << "#!/bin/bash\n\n";
+    std::cout << "\n";
     std::cout << "DATASET_NAME=" << data_name << "\n";
     std::cout << "N=" << n_train + n_test << "\n";
     std::cout << "N_TEST=" << n_test << "\n";
