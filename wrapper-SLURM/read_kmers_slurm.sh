@@ -16,17 +16,24 @@ if [ "$#" -ne "2" ]; then
 fi
 
 DATA_NAME="$1$2"
-mkdir -p ../tmp
-mkdir -p "../data/$DATA_NAME"
+OUTPUT_DIR="../data/$DATA_NAME"
+DATA_FILE="$DATA_NAME.mat"
+TMP_DIR="/tmp/$SLURM_JOB_ID"
 
-for f in ../data/$1/f*
+# move input data and fsm-lite into the local disc of the node
+mkdir -p "$OUTPUT_DIR"
+cp -a "../data/$1" "$FSM_PATH/fsm-lite" "$TMP_DIR"
+cd "$TMP_DIR"
+
+
+for f in $1/f*
 do
   id=$(basename $f)
   echo $id $(readlink -f $f)
-done > "../tmp/$1_list"
+done > "$1_list"
 
-head -$2 "../tmp/$1_list" > "../tmp/$1_list$2"
+head -$2 "$1_list" > "$1_list$2"
 
-srun $FSM_PATH/fsm-lite -l ../tmp/$1_list$2 -t tmp -m 21 -M 41 -s 5 -S 95 > ../data/$DATA_NAME/$DATA_NAME.mat
-rm ../tmp/$1_list
-rm ../tmp/$1_list$2
+srun fsm-lite -l $1_list$2 -t tmp -m 21 -M 41 -s 5 -S 95 > "$DATA_FILE"
+
+cp "$DATA_FILE" "$1_list$2" "$OUTPUT_DIR"
