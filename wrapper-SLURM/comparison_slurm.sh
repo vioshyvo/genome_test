@@ -1,6 +1,6 @@
 #!/bin/bash
-#SBATCH --time=01:00:00
-#SBATCH --mem=30G
+#SBATCH --time=00:10:00
+#SBATCH --mem=5G
 #SBATCH --cpus-per-task=1
 
 #SBATCH -e errors_comparison.txt
@@ -26,6 +26,9 @@ if [ "$#" -ne "1" ]; then
    echo "error: Expecting parameters: <data set name>" > /dev/stderr
    exit 1
 fi
+
+. "$BASE_DIR/parameters/$1.sh"
+. "$INPUT_DIR/dimensions.sh"
 
 ADD=""
 if [[ $MMAP -eq 1 ]]
