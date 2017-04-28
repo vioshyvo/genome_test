@@ -22,6 +22,7 @@ TMP_DIR="/tmp/$SLURM_JOB_ID"
 
 # move input data and fsm-lite into the local disc of the node
 mkdir -p "$OUTPUT_DIR"
+mkdir -p "$TMP_DIR"
 cp -a "../data/$1" "$FSM_PATH/fsm-lite" "$TMP_DIR"
 cd "$TMP_DIR"
 
