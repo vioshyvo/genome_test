@@ -31,6 +31,9 @@ int main(int argc, char **argv) {
   int dim = atoi(argv[4]);
   int mmap = atoi(argv[5]);
   std::string data_path(argv[6]);
+  if (!data_path.empty() && data_path.back() != '/')
+    data_path += '/';
+
 
   float sparsity = 1;
   int n_points = n - ntest;
