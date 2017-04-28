@@ -3,7 +3,7 @@
 
 
 `prepare_data.sh <zip-file> <data-name> `
-  - unzip data from `zip-file`, preprocess it for `fsm-lite`, and save the files to `data/data-name`
+  - Unzip data from `zip-file`, preprocess it for `fsm-lite`, and save the files to `data/data-name`
   - Removes `spades.fa` - files, and renames rest fasta-files into `f0001`, `f0002`,...
   - Outputs the names of the original files as `data_name_file_list` into the `data` directory.
 
@@ -24,6 +24,9 @@ For SLURM scripts remember to set
    - upper limit for computing time, for example one hour: `#SBATCH --time=01:00:00`
 
 Scripts that can be used to run the C++ tools in SLURM system are in the directory wrapper-SLURM:
+
+`prepare_data_slurm.sh <zip-file> <data-name>`
+  - Slurm wrapper for `prepare_data.sh`.
 
 `read_kmers_slurm.sh <data-name> <n-points>`
   - Wrapper for `fsm-lite`, same as `read_kmers.sh`.
