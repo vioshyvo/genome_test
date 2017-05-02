@@ -3,7 +3,7 @@
 #SBATCH --mem=120G
 #SBATCH --cpus-per-task=1
 
-#SBATCH -e errors_comparison.txt
+#SBATCH -e "errors_comparison_$SLURM_JOB_ID.txt"
 #SBATCH --mail-type=END
 #SBATCH --mail-user=ville.o.hyvonen@helsinki.fi
 
