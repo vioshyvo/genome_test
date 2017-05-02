@@ -37,6 +37,17 @@ then
   echo "memory mapping on"
 fi
 
+pushd ../exact
+make clean
+make
+popd
+
+pushd ../mrpt
+make clean
+make
+popd
+
+
 OUTPUT_DIR="$BASE_DIR/results/$DATASET_NAME$ADD"
 TMP_DIR="/tmp/$SLURM_JOB_ID"
 
