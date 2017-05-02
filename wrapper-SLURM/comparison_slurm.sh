@@ -60,7 +60,7 @@ cp -a "$INPUT_DIR/train.bin" "$INPUT_DIR/test.bin" "$BASE_DIR/exact/tester" "$BA
 cd "$TMP_DIR"
 
 for K in 1 10 100; do
-    srun tester $N $N_TEST 10 $DIM $MMAP "$TMP_DIR" > "$OUTPUT_DIR/truth_$K"
+    srun tester $N $N_TEST $K $DIM $MMAP "$TMP_DIR" > "$OUTPUT_DIR/truth_$K"
 done
 
 
