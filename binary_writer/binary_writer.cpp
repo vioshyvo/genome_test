@@ -1,9 +1,5 @@
 #include <iostream>
 #include <fstream>
-#include <Eigen/Dense>
-#include <Eigen/SparseCore>
-#include <bench/BenchTimer.h>
-#include <unsupported/Eigen/SparseExtra>
 #include <typeinfo>
 
 #include <vector>
@@ -22,8 +18,11 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include "cpp/Mrpt.h"
-#include "../common.h"
+#include <sys/mman.h>
+#include <cstdlib>
+
+#include <cstring>
+
 
 int main(int argc, char **argv) {
     if (argc != 6) {
@@ -76,8 +75,7 @@ int main(int argc, char **argv) {
 
 
     // read the data into a binary file in a rowwise form
-    BenchTimer etr;
-    etr.start();
+    double start = omp_get_wtime();
 
     size_t kmer = -1;
     float *kmer_buffer = nullptr;
@@ -107,12 +105,10 @@ int main(int argc, char **argv) {
     delete[] kmer_buffer;
     kmer_buffer = nullptr;
 
-    etr.stop();
-    std::cout << "# Time to read the original file: " << etr.value() << " seconds.\n";
-    etr.reset();
+    double end = omp_get_wtime();
+    std::cout << "# Time to read the original file: " << end - start << " seconds.\n";
 
-    etr.start();
-
+    start = omp_get_wtime();
     // read the data from the rowwise binary file into the colwise binary file
     // reopen the rowwise binary file
     FILE *inf;
@@ -154,6 +150,7 @@ int main(int argc, char **argv) {
 
 
     for(size_t i = 0; i < n_train; i++) {
+      std::cout << "# Writing " << i + 1 << ":th data point.\n";
         // obs_buffer = new float[kmer_count]();
         for(size_t j = 0; j < kmer_count; j++) {
             fseek(inf, (j * n + i) * sizeof(float), SEEK_SET);
@@ -168,12 +165,10 @@ int main(int argc, char **argv) {
 
     fclose(outfile_train);
 
-    etr.stop();
-    std::cout << "# Time to write the training data with " << n_train << " points: " << etr.value() << " seconds.\n";
-    etr.reset();
+    end = omp_get_wtime();
+    std::cout << "# Time to write the training data with " << n_train << " points: " << end - start << " seconds.\n";
 
-    etr.start();
-
+    start = omp_get_wtime();
 
     for(size_t i = n_train; i < n; i++) {
         // obs_buffer = new float[kmer_count]();
@@ -191,9 +186,8 @@ int main(int argc, char **argv) {
     obs_buffer = nullptr;
     fclose(outfile_test);
 
-    etr.stop();
-    std::cout << "# Time to write the test data with " << n_test << " points: " << etr.value() << " seconds.\n";
-    etr.reset();
+    end = omp_get_wtime();
+    std::cout << "# Time to write the test data with " << n_test << " points: " << end - start << " seconds.\n";
 
     std::cout << "\n";
     std::cout << "DATASET_NAME=" << data_name << "\n";
