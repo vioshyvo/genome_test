@@ -150,16 +150,18 @@ int main(int argc, char **argv) {
 
 
     for(size_t i = 0; i < n_train; i++) {
-      std::cout << "# Writing " << i + 1 << ":th data point.\n";
-        // obs_buffer = new float[kmer_count]();
+      double start_point = omp_get_wtime();
+      // obs_buffer = new float[kmer_count]();
         for(size_t j = 0; j < kmer_count; j++) {
             fseek(inf, (j * n + i) * sizeof(float), SEEK_SET);
             fread(obs_buffer + j, sizeof(float), 1, inf);
         }
         fwrite(obs_buffer, sizeof(float), kmer_count, outfile_train);
-        memset(obs_buffer, 0, kmer_count * sizeof(float));
+        //memset(obs_buffer, 0, kmer_count * sizeof(float));
         //delete[] obs_buffer;
         //obs_buffer = nullptr;
+        double end_point = omp_get_wtime();
+        std::cout << "# Time to write " << i + 1 << ":th data point: " << end_point - start_point << " s.\n";
     }
 
 
