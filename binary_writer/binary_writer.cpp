@@ -108,7 +108,6 @@ int main(int argc, char **argv) {
     double end = omp_get_wtime();
     std::cout << "# Time to read the original file: " << end - start << " seconds.\n";
 
-    start = omp_get_wtime();
     // read the data from the rowwise binary file into the colwise binary file
     // reopen the rowwise binary file
     FILE *inf;
@@ -146,24 +145,25 @@ int main(int argc, char **argv) {
 
     // write the data in colwise format
     // float *obs_buffer;
-    float *obs_buffer = new float[kmer_count]();
+    start = omp_get_wtime();
+    float *rowwise_data = new float[kmer_count * n]();
+    fread(rowwise_data, sizeof(float), n * kmer_count, inf);
+    end = omp_get_wtime();
+    std::cout << "# Time to read the rowwise data: " << end - start << " s.\n";
 
+    start = omp_get_wtime();
+    float *obs_buffer = new float[kmer_count]();
 
     for(size_t i = 0; i < n_train; i++) {
       double start_point = omp_get_wtime();
-      // obs_buffer = new float[kmer_count]();
         for(size_t j = 0; j < kmer_count; j++) {
-            fseek(inf, (j * n + i) * sizeof(float), SEEK_SET);
-            fread(obs_buffer + j, sizeof(float), 1, inf);
+            obs_buffer[j] = rowwise_data[j * n + i];
         }
         fwrite(obs_buffer, sizeof(float), kmer_count, outfile_train);
         //memset(obs_buffer, 0, kmer_count * sizeof(float));
-        //delete[] obs_buffer;
-        //obs_buffer = nullptr;
         double end_point = omp_get_wtime();
         std::cout << "# Time to write " << i + 1 << ":th data point: " << end_point - start_point << " s.\n";
     }
-
 
     fclose(outfile_train);
 
@@ -173,19 +173,18 @@ int main(int argc, char **argv) {
     start = omp_get_wtime();
 
     for(size_t i = n_train; i < n; i++) {
-        // obs_buffer = new float[kmer_count]();
         for(size_t j = 0; j < kmer_count; j++) {
-            fseek(inf, (j * n + i) * sizeof(float), SEEK_SET);
-            fread(obs_buffer + j, sizeof(float), 1, inf);
+            obs_buffer[j] = rowwise_data[j * n + i];
         }
         fwrite(obs_buffer, sizeof(float), kmer_count, outfile_test);
-        memset(obs_buffer, 0, kmer_count * sizeof(float));
-        //delete[] obs_buffer;
-        //obs_buffer = nullptr;
+        // memset(obs_buffer, 0, kmer_count * sizeof(float));
     }
 
     delete[] obs_buffer;
     obs_buffer = nullptr;
+    delete[] rowwise_data;
+    rowwise_data = nullptr;
+
     fclose(outfile_test);
 
     end = omp_get_wtime();
