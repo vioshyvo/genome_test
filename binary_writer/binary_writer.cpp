@@ -71,11 +71,11 @@ int main(int argc, char **argv) {
     infile.clear();
     infile.seekg(0, std::ios::beg);
 
-    std::cout << "# Dimension of data: " << kmer_count << "\n";
+    // std::cout << "# Dimension of data: " << kmer_count << "\n";
 
 
     // read the data into a binary file in a rowwise form
-    double start = omp_get_wtime();
+    // double start = omp_get_wtime();
 
     size_t kmer = -1;
     float *kmer_buffer = nullptr;
@@ -105,8 +105,8 @@ int main(int argc, char **argv) {
     delete[] kmer_buffer;
     kmer_buffer = nullptr;
 
-    double end = omp_get_wtime();
-    std::cout << "# Time to read the original file: " << end - start << " seconds.\n";
+    // double end = omp_get_wtime();
+    // std::cout << "# Time to read the original file: " << end - start << " seconds.\n";
 
     // read the data from the rowwise binary file into the colwise binary file
     // reopen the rowwise binary file
@@ -145,32 +145,32 @@ int main(int argc, char **argv) {
 
     // write the data in colwise format
     // float *obs_buffer;
-    start = omp_get_wtime();
+    // start = omp_get_wtime();
     float *rowwise_data = new float[kmer_count * n]();
     fread(rowwise_data, sizeof(float), n * kmer_count, inf);
-    end = omp_get_wtime();
-    std::cout << "# Time to read the rowwise data: " << end - start << " s.\n";
+    // end = omp_get_wtime();
+    // std::cout << "# Time to read the rowwise data: " << end - start << " s.\n";
 
-    start = omp_get_wtime();
+    // start = omp_get_wtime();
     float *obs_buffer = new float[kmer_count]();
 
     for(size_t i = 0; i < n_train; i++) {
-      double start_point = omp_get_wtime();
+      // double start_point = omp_get_wtime();
         for(size_t j = 0; j < kmer_count; j++) {
             obs_buffer[j] = rowwise_data[j * n + i];
         }
         fwrite(obs_buffer, sizeof(float), kmer_count, outfile_train);
         //memset(obs_buffer, 0, kmer_count * sizeof(float));
-        double end_point = omp_get_wtime();
-        std::cout << "# Time to write " << i + 1 << ":th data point: " << end_point - start_point << " s.\n";
+        // double end_point = omp_get_wtime();
+        // std::cout << "# Time to write " << i + 1 << ":th data point: " << end_point - start_point << " s.\n";
     }
 
     fclose(outfile_train);
 
-    end = omp_get_wtime();
-    std::cout << "# Time to write the training data with " << n_train << " points: " << end - start << " seconds.\n";
+    // end = omp_get_wtime();
+    // std::cout << "# Time to write the training data with " << n_train << " points: " << end - start << " seconds.\n";
 
-    start = omp_get_wtime();
+    // start = omp_get_wtime();
 
     for(size_t i = n_train; i < n; i++) {
         for(size_t j = 0; j < kmer_count; j++) {
@@ -187,8 +187,8 @@ int main(int argc, char **argv) {
 
     fclose(outfile_test);
 
-    end = omp_get_wtime();
-    std::cout << "# Time to write the test data with " << n_test << " points: " << end - start << " seconds.\n";
+    // end = omp_get_wtime();
+    // std::cout << "# Time to write the test data with " << n_test << " points: " << end - start << " seconds.\n";
 
     std::cout << "\n";
     std::cout << "DATASET_NAME=" << data_name << "\n";
