@@ -27,8 +27,9 @@ if [ "$#" -ne "1" ]; then
    exit 1
 fi
 
-. "$BASE_DIR/parameters/$1.sh"
 . "$INPUT_DIR/dimensions.sh"
+. "$BASE_DIR/parameters/$1.sh"
+
 
 ADD=""
 if [[ $MMAP -eq 1 ]]
