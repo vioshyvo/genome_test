@@ -46,7 +46,7 @@ int main(int argc, char **argv) {
 
   test = read_memory((data_path + "test.bin").c_str(), ntest, dim);
   if(!test) {
-      std::cerr << "Test data " << data_path + "test.bin" << " could not be read\n";
+      std::cerr << "in tester : test data " << data_path + "test.bin" << " could not be read\n";
       return -1;
   }
 
@@ -57,7 +57,7 @@ int main(int argc, char **argv) {
   }
 
   if(!test) {
-      std::cerr << "Training data " << data_path + "train.bin" << " could not be read\n";
+      std::cerr << "in tester : training data " << data_path + "train.bin" << " could not be read\n";
       return -1;
   }
 

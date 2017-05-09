@@ -21,5 +21,6 @@ if [ ! -f "$DATA_FILE" ]; then
   exit
 fi
 
-binary_writer/binary_writer $DATA_NAME $DATA_FILE $DATA_DIR $2 $3 > "$DATA_DIR/dimensions.sh"
+binary_writer/binary_writer $DATA_NAME $DATA_FILE $DATA_DIR $2 $3
+# > "$DATA_DIR/dimensions.sh"
 rm "$DATA_DIR/rowwise.bin" # remove temp files
