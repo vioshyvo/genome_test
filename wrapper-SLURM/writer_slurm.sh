@@ -10,9 +10,8 @@
 BASE_DIR="$WRKDIR/Sanger/genome_test"  # set to the path of the repo
 
 if [ "$#" -ne "3" ]; then
-   echo "error: Expecting parameters: <data-name> <n_train> <n_test>"
-   echo "error: Expecting parameters: <data-name> <n_train> <n_test>" > /dev/stderr
-   exit 1
+   echo "error: Expecting parameters: <data-name> <n_train> <n_test>" 1>&2
+   exit 
 fi
 
 ((N = $2 + $3))

@@ -3,40 +3,50 @@
 #SBATCH --mem=30G
 #SBATCH --cpus-per-task=1
 
-#SBATCH -e "errors_comparison.txt"
+#SBATCH -e "errors_comparison-$SLURM_JOB_ID.txt"
 #SBATCH --mail-type=END
 #SBATCH --mail-user=ville.o.hyvonen@helsinki.fi
 
+if [ "$#" -ne 2 ] && [ "$#" -ne 3 ]; then
+   echo "error: Expecting parameters: <data-set-name> <n> or <data-set-name> <n> <postfix>" 1>&2
+   exit
+fi
+
 BASE_DIR="$WRKDIR/Sanger/genome_test"  # set to the path of the repo
 
-INPUT_DIR="$BASE_DIR/data/$1"
+DATA_NAME="$1$2"
+INPUT_DIR="$BASE_DIR/data/$DATA_NAME"
+PARAMETER_DIR="$BASE_DIR/parameters"
+
 
 if [ ! -f "$INPUT_DIR/dimensions.sh" ]; then
-    echo "Invalid data set $1" 1>&2
+    echo Invalid data set $DATA_NAME 1>&2
     exit
 fi
 
-if [ ! -f "$BASE_DIR/parameters/$1.sh" ]; then
-    echo "Invalid data set $1" 1>&2
+if [ "$#" -eq 2 ]; then
+  PARAMETER_NAME="$DATA_NAME"
+fi
+
+if [ "$#" -eq 3 ]; then
+  PARAMETER_NAME="$DATA_NAME-$3"
+fi
+
+if [ ! -f "$PARAMETER_DIR/$PARAMETER_NAME.sh" ]; then
+    echo Invalid parameter file name $PARAMETER_NAME 1>&2
     exit
 fi
 
-if [ "$#" -ne "1" ]; then
-   echo "error: Expecting parameters: <data set name>"
-   echo "error: Expecting parameters: <data set name>" > /dev/stderr
-   exit 1
-fi
-
+. "$PARAMETER_DIR/$PARAMETER_NAME.sh"
 . "$INPUT_DIR/dimensions.sh"
-. "$BASE_DIR/parameters/$1.sh"
-
 
 ADD=""
 if [[ $MMAP -eq 1 ]]
 then
-  ADD="_mmap"
+  ADD="-mmap"
   echo "memory mapping on"
 fi
+
 
 pushd ../exact
 make clean
@@ -49,7 +59,7 @@ make
 popd
 
 
-OUTPUT_DIR="$BASE_DIR/results/$DATASET_NAME$ADD"
+OUTPUT_DIR="$BASE_DIR/results/$PARAMETER_NAME$ADD"
 TMP_DIR="/tmp/$SLURM_JOB_ID"
 
 # create a directory for the results, if it does not yet exist

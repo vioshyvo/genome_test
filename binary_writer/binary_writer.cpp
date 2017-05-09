@@ -188,10 +188,8 @@ int main(int argc, char **argv) {
     fclose(outfile_test);
 
     // end = omp_get_wtime();
-    // std::cout << "# Time to write the test data with " << n_test << " points: " << end - start << " seconds.\n";
+    // std::cout << "# Time to write the test data with " << n_test << " points: " << end - start << " seconds.\n\n";
 
-    std::cout << "\n";
-    std::cout << "DATASET_NAME=" << data_name << "\n";
     std::cout << "N=" << n_train + n_test << "\n";
     std::cout << "N_TEST=" << n_test << "\n";
     std::cout << "DIM=" << kmer_count << "\n";
