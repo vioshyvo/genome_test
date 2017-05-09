@@ -18,7 +18,7 @@ using namespace std;
 
 int Ks[] = {1, 10, 100, -1};
 
-float *get_data(const char *file, size_t dim, size *n) {
+float *get_data(const char *file, size_t dim, size_t *n) {
     struct stat sb;
     stat(file, &sb);
     size_t N = sb.st_size / (sizeof(float) * dim);
