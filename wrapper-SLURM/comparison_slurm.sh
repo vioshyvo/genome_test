@@ -1,9 +1,9 @@
 #!/bin/bash
-#SBATCH --time=01:00:00
-#SBATCH --mem=30G
+#SBATCH --time=10:00:00
+#SBATCH --mem=250G
 #SBATCH --cpus-per-task=1
 
-#SBATCH -e "errors_comparison-$SLURM_JOB_ID.txt"
+#SBATCH -e "errors_comparison-small.txt"
 #SBATCH --mail-type=END
 #SBATCH --mail-user=ville.o.hyvonen@helsinki.fi
 
