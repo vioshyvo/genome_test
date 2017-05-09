@@ -2,7 +2,6 @@
 #include <fstream>
 #include <Eigen/Dense>
 #include <Eigen/SparseCore>
-#include <bench/BenchTimer.h>
 #include <unsupported/Eigen/SparseExtra>
 #include <typeinfo>
 
@@ -32,12 +31,12 @@
 using namespace Eigen;
 
 int main(int argc, char **argv) {
-    int n = atoi(argv[1]);
-    int ntest = atoi(argv[2]);
+    size_t n = atoi(argv[1]);
+    size_t ntest = atoi(argv[2]);
     int k = atoi(argv[3]);
     int n_trees = atoi(argv[4]);
     int depth = atoi(argv[5]);
-    int dim = atoi(argv[6]);
+    size_t dim = atoi(argv[6]);
     int mmap = atoi(argv[7]);
     std::string result_path(argv[8]);
     if (!result_path.empty() && result_path.back() != '/')
@@ -48,7 +47,7 @@ int main(int argc, char **argv) {
       infile_path += '/';
 
     int last_arg = 9;
-    int n_points = n - ntest;
+    size_t n_points = n - ntest;
     bool verbose = false;
 
 

@@ -18,10 +18,10 @@ using namespace std;
 
 int Ks[] = {1, 10, 100, -1};
 
-float *get_data(const char *file, int dim, int *n) {
+float *get_data(const char *file, size_t dim, size *n) {
     struct stat sb;
     stat(file, &sb);
-    int N = sb.st_size / (sizeof(float) * dim);
+    size_t N = sb.st_size / (sizeof(float) * dim);
     *n = N;
 
     float *data = new float[N * dim];
@@ -34,7 +34,7 @@ float *get_data(const char *file, int dim, int *n) {
     return data;
 }
 
-float *read_memory(const char *file, int n, int dim) {
+float *read_memory(const char *file, size_t n, size_t dim) {
     float *data = new float[n * dim];
 
     struct stat sb;
@@ -51,7 +51,7 @@ float *read_memory(const char *file, int n, int dim) {
         return NULL;
     }
 
-    int read = fread(data, sizeof(float), n * dim, fd);
+    size_t read = fread(data, sizeof(float), n * dim, fd);
     if (read != n * dim) {
         std::cerr << "Expected size of the read was " << n * dim << ", but " << read << " was read.\n";
         return NULL;
@@ -61,7 +61,7 @@ float *read_memory(const char *file, int n, int dim) {
     return data;
 }
 
-float *read_mmap(const char *file, int n, int dim) {
+float *read_mmap(const char *file, size_t n, size_t dim) {
     FILE *fd;
     if ((fd = fopen(file, "rb")) == NULL)
         return NULL;
