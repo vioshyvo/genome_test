@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --time=05:00:00
+#SBATCH --time=48:00:00
 #SBATCH --mem=240G
 #SBATCH --cpus-per-task=1
 
@@ -77,11 +77,11 @@ else
 fi
 
 
+K=10
 
-for K in 1 10 100; do
+# for K in 1 10 100; do
     srun exact/tester $N $N_TEST $K $DIM $MMAP "$DATA_DIR" > "$OUTPUT_DIR/truth_$K"
-done
-
+# done
 
 echo -n > "$OUTPUT_DIR/mrpt.txt"
 for n_trees in $MRPT_VOTING_N_TREES; do
