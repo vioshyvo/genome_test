@@ -78,6 +78,6 @@ done
 echo -n > "$OUTPUT_DIR/mrpt.txt"
 for n_trees in $MRPT_VOTING_N_TREES; do
     for depth in $MRPT_DEPTH; do
-        srun mrpt_comparison $N $N_TEST 10 $n_trees $depth $DIM $MMAP "$OUTPUT_DIR" "$TMP_DIR" $MRPT_VOTES  >> "$OUTPUT_DIR/mrpt.txt"
+        srun mrpt_comparison $N $N_TEST $K $n_trees $depth $DIM $MMAP "$OUTPUT_DIR" "$TMP_DIR" $MRPT_VOTES  >> "$OUTPUT_DIR/mrpt.txt"
     done
 done
