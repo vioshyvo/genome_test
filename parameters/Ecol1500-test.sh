@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-MMAP=1
+MMAP=0
 
 MRPT_DEPTH="3 4"
 

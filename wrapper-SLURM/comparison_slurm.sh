@@ -1,9 +1,9 @@
 #!/bin/bash
-#SBATCH --time=10:00:00
-#SBATCH --mem=250G
+#SBATCH --time=5:00:00
+#SBATCH --mem=200G
 #SBATCH --cpus-per-task=1
 
-#SBATCH -e "errors_comparison-small.txt"
+#SBATCH -e "errors_comparison-test0.txt"
 #SBATCH --mail-type=END
 #SBATCH --mail-user=ville.o.hyvonen@helsinki.fi
 
