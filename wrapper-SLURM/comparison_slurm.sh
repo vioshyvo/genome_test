@@ -73,6 +73,7 @@ then
   cd "$DATA_DIR"
 else
   DATA_DIR="$INPUT_DIR"
+  cd ..
 fi
 
 
