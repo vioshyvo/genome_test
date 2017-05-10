@@ -1,6 +1,6 @@
 #!/bin/bash
-#SBATCH --time=5:00:00
-#SBATCH --mem=200G
+#SBATCH --time=01:00:00
+#SBATCH --mem=15G
 #SBATCH --cpus-per-task=1
 
 #SBATCH -e "errors_comparison-test0.txt"
@@ -60,24 +60,31 @@ popd
 
 
 OUTPUT_DIR="$BASE_DIR/results/$PARAMETER_NAME$ADD"
-TMP_DIR="/tmp/$SLURM_JOB_ID"
 
 # create a directory for the results, if it does not yet exist
 mkdir -p "$OUTPUT_DIR"
 
-# move data and tester into the local disc of the node
-mkdir -p "$TMP_DIR"
-cp -a "$INPUT_DIR/train.bin" "$INPUT_DIR/test.bin" "$BASE_DIR/exact/tester" "$BASE_DIR/mrpt/mrpt_comparison" "$TMP_DIR"
-cd "$TMP_DIR"
+# if memory mapping is on, move data and tester into the local disc of the node
+if [[ $MMAP -eq 1 ]]
+then
+  DATA_DIR="/tmp/$SLURM_JOB_ID"
+  mkdir -p "$DATA_DIR"
+  cp -a "$INPUT_DIR/train.bin" "$INPUT_DIR/test.bin" "$BASE_DIR/exact" "$BASE_DIR/mrpt" "$DATA_DIR"
+  cd "$DATA_DIR"
+else
+  DATA_DIR="$INPUT_DIR"
+fi
+
+
 
 for K in 1 10 100; do
-    srun tester $N $N_TEST $K $DIM $MMAP "$TMP_DIR" > "$OUTPUT_DIR/truth_$K"
+    srun exact/tester $N $N_TEST $K $DIM $MMAP "$DATA_DIR" > "$OUTPUT_DIR/truth_$K"
 done
 
 
 echo -n > "$OUTPUT_DIR/mrpt.txt"
 for n_trees in $MRPT_VOTING_N_TREES; do
     for depth in $MRPT_DEPTH; do
-        srun mrpt_comparison $N $N_TEST $K $n_trees $depth $DIM $MMAP "$OUTPUT_DIR" "$TMP_DIR" $MRPT_VOTES  >> "$OUTPUT_DIR/mrpt.txt"
+        srun mrpt/mrpt_comparison $N $N_TEST $K $n_trees $depth $DIM $MMAP "$OUTPUT_DIR" "$DATA_DIR" $MRPT_VOTES  >> "$OUTPUT_DIR/mrpt.txt"
     done
 done
