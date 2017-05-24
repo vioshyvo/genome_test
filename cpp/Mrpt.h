@@ -168,14 +168,25 @@ class Mrpt {
         int max_leaf_size = n_samples / (1 << depth) + 1;
         VectorXi elected(n_trees * max_leaf_size);
 
+        double start = omp_get_wtime();
         VectorXf projected_query(n_pool);
         if (density < 1)
             projected_query.noalias() = sparse_random_matrix * q;
         else
             projected_query.noalias() = dense_random_matrix * q;
+        double end = omp_get_wtime();
+        std::cout << "# projection time: " << end - start << "\n";
 
+        start = omp_get_wtime();
         int n_elected = elect(projected_query, k, votes_required, elected.data());
-        return exact_knn(q, k, elected, n_elected, out);
+        end = omp_get_wtime();
+        std::cout << "# elect time: " << end - start << "\n";
+
+        start = omp_get_wtime();
+        auto ret = exact_knn(q, k, elected, n_elected, out);
+        end = omp_get_wtime();
+        std::cout << "# exact search time: " << end - start << "\n";
+        return ret
     }
 
     int elect(const VectorXf &projected_query, int k, int votes_required, int *out) const {
