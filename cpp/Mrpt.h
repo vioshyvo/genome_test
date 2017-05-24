@@ -186,7 +186,7 @@ class Mrpt {
         auto ret = exact_knn(q, k, elected, n_elected, out);
         end = omp_get_wtime();
         std::cout << "# exact search time: " << end - start << "\n";
-        return ret
+        return ret;
     }
 
     int elect(const VectorXf &projected_query, int k, int votes_required, int *out) const {
