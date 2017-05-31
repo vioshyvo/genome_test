@@ -91,14 +91,14 @@ int main(int argc, char **argv) {
         for (int i = 0; i < ntest; ++i) {
                 std::vector<int> result(k);
                 double start = omp_get_wtime();
-                index_dense.query(Map<VectorXf>(&test[i * dim], dim), k, votes, &result[0], projection_time, exact_time, elect_time);
+                int k_found = index_dense.query(Map<VectorXf>(&test[i * dim], dim), k, votes, &result[0], projection_time, exact_time, elect_time);
 
                 double end = omp_get_wtime();
                 times.push_back(end - start);
                 projection_times.push_back(projection_time);
                 exact_times.push_back(exact_time);
                 elect_times.push_back(elect_time);
-                idx.push_back(std::set<int>(result.begin(), result.end()));
+                idx.push_back(std::set<int>(result.begin(), result.begin() + k_found)); // k_found (<= k) is the number of k-nn canditates returned 
             }
 
         if(verbose)
