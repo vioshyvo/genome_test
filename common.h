@@ -84,7 +84,8 @@ float *read_mmap(const char *file, size_t n, size_t dim) {
 }
 
 
-void results(int k, const vector<double> &times, const vector<set<int>> &idx, const char *truth, bool verbose) {
+void results(int k, const vector<double> &times, const vector<set<int>> &idx, const char *truth, bool verbose,
+             std::vector<double> projection_times, std::vector<double> exact_times, std::vector<double> elect_times) {
     double time;
     vector<set<int>> correct;
 
@@ -102,12 +103,17 @@ void results(int k, const vector<double> &times, const vector<set<int>> &idx, co
     vector<pair<double, double>> results;
 
     double accuracy, total_time = 0, total_accuracy = 0;
+    double projection_time = 0, exact_time = 0, elect_time = 0;
     for (unsigned i = 0; i < times.size(); ++i) {
         set<int> intersect;
         set_intersection(correct[i].begin(), correct[i].end(), idx[i].begin(), idx[i].end(),
                          inserter(intersect, intersect.begin()));
         accuracy = intersect.size() / static_cast<double>(k);
         total_time += times[i];
+        projection_time += projection_times[i];
+        exact_time += exact_times[i];
+        elect_time += elect_times[i];
+
         total_accuracy += accuracy;
         results.push_back(make_pair(times[i], accuracy));
     }
@@ -119,9 +125,21 @@ void results(int k, const vector<double> &times, const vector<set<int>> &idx, co
 
     cout << setprecision(5);
     if(verbose)
-        cout << "accuracy: " << mean_accuracy << ", variance:  " << variance << ", query time: " << total_time << endl;
+        cout << "accuracy: " << mean_accuracy
+             << ", variance:  " << variance
+             << ", query time: " << total_time
+             << ", projection time: " << projection_time
+             << ", exact search time: " << exact_time
+             << ", elect time: " << elect_time
+             << endl;
     else
-        cout << mean_accuracy << " " << variance << " " << total_time << endl;
+        cout << mean_accuracy << " "
+             << variance << " "
+             << total_time << " "
+             << projection_time << " "
+             << exact_time << " "
+             << elect_time << " "
+             << endl;
 
 
 }

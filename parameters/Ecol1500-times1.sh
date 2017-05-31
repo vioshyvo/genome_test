@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+MMAP=0
+
+MRPT_DEPTH="6 7 8"
+
+MRPT_VOTING_N_TREES="10 25 50 75 100"
+
+MRPT_VOTES="1 2 3 5 8 10 15 25"
