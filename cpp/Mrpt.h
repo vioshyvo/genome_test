@@ -164,18 +164,32 @@ class Mrpt {
     * @param out - The output buffer
     * @return
     */
-    int query(const Map<VectorXf> &q, int k, int votes_required, int *out) const {
+    int query(const Map<VectorXf> &q, int k, int votes_required, int *out, double &projection_time, double &exact_time, double &elect_time) const {
         int max_leaf_size = n_samples / (1 << depth) + 1;
         VectorXi elected(n_trees * max_leaf_size);
 
+        double start = omp_get_wtime();
         VectorXf projected_query(n_pool);
         if (density < 1)
             projected_query.noalias() = sparse_random_matrix * q;
         else
             projected_query.noalias() = dense_random_matrix * q;
+        double end = omp_get_wtime();
+        projection_time = end - start;
+        // std::cout << "# projection time: " << projection_time << "\n";
 
+        start = omp_get_wtime();
         int n_elected = elect(projected_query, k, votes_required, elected.data());
-        return exact_knn(q, k, elected, n_elected, out);
+        end = omp_get_wtime();
+        elect_time = end - start;
+        // std::cout << "# elect time: " << elect_time << "\n";
+
+        start = omp_get_wtime();
+        auto ret = exact_knn(q, k, elected, n_elected, out);
+        end = omp_get_wtime();
+        exact_time = end - start;
+        // std::cout << "# exact search time: " << exact_time << "\n";
+        return ret;
     }
 
     int elect(const VectorXf &projected_query, int k, int votes_required, int *out) const {
