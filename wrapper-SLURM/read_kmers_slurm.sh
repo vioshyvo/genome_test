@@ -7,7 +7,7 @@
 #SBATCH --mail-type=END
 #SBATCH --mail-user=ville.o.hyvonen@helsinki.fi
 
-FSM_PATH="$WRKDIR/Sanger/fsm-lite"     # set to the dir where fsm-litei is installed
+FSM_PATH="fsm-lite"     # set to the dir where fsm-lite is installed
 BASE_DIR="$WRKDIR/Sanger/genome_test"  # set to the path of the repo
 
 
