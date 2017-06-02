@@ -4,9 +4,10 @@
 ### Installing C++ tools
 `./install_fsm.sh`
   - Installs [`fsm-lite`](https://github.com/nvalimak/fsm-lite "fsm-lite github page") and its dependencies ([`sdsl-lite`](https://github.com/simongog/sdsl-lite "sdsl-lite github page"), which requires [`cmake`](https://cmake.org/download/ "cmake download page")).
-   
+
 ### Local scripts
 Scripts that can be used to run C++ tools locally
+
 `./prepare_data.sh <zip-file> <data-name> `
   - Unzip data from `zip-file`, preprocess it for `fsm-lite`, and save the files to `data/data-name`
   - Removes `spades.fa` - files, and renames rest fasta-files into `f0001`, `f0002`,...
