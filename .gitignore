@@ -31,6 +31,8 @@ python
 /wrapper-SLURM/*.out
 /tmp/*
 tmp.*
+sdsl-lite/*
+sdsl-lite
 
 /results/*
 
