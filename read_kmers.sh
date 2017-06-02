@@ -1,5 +1,5 @@
 #!/bin/bash
-FSM_PATH=/home/hyvi/HYVI/programs/fsm-lite-master
+FSM_PATH=fsm-lite
 
 if [ "$#" -ne "2" ]; then
    echo "error: Expecting parameters: <data name> <n_points>"

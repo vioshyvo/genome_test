@@ -33,6 +33,8 @@ python
 tmp.*
 sdsl-lite/*
 sdsl-lite
+fsm-lite
+fsm-lite/*
 
 /results/*
 
