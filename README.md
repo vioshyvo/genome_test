@@ -1,23 +1,28 @@
 ## Pipeline
 ![](Lentua.jpg)
 
-
-`prepare_data.sh <zip-file> <data-name> `
+### Installing C++ tools
+`./install_fsm.sh`
+  - Installs [`fsm-lite`](https://github.com/nvalimak/fsm-lite "fsm-lite github page") and its dependencies ([`sdsl-lite`](https://github.com/simongog/sdsl-lite "sdsl-lite github page"), which requires [`cmake`](https://cmake.org/download/ "cmake download page")).
+   
+### Local scripts
+Scripts that can be used to run C++ tools locally
+`./prepare_data.sh <zip-file> <data-name> `
   - Unzip data from `zip-file`, preprocess it for `fsm-lite`, and save the files to `data/data-name`
   - Removes `spades.fa` - files, and renames rest fasta-files into `f0001`, `f0002`,...
   - Outputs the names of the original files as `data_name_file_list` into the `data` directory.
 
-`read_kmers.sh <data-name> <n-points>`
+`./read_kmers.sh <data-name> <n-points>`
   - Wrapper for `fsm-lite`, reads  kmers counts into the sparse matrix `data/<data-name><n_points>/<data-name><n_points>.mat` from the specified fasta-files, that reside in the directory `data/data-name`.
   - Argument `data-name` is the name of the data set, for example `Ecol`.
   - Argument `n_points` controls how many first points you want to read, for example 250.
   - Creates for example file `data/Ecol250/Ecol250.mat`.
 
-`writer.sh <data-name> <n_train> <n_test>`
+`./writer.sh <data-name> <n_train> <n_test>`
   - Divides the data set into a training set with n_train points and test set with n_test points and writes these to directory `data/data-name/` as files `train.bin` and `test.bin`. Dimensions of the data set are written to `dimensions.sh`. Wrapper for `binary_writer/binary_writer`.
   - Assumes that there is a data set `data-name` with `n_train + n_test` points written by `read_kmers`.
 
-`comparison.sh <data-name> <n> <postfix>`
+`./comparison.sh <data-name> <n> <postfix>`
   - Run exact k-NN search and approximate k-NN search with the MRPT algorithm.
   - Wrapper for `exact/tester` and `mrpt/mrpt_comparison`.
   - Assumes that the parameters of the test run are saved in the file `parameters/<data-name><n><postfix>.sh`
