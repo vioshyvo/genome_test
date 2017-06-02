@@ -30,7 +30,14 @@ fi
 
 if [ ! -d fsm-lite ]; then
   git clone https://github.com/nvalimak/fsm-lite.git
-  patch fsm-lite/Makefile patches/fsm1.patch
+  PROGRAM=patch
+  if [ $(command -v $PROGRAM) ]; then
+    patch fsm-lite/Makefile patches/fsm1.patch
+  else
+    echo Checking dependencies: "$PROGRAM" not installed in system.
+    echo Overwriting  fsm-lite/Makefile with patches/Makefile... 
+    cp patches/Makefile fsm-lite/Makefile
+  fi
   pushd fsm-lite
   make depend && make
   popd
