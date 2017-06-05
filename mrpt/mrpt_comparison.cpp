@@ -46,7 +46,9 @@ int main(int argc, char **argv) {
     if (!infile_path.empty() && infile_path.back() != '/')
       infile_path += '/';
 
-    int last_arg = 9;
+    float sparsity = atof(argv[10]);
+
+    int last_arg = 10;
     size_t n_points = n - ntest;
     bool verbose = false;
 
@@ -74,7 +76,6 @@ int main(int argc, char **argv) {
 
 
     const Map<const MatrixXf> *M = new Map<const MatrixXf>(train, dim, n_points);
-    float sparsity = sqrt(dim);
 
     Mrpt index_dense(M, n_trees, depth, sparsity);
     index_dense.grow();
@@ -98,7 +99,7 @@ int main(int argc, char **argv) {
                 projection_times.push_back(projection_time);
                 exact_times.push_back(exact_time);
                 elect_times.push_back(elect_time);
-                idx.push_back(std::set<int>(result.begin(), result.begin() + k_found)); // k_found (<= k) is the number of k-nn canditates returned 
+                idx.push_back(std::set<int>(result.begin(), result.begin() + k_found)); // k_found (<= k) is the number of k-nn canditates returned
             }
 
         if(verbose)
