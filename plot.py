@@ -67,7 +67,7 @@ def main(k, files):
 
 
     ax.legend(LSD, labels=[a[0] for a in A], loc="upper left")
-    plt.show()
+    # plt.show()
     plt.savefig('images/uusi_4-6.png', bbox_inches='tight')
 
 
