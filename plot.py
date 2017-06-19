@@ -41,8 +41,8 @@ def main(k, files):
         with open(resfile) as f:
             _ = f.readline()
             lines = [[float(x) for x in s.strip().split()] for s in f]
-        acc = [x[-3] for x in lines if x[0] == k]
-        tym = [x[-1] for x in lines if x[0] == k]
+        acc = [x[5] for x in lines if x[0] == k]
+        tym = [x[7] for x in lines if x[0] == k]
         A.append((resfile.split('.')[0], acc, tym))
     colors = cm.rainbow(np.linspace(0, 1, len(A)))
     minY, maxY = float('inf'), -float('inf')
@@ -57,7 +57,7 @@ def main(k, files):
     ax.set_xlabel('recall', fontsize=22)
     ax.set_xlim((0, 1))
     ax.set_ylim((minY / 1.25, maxY * 1.25))
-    # ax.set_ylim((0,1))
+    ax.set_ylim((0,100))
     ax.xaxis.labelpad = 15
     ax.yaxis.labelpad = 15
     ax.set_yscale('linear')
@@ -66,7 +66,7 @@ def main(k, files):
 
 
 
-    # ax.legend(LSD, labels=[a[0] for a in A], loc="upper left")
+    ax.legend(LSD, labels=[a[0] for a in A], loc="upper left")
     plt.show()
     # plt.savefig('plot.png', bbox_inches='tight')
 
