@@ -1,10 +1,10 @@
 #!/bin/bash
 
-#SBATCH --time=24:00:00
+#SBATCH --time=96:00:00
 #SBATCH --mem=240G
 #SBATCH --cpus-per-task=1
 
-#SBATCH -e "errors_comparison-times1.txt"
+#SBATCH -e "errors_comparison-times10.txt"
 #SBATCH --mail-type=END
 #SBATCH --mail-user=ville.o.hyvonen@helsinki.fi
 
