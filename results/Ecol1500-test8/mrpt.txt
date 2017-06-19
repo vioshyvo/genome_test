@@ -1,0 +1,453 @@
+# projection time: 0.0302534
+# elect time: 5.97211e-06
+# exact search time: 2.4603
+# projection time: 0.0301606
+# elect time: 5.07105e-06
+# exact search time: 2.43473
+# projection time: 0.0307037
+# elect time: 4.86593e-06
+# exact search time: 2.44496
+# projection time: 0.0634705
+# elect time: 4.57396e-06
+# exact search time: 2.43529
+# projection time: 0.0307964
+# elect time: 4.76511e-06
+# exact search time: 2.44498
+# projection time: 0.0298311
+# elect time: 4.53601e-06
+# exact search time: 2.45181
+# projection time: 0.0294083
+# elect time: 4.49689e-06
+# exact search time: 2.50003
+# projection time: 0.0622651
+# elect time: 4.32087e-06
+# exact search time: 2.49463
+# projection time: 0.0301077
+# elect time: 4.35021e-06
+# exact search time: 2.4765
+# projection time: 0.029995
+# elect time: 4.45498e-06
+# exact search time: 2.63528
+# projection time: 0.030463
+# elect time: 3.77302e-06
+# exact search time: 2.59555
+# projection time: 0.066288
+# elect time: 3.56114e-06
+# exact search time: 2.44846
+# projection time: 0.0593131
+# elect time: 5.81588e-06
+# exact search time: 2.41229
+# projection time: 0.0302216
+# elect time: 4.78211e-06
+# exact search time: 2.40342
+# projection time: 0.0303371
+# elect time: 4.31482e-06
+# exact search time: 2.83176
+# projection time: 0.0622202
+# elect time: 4.24404e-06
+# exact search time: 2.49656
+# projection time: 0.0294875
+# elect time: 4.00818e-06
+# exact search time: 2.41659
+# projection time: 0.0306466
+# elect time: 9.94001e-06
+# exact search time: 2.76067
+# projection time: 0.0297742
+# elect time: 4.15393e-06
+# exact search time: 2.4268
+# projection time: 0.0621738
+# elect time: 4.67198e-06
+# exact search time: 2.75811
+# projection time: 0.0300205
+# elect time: 4.74905e-06
+# exact search time: 2.39525
+# projection time: 0.0302828
+# elect time: 4.01097e-06
+# exact search time: 2.39753
+# projection time: 0.0301802
+# elect time: 4.23589e-06
+# exact search time: 2.72718
+# projection time: 0.0630728
+# elect time: 3.31202e-06
+# exact search time: 2.43496
+# projection time: 0.0296926
+# elect time: 3.73903e-06
+# exact search time: 2.4343
+# projection time: 0.0302602
+# elect time: 9.52603e-06
+# exact search time: 2.55328
+# projection time: 0.0298594
+# elect time: 4.136e-06
+# exact search time: 2.43274
+# projection time: 0.0617571
+# elect time: 4.014e-06
+# exact search time: 2.41551
+# projection time: 0.0301314
+# elect time: 4.37908e-06
+# exact search time: 2.45108
+# projection time: 0.0310741
+# elect time: 4.65405e-06
+# exact search time: 2.4213
+# projection time: 0.0300439
+# elect time: 3.94997e-06
+# exact search time: 2.42913
+# projection time: 0.0619598
+# elect time: 4.1509e-06
+# exact search time: 2.91679
+# projection time: 0.0308026
+# elect time: 4.35696e-06
+# exact search time: 2.55253
+# projection time: 0.0294132
+# elect time: 9.5868e-06
+# exact search time: 2.51776
+# projection time: 0.0307381
+# elect time: 4.40492e-06
+# exact search time: 2.76773
+# projection time: 0.0617189
+# elect time: 4.63217e-06
+# exact search time: 2.74115
+# projection time: 0.0595107
+# elect time: 5.98817e-06
+# exact search time: 2.50464
+# projection time: 0.0300724
+# elect time: 9.76305e-06
+# exact search time: 2.86459
+# projection time: 0.0301117
+# elect time: 4.13903e-06
+# exact search time: 2.40614
+# projection time: 0.0619129
+# elect time: 3.89898e-06
+# exact search time: 2.41545
+# projection time: 0.0303469
+# elect time: 3.69293e-06
+# exact search time: 2.44052
+# projection time: 0.0297814
+# elect time: 1.1438e-05
+# exact search time: 2.67434
+# projection time: 0.0295493
+# elect time: 4.30411e-06
+# exact search time: 2.41509
+# projection time: 0.0622151
+# elect time: 4.82821e-06
+# exact search time: 2.42009
+# projection time: 0.029782
+# elect time: 4.69992e-06
+# exact search time: 2.42333
+# projection time: 0.0302629
+# elect time: 4.25288e-06
+# exact search time: 2.4055
+# projection time: 0.0306462
+# elect time: 5.07315e-06
+# exact search time: 2.43417
+# projection time: 0.0621759
+# elect time: 4.67198e-06
+# exact search time: 2.43019
+# projection time: 0.0301507
+# elect time: 4.44404e-06
+# exact search time: 2.44088
+# projection time: 0.0299303
+# elect time: 5.42402e-06
+# exact search time: 2.73016
+10 1 3 4819.07 1 0.39 0.11316 127.88
+# projection time: 0.129848
+# elect time: 9.96399e-06
+# exact search time: 9.70677
+# projection time: 0.119236
+# elect time: 8.71299e-06
+# exact search time: 9.52295
+# projection time: 0.119717
+# elect time: 8.65711e-06
+# exact search time: 9.84636
+# projection time: 0.140592
+# elect time: 1.27349e-05
+# exact search time: 9.86717
+# projection time: 0.118751
+# elect time: 8.31601e-06
+# exact search time: 9.61023
+# projection time: 0.118508
+# elect time: 8.3968e-06
+# exact search time: 9.46997
+# projection time: 0.118055
+# elect time: 8.32696e-06
+# exact search time: 9.50179
+# projection time: 0.118204
+# elect time: 7.63685e-06
+# exact search time: 10.4629
+# projection time: 0.137468
+# elect time: 1.1388e-05
+# exact search time: 10.0444
+# projection time: 0.118309
+# elect time: 1.25431e-05
+# exact search time: 9.6633
+# projection time: 0.120412
+# elect time: 8.48691e-06
+# exact search time: 9.62568
+# projection time: 0.118834
+# elect time: 8.47783e-06
+# exact search time: 9.38523
+# projection time: 0.118085
+# elect time: 8.58912e-06
+# exact search time: 10.0767
+# projection time: 0.117687
+# elect time: 8.81287e-06
+# exact search time: 10.1577
+# projection time: 0.138954
+# elect time: 1.33622e-05
+# exact search time: 9.99879
+# projection time: 0.117946
+# elect time: 1.2951e-05
+# exact search time: 9.30893
+# projection time: 0.118115
+# elect time: 8.63406e-06
+# exact search time: 9.83389
+# projection time: 0.118186
+# elect time: 1.3547e-05
+# exact search time: 9.52146
+# projection time: 0.11918
+# elect time: 8.66014e-06
+# exact search time: 10.1487
+# projection time: 0.139394
+# elect time: 1.37668e-05
+# exact search time: 9.8434
+# projection time: 0.118128
+# elect time: 1.31188e-05
+# exact search time: 9.52359
+# projection time: 0.117781
+# elect time: 8.63289e-06
+# exact search time: 9.4701
+# projection time: 0.118165
+# elect time: 8.35396e-06
+# exact search time: 9.77515
+# projection time: 0.118456
+# elect time: 8.02986e-06
+# exact search time: 9.99973
+# projection time: 0.137742
+# elect time: 1.24951e-05
+# exact search time: 9.887
+# projection time: 0.119127
+# elect time: 1.3503e-05
+# exact search time: 9.59842
+# projection time: 0.123144
+# elect time: 8.95513e-06
+# exact search time: 9.12673
+# projection time: 0.118059
+# elect time: 8.99495e-06
+# exact search time: 8.96783
+# projection time: 0.117535
+# elect time: 8.48994e-06
+# exact search time: 9.14566
+# projection time: 0.119326
+# elect time: 1.34779e-05
+# exact search time: 10.4146
+# projection time: 0.139128
+# elect time: 1.33528e-05
+# exact search time: 10.2001
+# projection time: 0.11729
+# elect time: 8.34209e-06
+# exact search time: 10.0518
+# projection time: 0.117219
+# elect time: 9.22801e-06
+# exact search time: 9.50488
+# projection time: 0.117524
+# elect time: 1.40378e-05
+# exact search time: 9.35216
+# projection time: 0.11866
+# elect time: 8.59797e-06
+# exact search time: 9.55975
+# projection time: 0.138807
+# elect time: 1.49331e-05
+# exact search time: 9.69049
+# projection time: 0.117117
+# elect time: 9.11695e-06
+# exact search time: 9.89916
+# projection time: 0.118338
+# elect time: 8.60193e-06
+# exact search time: 9.05505
+# projection time: 0.118439
+# elect time: 1.40711e-05
+# exact search time: 9.25235
+# projection time: 0.118264
+# elect time: 9.15607e-06
+# exact search time: 9.76559
+# projection time: 0.118287
+# elect time: 8.91509e-06
+# exact search time: 10.4743
+# projection time: 0.13955
+# elect time: 1.33188e-05
+# exact search time: 10.0711
+# projection time: 0.117989
+# elect time: 8.91089e-06
+# exact search time: 9.65207
+# projection time: 0.117787
+# elect time: 8.54488e-06
+# exact search time: 9.66217
+# projection time: 0.118336
+# elect time: 8.63313e-06
+# exact search time: 9.65086
+# projection time: 0.119628
+# elect time: 1.32651e-05
+# exact search time: 9.96914
+# projection time: 0.139304
+# elect time: 1.3097e-05
+# exact search time: 10.0291
+# projection time: 0.118921
+# elect time: 1.37801e-05
+# exact search time: 9.47176
+# projection time: 0.118384
+# elect time: 1.41039e-05
+# exact search time: 8.93927
+# projection time: 0.118083
+# elect time: 1.2435e-05
+# exact search time: 9.78889
+10 5 3 4819.07 1 0.806 0.05078 491.67
+# projection time: 0.11918
+# elect time: 7.371e-06
+# exact search time: 2.3753
+# projection time: 0.11855
+# elect time: 7.3949e-06
+# exact search time: 2.6966
+# projection time: 0.11982
+# elect time: 7.6441e-06
+# exact search time: 2.6153
+# projection time: 0.12018
+# elect time: 8.0611e-06
+# exact search time: 2.4621
+# projection time: 0.13896
+# elect time: 1.0653e-05
+# exact search time: 2.4342
+# projection time: 0.11867
+# elect time: 8.283e-06
+# exact search time: 2.7075
+# projection time: 0.11806
+# elect time: 7.7051e-06
+# exact search time: 2.5106
+# projection time: 0.11781
+# elect time: 7.5689e-06
+# exact search time: 2.31
+# projection time: 0.11785
+# elect time: 6.4468e-06
+# exact search time: 2.2038
+# projection time: 0.11838
+# elect time: 7.906e-06
+# exact search time: 2.489
+# projection time: 0.11849
+# elect time: 7.5481e-06
+# exact search time: 2.5752
+# projection time: 0.11874
+# elect time: 7.946e-06
+# exact search time: 2.5331
+# projection time: 0.11827
+# elect time: 7.0019e-06
+# exact search time: 2.2027
+# projection time: 0.11762
+# elect time: 7.5419e-06
+# exact search time: 2.3454
+# projection time: 0.11777
+# elect time: 7.4941e-06
+# exact search time: 2.0974
+# projection time: 0.1179
+# elect time: 7.3742e-06
+# exact search time: 2.1619
+# projection time: 0.11817
+# elect time: 7.2629e-06
+# exact search time: 2.3314
+# projection time: 0.11822
+# elect time: 6.9828e-06
+# exact search time: 2.4627
+# projection time: 0.11777
+# elect time: 8.3861e-06
+# exact search time: 2.4375
+# projection time: 0.11774
+# elect time: 8.1982e-06
+# exact search time: 2.3383
+# projection time: 0.11793
+# elect time: 8.2469e-06
+# exact search time: 2.5465
+# projection time: 0.11868
+# elect time: 7.7381e-06
+# exact search time: 2.4978
+# projection time: 0.11817
+# elect time: 7.7859e-06
+# exact search time: 2.242
+# projection time: 0.11853
+# elect time: 1.2085e-05
+# exact search time: 2.6541
+# projection time: 0.11956
+# elect time: 7.8778e-06
+# exact search time: 2.6488
+# projection time: 0.14103
+# elect time: 1.3577e-05
+# exact search time: 2.7707
+# projection time: 0.11863
+# elect time: 1.2431e-05
+# exact search time: 2.7336
+# projection time: 0.11763
+# elect time: 7.9421e-06
+# exact search time: 2.7429
+# projection time: 0.11742
+# elect time: 1.296e-05
+# exact search time: 2.2299
+# projection time: 0.11784
+# elect time: 7.1181e-06
+# exact search time: 2.3352
+# projection time: 0.11766
+# elect time: 7.5342e-06
+# exact search time: 2.2379
+# projection time: 0.1173
+# elect time: 8.5561e-06
+# exact search time: 2.0749
+# projection time: 0.11843
+# elect time: 6.9931e-06
+# exact search time: 2.3766
+# projection time: 0.11771
+# elect time: 1.2939e-05
+# exact search time: 2.334
+# projection time: 0.11764
+# elect time: 7.3651e-06
+# exact search time: 2.1511
+# projection time: 0.11733
+# elect time: 8.3609e-06
+# exact search time: 2.7681
+# projection time: 0.11759
+# elect time: 7.6829e-06
+# exact search time: 2.4102
+# projection time: 0.11832
+# elect time: 8.272e-06
+# exact search time: 2.6326
+# projection time: 0.11786
+# elect time: 7.4799e-06
+# exact search time: 2.591
+# projection time: 0.11811
+# elect time: 7.9491e-06
+# exact search time: 2.277
+# projection time: 0.11839
+# elect time: 7.8019e-06
+# exact search time: 2.285
+# projection time: 0.11908
+# elect time: 7.2659e-06
+# exact search time: 2.2096
+# projection time: 0.11916
+# elect time: 7.902e-06
+# exact search time: 2.5934
+# projection time: 0.11777
+# elect time: 7.794e-06
+# exact search time: 2.4419
+# projection time: 0.11921
+# elect time: 7.9789e-06
+# exact search time: 2.5267
+# projection time: 0.11811
+# elect time: 8.0229e-06
+# exact search time: 2.7238
+# projection time: 0.13939
+# elect time: 1.1795e-05
+# exact search time: 2.3478
+# projection time: 0.11887
+# elect time: 7.588e-06
+# exact search time: 2.2788
+# projection time: 0.11837
+# elect time: 1.3908e-05
+# exact search time: 2.5887
+# projection time: 0.11819
+# elect time: 1.2172e-05
+# exact search time: 2.1416
+10 5 3 4819.1 2 0.56 0.11224 127.66
