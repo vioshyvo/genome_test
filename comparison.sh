@@ -50,7 +50,7 @@ fi
 RESULT_DIR="results/$PARAMETER_NAME$ADD"
 
 mkdir -p "$RESULT_DIR"
-for K in 1 10 100; do
+for K in 10; do
     ./exact/tester $N $N_TEST $K $DIM $MMAP "$DATA_DIR" > "$RESULT_DIR/truth_$K"
 done
 
