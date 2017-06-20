@@ -26,6 +26,8 @@ if [ ! -d sdsl-lite ]; then
   pushd sdsl-lite
   ./install.sh .
   popd
+else
+  echo sdsl-lite is already installed.
 fi
 
 if [ ! -d fsm-lite ]; then
@@ -35,10 +37,12 @@ if [ ! -d fsm-lite ]; then
     patch fsm-lite/Makefile patches/fsm1.patch
   else
     echo Checking dependencies: "$PROGRAM" not installed in system.
-    echo Overwriting  fsm-lite/Makefile with patches/Makefile... 
+    echo Overwriting  fsm-lite/Makefile with patches/Makefile...
     cp patches/Makefile fsm-lite/Makefile
   fi
   pushd fsm-lite
   make depend && make
   popd
+else
+  echo fsm-lite is already installed.
 fi
