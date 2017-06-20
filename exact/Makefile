@@ -1,4 +1,4 @@
-EIGEN_PATH=../../eigen_3.3.3
+EIGEN_PATH=../eigen
 MRPT_PATH=..
 
 CPPFLAGS=-I$(EIGEN_PATH) -I$(MRPT_PATH) -I./
