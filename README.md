@@ -57,4 +57,5 @@ Scripts that can be used to run the C++ tools in SLURM system are in the directo
 
 `python plot.py <k> results/<result-name1>/mrpt.txt results/<result-name2>/mrpt.txt`
   - plots running time vs. accuracy for `k`-nn queries.
-  - one line for each of the results file  
+  - one line for each of the results file.
+  - uses sparsity values (expected proportion of the non-zero components in the random vectors) in the legend.  
