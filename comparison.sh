@@ -22,7 +22,7 @@ if [ "$#" -eq 3 ]; then
 fi
 
 if [ ! -f "parameters/$PARAMETER_NAME.sh" ]; then
-    echo Invalid parameter file name $PARAMETER_NAME 1>&2
+    echo Invalid parameter file name "$PARAMETER_NAME.sh" 1>&2
     exit
 fi
 

@@ -3,7 +3,9 @@
 
 ### Installing C++ tools
 `./install_fsm.sh`
-  - Installs [`fsm-lite`](https://github.com/nvalimak/fsm-lite "fsm-lite github page") and its dependencies ([`sdsl-lite`](https://github.com/simongog/sdsl-lite "sdsl-lite github page"), which requires [`cmake`](https://cmake.org/download/ "cmake download page")).
+  - Installs [`fsm-lite`](https://github.com/nvalimak/fsm-lite "fsm-lite github page") and its dependencies ([`sdsl-lite`](https://github.com/simongog/sdsl-lite "sdsl-lite github page"), which requires [`cmake`](https://cmake.org/download/ "cmake download page")), if not already installed.
+  - Installs also Eigen 3.3.4 (http://eigen.tuxfamily.org/index.php?title=Main_Page), if not already installed.
+
 
 ### Local scripts
 Scripts that can be used to run C++ tools locally
