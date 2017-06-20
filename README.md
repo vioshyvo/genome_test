@@ -53,13 +53,8 @@ Scripts that can be used to run the C++ tools in SLURM system are in the directo
 `comparison_slurm.sh <data-name> <n> <postfix>`
   - Wrapper for `exact/tester` and `mrpt/mrpt_comparison`, same functionality as `comparison.sh`.
 
+### Plot results
 
-    | Points  | run time (fsm) | run time (writer) | RAM (fsm)  | Dimension      | Size (sparse) | Size (dense) |
-    |---------| ---------------|-------------------| ---------- | -------------- |---------------| ------------ |
-    | 100     | 00:42:00       | 00:11:04          | 8.7 Gb     | 14 541 768     | 3.7 Gb        | 5.5 Gb       |
-    | 250     | 01:05:23       | 00:24:36          | 23.2 Gb    | 16 775 795     | 3.9 Gb        | 16.6 Gb      |
-    | 500     | 02:03:14       |                   | 47.2 Gb    |                | 4.6 Gb        |              |
-    | 750     | 04:50:35       |                   | 70.6 Gb    |                | 4.8 Gb        |              |
-
-
-    Running times and RAM consumption for `fsm-lite` and `binary_writer` in Aalto Triton cluster. For `binary_writer` RAM consumption is smaller than 1 Gb. Also the sizes of the result files of `fsm-lite` (sparse) and `binary_writer` (dense).
+`python plot.py <k> results/<result-name1>/mrpt.txt results/<result-name2>/mrpt.txt`
+  - plots running time vs. accuracy for `k`-nn queries.
+  - one line for each of the results file  
