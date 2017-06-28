@@ -4,7 +4,7 @@
 #SBATCH --mem=240G
 #SBATCH --cpus-per-task=1
 
-#SBATCH -e "errors_comparison-uusi10.txt"
+#SBATCH -e "errors_comparison-5depth3.txt"
 #SBATCH --mail-type=END
 #SBATCH --mail-user=ville.o.hyvonen@helsinki.fi
 
