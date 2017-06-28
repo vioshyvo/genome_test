@@ -38,7 +38,7 @@ def main(k, files):
     set_ylim = True
 
     ylim = (0,100)
-    file_name = 'images/uusi_4-6.png'
+    file_name = 'images/4depth.png'
 
     fig = plt.figure()
     LSD = []
