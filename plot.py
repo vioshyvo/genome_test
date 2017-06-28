@@ -32,6 +32,14 @@ def pareto_frontier(Xs, Ys, maxX=True, maxY=True):
 
 
 def main(k, files):
+    legend = True
+    save = False
+    log = False
+    set_ylim = True
+
+    ylim = (0,100)
+    file_name = 'images/uusi_4-6.png'
+
     fig = plt.figure()
     LSD = []
     q = False
@@ -57,18 +65,29 @@ def main(k, files):
     ax.set_ylabel('time (s)', fontsize=22)
     ax.set_xlabel('recall', fontsize=22)
     ax.set_xlim((0, 1))
-    # ax.set_ylim((minY / 1.25, maxY * 1.25))
-    ax.set_ylim((0,100))
+
+    if set_ylim:
+        ax.set_ylim(ylim)
+    else:
+        ax.set_ylim((minY / 1.25, maxY * 1.25))
+
     ax.xaxis.labelpad = 15
     ax.yaxis.labelpad = 15
-    ax.set_yscale('linear')
-    # ax.set_yscale('log')
+
+    if log:
+        ax.set_yscale('log')
+    else:
+        ax.set_yscale('linear')
+
     # ax.set_title('title', fontsize=28, y=1.05)
     # ax.set_yticks(np.linspace(0, 1, 100))
 
-    ax.legend(LSD, labels=[a[0] for a in A], loc="upper left", title = 'Sparsity')
-    # plt.show()
-    plt.savefig('images/uusi_4-6.png', bbox_inches='tight')
+    if legend:
+        ax.legend(LSD, labels=[a[0] for a in A], loc="upper left", title = 'Sparsity')
+    if save:
+        plt.savefig(file_name, bbox_inches='tight')
+    else:
+        plt.show()
 
 
 if __name__ == '__main__':
