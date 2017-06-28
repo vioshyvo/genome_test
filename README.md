@@ -66,3 +66,4 @@ Scripts that can be used to run the C++ tools in SLURM system are in the directo
     - `save` : is file saved into a file called `file_name` or showed.
     - `log` : is the scale of y-axis logarithmic or linear
     - `set_ylim` : is the limit of y axis set to `ylim`, or show all data points.
+    - `legend_label` : which attribute is used for legend; current choices are `sparsity` and `depth`.

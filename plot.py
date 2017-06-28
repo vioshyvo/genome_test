@@ -36,9 +36,10 @@ def main(k, files):
     save = False
     log = False
     set_ylim = True
+    legend_label = 'depth' # 'sparsity' or 'depth'
 
     ylim = (0,100)
-    file_name = 'images/4depth.png'
+    file_name = 'images/depth.png'
 
     fig = plt.figure()
     LSD = []
@@ -52,7 +53,7 @@ def main(k, files):
         acc = [x[5] for x in lines if x[0] == k]
         tym = [x[7] for x in lines if x[0] == k]
         # A.append((resfile.split('.')[0], acc, tym))
-        A.append((lines[0][3], acc, tym))
+        A.append((lines[0][3], acc, tym, lines[0][2]))
     colors = cm.rainbow(np.linspace(0, 1, len(A)))
     minY, maxY = float('inf'), -float('inf')
     for a, c, m in zip(A, colors, ['>', 'v', 'd', '^', 'o', 'p', 'h', '<']):
@@ -82,8 +83,9 @@ def main(k, files):
     # ax.set_title('title', fontsize=28, y=1.05)
     # ax.set_yticks(np.linspace(0, 1, 100))
 
+    legend_idx = 0 if legend_label == 'sparsity' else 3
     if legend:
-        ax.legend(LSD, labels=[a[0] for a in A], loc="upper left", title = 'Sparsity')
+        ax.legend(LSD, labels=[a[legend_idx] for a in A], loc="upper left", title = legend_label)
     if save:
         plt.savefig(file_name, bbox_inches='tight')
     else:
