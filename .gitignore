@@ -40,5 +40,6 @@ cmake-3.8.2-Linux-x86_64/*
 cmake-3.8.2-Linux-x86_64.tar.gz
 results/Ecol100-test/*
 images/*
+eigen/*
 
 *.aalto.fi
