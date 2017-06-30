@@ -33,15 +33,15 @@ def pareto_frontier(Xs, Ys, maxX=True, maxY=True):
 
 def main(k, files):
     n_test = 50
-    legend = False
+    legend = True
     save = False
     log = False
     set_ylim = True
-    legend_label = 'sparsity' # 'sparsity' or 'depth'
+    legend_label = 'depth' # 'sparsity' or 'depth'
     show_title = True
 
     ylim = (0,100 / n_test)
-    file_name = 'images/3depth.png'
+    file_name = 'images/depth.png'
     title = 'Ecol data set, n = 1500, d = 23223411'
     exact_time = 21 # 50 test set points x approximately 22 seconds
 
