@@ -61,3 +61,12 @@ Scripts that can be used to run the C++ tools in SLURM system are in the directo
   - plots running time vs. accuracy for `k`-nn queries.
   - one line for each of the results file.
   - uses sparsity values (expected proportion of the non-zero components in the random vectors) in the legend.  
+  - configuration is done straight  to the script:
+    - `n_test` : test set size.
+    - `legend` : draw legend or not.
+    - `save` : is file saved into a file called `file_name` or showed.
+    - `log` : is the scale of y-axis logarithmic or linear
+    - `set_ylim` : is the limit of y axis set to `ylim`, or show all data points.
+    - `legend_label` : which attribute is used for legend; current choices are `sparsity` and `depth`.
+    - `show_title` : add title given by the argument `title` to plots.
+    - `exact_time` : time of exact search for one query point.
