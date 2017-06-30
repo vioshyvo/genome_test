@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-MMAP=0
+MMAP=1
 
 MRPT_SPARSITY=0.000021
 
