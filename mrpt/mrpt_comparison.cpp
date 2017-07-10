@@ -75,7 +75,7 @@ int main(int argc, char **argv) {
     }
 
 
-    const Map<const MatrixXf> *M = new Map<const MatrixXf>(train, dim, n_points);
+    const Map<const MatrixXf> *M = new Map<const MatrixXf>(train, dim, n_train);
 
     Mrpt index_dense(M, n_trees, depth, sparsity);
     index_dense.grow();

@@ -22,11 +22,14 @@
 #include <cstdlib>
 
 #include <cstring>
+#include <ctime>
 
 
 int main(int argc, char **argv) {
-    if (argc != 6) {
-        std::cerr << "Usage: " << argv[0] << " data_name data_file outfile_path n_train n_test" << std::endl;
+    size_t n_args = 5;
+
+    if (argc != n_args + 1 && argc != n_args + 2) {
+        std::cerr << "Usage: " << argv[0] << " data_name data_file outfile_path n_train n_test seed" << std::endl;
         return 1;
     }
 
@@ -40,6 +43,8 @@ int main(int argc, char **argv) {
 
     size_t n_train = atoi(argv[4]);
     size_t n_test = atoi(argv[5]);
+    size_t seed = (argc == n_args + 2) ? atoi(argv[n_args + 1]) : std::time(0);
+    std::srand(seed);
 
     std::ifstream infile(data_file);
     size_t n = n_train + n_test;
@@ -144,7 +149,10 @@ int main(int argc, char **argv) {
     }
 
     // write the data in colwise format
-    // float *obs_buffer;
+    std::vector<size_t> point_idx;
+    for (int i = 0; i < n; ++i) point_idx.push_back(i);
+    std::random_shuffle(point_idx.begin(), point_idx.end());
+
     // start = omp_get_wtime();
     float *rowwise_data = new float[kmer_count * n]();
     fread(rowwise_data, sizeof(float), n * kmer_count, inf);
@@ -155,14 +163,11 @@ int main(int argc, char **argv) {
     float *obs_buffer = new float[kmer_count]();
 
     for(size_t i = 0; i < n_train; i++) {
-      // double start_point = omp_get_wtime();
+        size_t random_idx = point_idx[i];
         for(size_t j = 0; j < kmer_count; j++) {
-            obs_buffer[j] = rowwise_data[j * n + i];
+            obs_buffer[j] = rowwise_data[j * n + random_idx];
         }
         fwrite(obs_buffer, sizeof(float), kmer_count, outfile_train);
-        //memset(obs_buffer, 0, kmer_count * sizeof(float));
-        // double end_point = omp_get_wtime();
-        // std::cout << "# Time to write " << i + 1 << ":th data point: " << end_point - start_point << " s.\n";
     }
 
     fclose(outfile_train);
@@ -173,11 +178,11 @@ int main(int argc, char **argv) {
     // start = omp_get_wtime();
 
     for(size_t i = n_train; i < n; i++) {
+        size_t random_idx = point_idx[i];
         for(size_t j = 0; j < kmer_count; j++) {
-            obs_buffer[j] = rowwise_data[j * n + i];
+            obs_buffer[j] = rowwise_data[j * n + random_idx];
         }
         fwrite(obs_buffer, sizeof(float), kmer_count, outfile_test);
-        // memset(obs_buffer, 0, kmer_count * sizeof(float));
     }
 
     delete[] obs_buffer;
