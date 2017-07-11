@@ -195,6 +195,18 @@ int main(int argc, char **argv) {
     // end = omp_get_wtime();
     // std::cout << "# Time to write the test data with " << n_test << " points: " << end - start << " seconds.\n\n";
 
+    std::ofstream outfile_perm(outfile_path + "permutations");
+
+    if(!outfile_perm) {
+      std::cerr << "File " << outfile_path + "permutations" << " could not be opened for writing.\n";
+      return -1;
+    }
+
+    for(size_t i = 0; i != n; ++i) outfile_perm << point_idx[i] << " ";
+    outfile_perm << '\n';
+
+    outfile_perm.close();
+
     std::cout << "N=" << n_train + n_test << "\n";
     std::cout << "N_TEST=" << n_test << "\n";
     std::cout << "DIM=" << kmer_count << "\n";
