@@ -4,7 +4,8 @@
 ### Installing C++ tools
 `./install_fsm.sh`
   - Installs [`fsm-lite`](https://github.com/nvalimak/fsm-lite "fsm-lite github page") and its dependencies ([`sdsl-lite`](https://github.com/simongog/sdsl-lite "sdsl-lite github page"), which requires [`cmake`](https://cmake.org/download/ "cmake download page")), if not already installed.
-  - Installs also Eigen 3.3.4 (http://eigen.tuxfamily.org/index.php?title=Main_Page), if not already installed.
+  - Installs [`Eigen 3.3.4`](http://eigen.tuxfamily.org/index.php?title=Main_Page "eigen main page"), if not already installed.
+  - Installs [`googletest`](https://github.com/google/googletest "googletest github page"), if not already installed.
 
 
 ### Local scripts
@@ -21,9 +22,11 @@ Scripts that can be used to run C++ tools locally
   - Argument `n_points` controls how many first points you want to read, for example 250.
   - Creates for example file `data/Ecol250/Ecol250.mat`.
 
-`./writer.sh <data-name> <n_train> <n_test>`
-  - Divides the data set into a training set with n_train points and test set with n_test points and writes these to directory `data/data-name/` as files `train.bin` and `test.bin`. Dimensions of the data set are written to `dimensions.sh`. Wrapper for `binary_writer/binary_writer`.
-  - Assumes that there is a data set `data-name` with `n_train + n_test` points written by `read_kmers`.
+`./writer.sh <data-name> <n_train> <n_test> <counts> <data-monicker>`
+  - Data set name is `<data-name> <n_points> - <data-monicker>`, where `n_points = n_train + n_test`, and `<data-monicker>` is optional.
+  - Divides the data set into a training set with `n_train` points and test set with `n_test` points and writes these to directory `data/data-name/` as files `train.bin` and `test.bin`. Dimensions of the data set are written to `dimensions.sh`. Wrapper for `binary_writer/binary_writer`.
+  - Assumes that the data set with `n_points` points is written by `read_kmers`.
+  - Argument `counts` controls if the kmer counts (`counts=1`) in samples are written, or only binary (`counts=0`) yes/no (kmer is in sample or not).
 
 `./comparison.sh <data-name> <n> <postfix>`
   - Run exact k-NN search and approximate k-NN search with the MRPT algorithm.
@@ -47,7 +50,7 @@ Scripts that can be used to run the C++ tools in SLURM system are in the directo
   - Wrapper for `fsm-lite`, same as `read_kmers.sh`.
   - Set variable `FSM_PATH` to the directory where you have compiled `fsm-lite`.
 
-`writer_slurm.sh <data-set-name>  <n_train>  <n_test>`
+`writer_slurm.sh <data-set-name>  <n_train>  <n_test> <counts> <data-monicker>`
  - Wrapper for `binary_writer/binary_writer`, same functionality as `writer.sh`.
  - Set variable `BASE_DIR` to your local clone of this repo, for example `BASE_DIR=/home/mydir/genome_test`
  - For `Ecol` data set with 1500 points `#SBATCH --mem=150G` and `#SBATCH --time=02:00:00` are good values.
