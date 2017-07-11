@@ -21,6 +21,17 @@ else
 fi
 
 
+if [ ! -d googletest ]; then
+  git clone https://github.com/google/googletest.git
+  pushd googletest/googletest/make
+    make
+    ./sample1_unittest
+  popd
+else
+  echo googletest is already installed.
+fi
+
+
 if [ ! -d sdsl-lite ]; then
   git clone https://github.com/simongog/sdsl-lite.git
   pushd sdsl-lite
