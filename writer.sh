@@ -1,16 +1,17 @@
 #!/bin/bash
 
-if [ "$#" -ne 3 ] && [ "$#" -ne 4 ]; then
-   echo "error: Expecting parameters: <data-name> <n_train> <n_test> or <data-name> <n_train> <n_test> <data-monicker> " 1>&2
+if [ "$#" -ne 4 ] && [ "$#" -ne 5 ]; then
+   echo "error: Expecting parameters: <data-name> <n_train> <n_test> <counts> or <data-name> <n_train> <n_test> <counts> <data-monicker> " 1>&2
    exit
 fi
 
 ((N = $2 + $3))
+COUNTS="$5"
 
 if [ "$#" -eq 3 ]; then
   DATA_NAME="$1$N"
 else
-  DATA_NAME="$1$N-$4"
+  DATA_NAME="$1$N-$5"
 fi
 
 DATA_DIR="data/$DATA_NAME"
@@ -31,5 +32,5 @@ make clean
 make
 popd
 
-binary_writer/binary_writer $DATA_NAME $DATA_FILE $DATA_DIR $2 $3 > "$DATA_DIR/dimensions.sh"
+binary_writer/binary_writer $DATA_NAME $DATA_FILE $DATA_DIR $2 $3 $COUNTS > "$DATA_DIR/dimensions.sh"
 rm "$DATA_DIR/rowwise.bin" # remove temp files

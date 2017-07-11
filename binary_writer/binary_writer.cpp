@@ -26,10 +26,11 @@
 
 
 int main(int argc, char **argv) {
-    size_t n_args = 5;
+    size_t n_args = 6;
 
     if (argc != n_args + 1 && argc != n_args + 2) {
-        std::cerr << "Usage: " << argv[0] << " data_name data_file outfile_path n_train n_test seed" << std::endl;
+        std::cerr << "Usage: " << argv[0] <<
+        " data_name data_file outfile_path n_train n_test counts\n OR data_name data_file outfile_path n_train n_test counts seed" << std::endl;
         return 1;
     }
 
@@ -43,6 +44,9 @@ int main(int argc, char **argv) {
 
     size_t n_train = atoi(argv[4]);
     size_t n_test = atoi(argv[5]);
+    bool counts = atoi(argv[6]);
+    std::cout << "counts: " << counts << "\n";
+
     size_t seed = (argc == n_args + 2) ? atoi(argv[n_args + 1]) : std::time(0);
     std::srand(seed);
 
@@ -100,7 +104,7 @@ int main(int argc, char **argv) {
             int colon_position = strInput.find(':');
             int observation = std::stoi(strInput.substr(1, colon_position - 1)) - 1;
             float value = std::stof(strInput.substr(colon_position + 1));
-            kmer_buffer[observation] = value;
+            kmer_buffer[observation] = counts ? value : 1;
         }
 
     }
