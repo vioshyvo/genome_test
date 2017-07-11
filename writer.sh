@@ -1,12 +1,18 @@
 #!/bin/bash
 
-if [ "$#" -ne "3" ]; then
-   echo "error: Expecting parameters: <data-name> <n_train> <n_test>" 1>&2
+if [ "$#" -ne 3 ] && [ "$#" -ne 4 ]; then
+   echo "error: Expecting parameters: <data-name> <n_train> <n_test> or <data-name> <n_train> <n_test> <data-monicker> " 1>&2
    exit
 fi
 
 ((N = $2 + $3))
-DATA_NAME="$1$N"
+
+if [ "$#" -eq 3 ]; then
+  DATA_NAME="$1$N"
+else
+  DATA_NAME="$1$N-$4"
+fi
+
 DATA_DIR="data/$DATA_NAME"
 DATA_FILE="$DATA_DIR/$DATA_NAME.mat"
 
