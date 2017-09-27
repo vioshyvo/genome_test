@@ -42,5 +42,7 @@ results/Ecol100-test/*
 images/*
 eigen/*
 googletest/*
+googletest
+bits/test_bits
 
 *.aalto.fi
