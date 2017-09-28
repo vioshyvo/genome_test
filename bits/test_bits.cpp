@@ -7,7 +7,8 @@
 #include <omp.h>
 #include <boost/dynamic_bitset.hpp>
 
-#define N 100000
+// #define N 10000000
+#define N 20
 
 int distance(std::bitset<N> x, std::bitset<N> y) {
   return (x ^ y).count();
@@ -24,6 +25,10 @@ int distance(boost::dynamic_bitset<> x, boost::dynamic_bitset<> y) {
   return (x ^ y).count();
 }
 
+int project(std::bitset<N> x, std::bitset<N> rv_plus, std::bitset<N> rv_minus) {
+  return (x & rv_plus).count() - (x & rv_minus).count();
+}
+
 
 int main(int argc, char **argv) {
   if(argc != 2) {
@@ -31,15 +36,19 @@ int main(int argc, char **argv) {
     return -1;
   }
 
-  bool verbose = false;
+  bool verbose = true;
   int seed = atoi(argv[1]);
   double prob1 = 0.5;
+  double density = 0.3;
   std::mt19937 gen(seed);
   std::bernoulli_distribution dist(prob1);
+  std::bernoulli_distribution rdist(density);
+  std::bernoulli_distribution coinflip(0.5);
 
-  std::bitset<N> input1, input2;
-  std::vector<int> vector1(N), vector2(N);
-  boost::dynamic_bitset<> dbitset1(N), dbitset2(N); // all 0's by default
+  std::bitset<N> input1, input2, rv_plus, rv_minus;
+  std::vector<int> vector1(N), vector2(N), rvector_plus(N), rvector_minus(N);
+  boost::dynamic_bitset<> dbitset1(N), dbitset2(N), rdbs_plus(N), rdbs_minus(N);
+  bool rvalue, rplus, rminus;
 
   for(int i = 0; i < N; ++i) {
     bool v1 = dist(gen);
@@ -50,6 +59,21 @@ int main(int argc, char **argv) {
     dbitset2.set(i, v2);
     vector1[i] = v1;
     vector2[i] = v2;
+
+    bool nonzero = rdist(gen);
+    if(nonzero) {
+      bool sign = coinflip(gen);
+      rplus = sign;
+      rminus = !sign;
+
+      rv_plus.set(i, rplus);
+      rv_minus.set(i, rminus);
+      rdbs_plus.set(i, rplus);
+      rdbs_minus.set(i, rminus);
+      rvector_plus[i] = rplus;
+      rvector_minus[i] = rminus;
+    }
+
   }
 
   if(verbose) {
@@ -85,6 +109,13 @@ int main(int argc, char **argv) {
   end = omp_get_wtime();
   std::cout << "distance: " << d3 << std::endl;
   std::cout << "time for boost::dynamic_bitset version: " << end - start << std::endl;
+
+  if(verbose) {
+    std::cout << input1 <<  std::endl;
+    std::cout << rv_plus << std::endl;
+    std::cout << rv_minus << std::endl;
+    std::cout << "projected value: " << project(input1, rv_plus, rv_minus) << std::endl;
+  }
 
   return 0;
 }
