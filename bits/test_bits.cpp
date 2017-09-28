@@ -7,8 +7,8 @@
 #include <omp.h>
 #include <boost/dynamic_bitset.hpp>
 
-// #define N 10000000
-#define N 20
+#define N 1000000
+// #define N 20
 
 int distance(std::bitset<N> x, std::bitset<N> y) {
   return (x ^ y).count();
@@ -17,7 +17,9 @@ int distance(std::bitset<N> x, std::bitset<N> y) {
 int distance(std::vector<int> x, std::vector<int> y) {
   int sum = 0;
   size_t n = x.size();
-  for(int i = 0; i < n; ++i) sum += std::abs(x[i] - y[i]);
+  for(int i = 0; i < n; ++i) {
+    sum += std::abs(x[i] - y[i]);
+  }
   return sum;
 }
 
@@ -29,6 +31,21 @@ int project(std::bitset<N> x, std::bitset<N> rv_plus, std::bitset<N> rv_minus) {
   return (x & rv_plus).count() - (x & rv_minus).count();
 }
 
+int project(boost::dynamic_bitset<> x, boost::dynamic_bitset<> rv_plus, boost::dynamic_bitset<> rv_minus) {
+  return (x & rv_plus).count() - (x & rv_minus).count();
+}
+
+int project(std::vector<int> x, std::vector<int> rv_plus, std::vector<int> rv_minus) {
+  int sum = 0;
+  int xval;
+  size_t n = x.size();
+  for(int i = 0; i < N; ++i) {
+    xval = x[i];
+    sum += (xval * rv_plus[i] - xval * rv_minus[i]);
+  }
+  return sum;
+}
+
 
 int main(int argc, char **argv) {
   if(argc != 2) {
@@ -36,7 +53,7 @@ int main(int argc, char **argv) {
     return -1;
   }
 
-  bool verbose = true;
+  bool verbose = false;
   int seed = atoi(argv[1]);
   double prob1 = 0.5;
   double density = 0.3;
@@ -114,8 +131,30 @@ int main(int argc, char **argv) {
     std::cout << input1 <<  std::endl;
     std::cout << rv_plus << std::endl;
     std::cout << rv_minus << std::endl;
-    std::cout << "projected value: " << project(input1, rv_plus, rv_minus) << std::endl;
   }
+
+  std::cout << std::endl;
+
+  start = omp_get_wtime();
+  int proj_bs = project(input1, rv_plus, rv_minus);
+  end = omp_get_wtime();
+  std::cout << "projected value: " << proj_bs << std::endl;
+  std::cout << "projection time for bitset version: " << end - start << std::endl;
+
+  start = omp_get_wtime();
+  int proj_vec = project(vector1, rvector_plus, rvector_minus);
+  end = omp_get_wtime();
+  std::cout << "projected value: " << proj_vec << std::endl;
+  std::cout << "projection time for vector<int> version: " << end - start << std::endl;
+
+  start = omp_get_wtime();
+  int proj_dbs = project(dbitset1, rdbs_plus, rdbs_minus);
+  end = omp_get_wtime();
+  std::cout << "projected value: " << proj_dbs << std::endl;
+  std::cout << "projection time for dynamic_bitset version: " << end - start << std::endl;
+
+
+
 
   return 0;
 }
