@@ -27,6 +27,19 @@ int distance(boost::dynamic_bitset<> x, boost::dynamic_bitset<> y) {
   return (x ^ y).count();
 }
 
+int distance(std::vector<bool> x, std::vector<bool> y) {
+  int sum = 0;
+  size_t n = x.size();
+  bool xval, yval;
+  for(int i = 0; i < n; ++i) {
+    xval = x[i];
+    yval = y[i];
+    sum += (xval || yval) && !(xval && yval);
+  }
+  return sum;
+}
+
+
 int project(std::bitset<N> x, std::bitset<N> rv_plus, std::bitset<N> rv_minus) {
   return (x & rv_plus).count() - (x & rv_minus).count();
 }
@@ -46,6 +59,16 @@ int project(std::vector<int> x, std::vector<int> rv_plus, std::vector<int> rv_mi
   return sum;
 }
 
+int project(std::vector<bool> x, std::vector<bool> rv_plus, std::vector<bool> rv_minus) {
+  int sum = 0;
+  bool xval;
+  size_t n = x.size();
+  for(int i = 0; i < N; ++i) {
+    xval = x[i];
+    sum += (xval && rv_plus[i]) - (xval && rv_minus[i]);
+  }
+  return sum;
+}
 
 int main(int argc, char **argv) {
   if(argc != 2) {
@@ -65,6 +88,7 @@ int main(int argc, char **argv) {
   std::bitset<N> input1, input2, rv_plus, rv_minus;
   std::vector<int> vector1(N), vector2(N), rvector_plus(N), rvector_minus(N);
   boost::dynamic_bitset<> dbitset1(N), dbitset2(N), rdbs_plus(N), rdbs_minus(N);
+  std::vector<bool> vb1(N), vb2(N), rvb_plus(N), rvb_minus(N);
   bool rvalue, rplus, rminus;
 
   for(int i = 0; i < N; ++i) {
@@ -76,6 +100,8 @@ int main(int argc, char **argv) {
     dbitset2.set(i, v2);
     vector1[i] = v1;
     vector2[i] = v2;
+    vb1[i] = v1;
+    vb2[i] = v2;
 
     bool nonzero = rdist(gen);
     if(nonzero) {
@@ -89,37 +115,47 @@ int main(int argc, char **argv) {
       rdbs_minus.set(i, rminus);
       rvector_plus[i] = rplus;
       rvector_minus[i] = rminus;
+      rvb_plus[i] = rplus;
+      rvb_minus[i] = rminus;
     }
-
   }
+
 
   if(verbose) {
     std::cout << input1 << std::endl;
     std::cout << input2 << std::endl;
     std::bitset<N> xorset = input1 ^ input2;
     std::cout << xorset << std::endl;
-  }
 
-
-  auto start = omp_get_wtime();
-  int d1 = distance(input1, input2);
-  auto end = omp_get_wtime();
-
-  std::cout << "distance: " << d1 << std::endl;
-  std::cout << "time for bitset version: " << end - start << std::endl;
-
-  if(verbose) {
     for(int i = 0; i < N; ++i) std::cout << vector1[i];
     std::cout << std::endl;
     for(int i = 0; i < N; ++i) std::cout << vector2[i];
     std::cout << std::endl;
+
+    std::cout << input1 <<  std::endl;
+    std::cout << rv_plus << std::endl;
+    std::cout << rv_minus << std::endl;
    }
 
-  start = omp_get_wtime();
+
+
+  auto start = omp_get_wtime();
   int d2 = distance(vector1, vector2);
-  end = omp_get_wtime();
+  auto end = omp_get_wtime();
   std::cout << "distance: " << d2 << std::endl;
   std::cout << "time for vector<int> version: " << end - start << std::endl;
+
+  start = omp_get_wtime();
+  int d4 = distance(vb1, vb2);
+  end = omp_get_wtime();
+  std::cout << "distance: " << d4 << std::endl;
+  std::cout << "time for vector<bool> version: " << end - start << std::endl;
+
+  start = omp_get_wtime();
+  int d1 = distance(input1, input2);
+  end = omp_get_wtime();
+  std::cout << "distance: " << d1 << std::endl;
+  std::cout << "time for bitset version: " << end - start << std::endl;
 
   start = omp_get_wtime();
   int d3 = distance(dbitset1, dbitset2);
@@ -127,19 +163,8 @@ int main(int argc, char **argv) {
   std::cout << "distance: " << d3 << std::endl;
   std::cout << "time for boost::dynamic_bitset version: " << end - start << std::endl;
 
-  if(verbose) {
-    std::cout << input1 <<  std::endl;
-    std::cout << rv_plus << std::endl;
-    std::cout << rv_minus << std::endl;
-  }
 
   std::cout << std::endl;
-
-  start = omp_get_wtime();
-  int proj_bs = project(input1, rv_plus, rv_minus);
-  end = omp_get_wtime();
-  std::cout << "projected value: " << proj_bs << std::endl;
-  std::cout << "projection time for bitset version: " << end - start << std::endl;
 
   start = omp_get_wtime();
   int proj_vec = project(vector1, rvector_plus, rvector_minus);
@@ -148,12 +173,22 @@ int main(int argc, char **argv) {
   std::cout << "projection time for vector<int> version: " << end - start << std::endl;
 
   start = omp_get_wtime();
+  int proj_vbool = project(vb1, rvb_plus, rvb_minus);
+  end = omp_get_wtime();
+  std::cout << "projected value: " << proj_vbool << std::endl;
+  std::cout << "projection time for vector<bool> version: " << end - start << std::endl;
+
+  start = omp_get_wtime();
+  int proj_bs = project(input1, rv_plus, rv_minus);
+  end = omp_get_wtime();
+  std::cout << "projected value: " << proj_bs << std::endl;
+  std::cout << "projection time for bitset version: " << end - start << std::endl;
+
+  start = omp_get_wtime();
   int proj_dbs = project(dbitset1, rdbs_plus, rdbs_minus);
   end = omp_get_wtime();
   std::cout << "projected value: " << proj_dbs << std::endl;
   std::cout << "projection time for dynamic_bitset version: " << end - start << std::endl;
-
-
 
 
   return 0;
