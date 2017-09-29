@@ -9,12 +9,13 @@
 #include <Eigen/Sparse>
 
 // #define N 133924650
-#define N 23223411
-// #define N 20
+// #define N 23223411
+#define N 20
 
 using SpVec = Eigen::SparseVector<int>;
 using SpMat = Eigen::SparseMatrix<int>;
 using T = Eigen::Triplet<int>;
+using InIterVec = SpVec::InnerIterator;
 
 int distance(std::bitset<N> x, std::bitset<N> y) {
   return (x ^ y).count();
@@ -46,7 +47,38 @@ int distance(std::vector<bool> x, std::vector<bool> y) {
 }
 
 int distance(SpVec x, SpVec y) {
-  return x.dot(y);
+  int sum = 0;
+  InIterVec iter_x(x), iter_y(y);
+  int x_idx = -1, y_idx = -1;
+  if(iter_x) x_idx = iter_x.index();
+  if(iter_y) y_idx = iter_y.index();
+
+  while(iter_x || iter_y) {
+    if(x_idx < y_idx) {
+      sum += 1;
+      if(iter_x) ++iter_x; else ++iter_y;
+      if(iter_x) {
+        x_idx = iter_x.index();
+      } else if(iter_y) {
+         y_idx = iter_y.index();
+      }
+    } else if(x_idx > y_idx) {
+      sum += 1;
+      if(iter_y) ++iter_y; else ++iter_y;
+      if(iter_y) {
+        y_idx = iter_y.index();
+      } else if(iter_x) {
+        x_idx = iter_x.index();
+      }
+    } else {
+      if(iter_x) ++iter_x;
+      if(iter_y) ++iter_y;
+      if(iter_x) x_idx = iter_x.index();
+      if(iter_y) y_idx = iter_y.index();
+    }
+  }
+
+  return sum;
 }
 
 int project(std::bitset<N> x, std::bitset<N> rv_plus, std::bitset<N> rv_minus) {
@@ -61,7 +93,7 @@ int project(std::vector<int> x, std::vector<int> rv_plus, std::vector<int> rv_mi
   int sum = 0;
   int xval;
   size_t n = x.size();
-  for(int i = 0; i < N; ++i) {
+  for(int i = 0; i < n; ++i) {
     xval = x[i];
     sum += (xval * rv_plus[i] - xval * rv_minus[i]);
   }
@@ -72,11 +104,15 @@ int project(std::vector<bool> x, std::vector<bool> rv_plus, std::vector<bool> rv
   int sum = 0;
   bool xval;
   size_t n = x.size();
-  for(int i = 0; i < N; ++i) {
+  for(int i = 0; i < n; ++i) {
     xval = x[i];
     sum += (xval && rv_plus[i]) - (xval && rv_minus[i]);
   }
   return sum;
+}
+
+int project(SpVec x, SpVec spv_plus, SpVec spv_minus){
+  return x.dot(spv_plus) - x.dot(spv_minus);
 }
 
 int main(int argc, char **argv) {
@@ -85,10 +121,10 @@ int main(int argc, char **argv) {
     return -1;
   }
 
-  bool verbose = false;
   int seed = atoi(argv[1]);
   double prob1 = 0.5;
-  double density = 0.000021;
+  // double density = 0.000021;
+  double density = 0.4;
   std::mt19937 gen(seed);
   std::bernoulli_distribution dist(prob1);
   std::bernoulli_distribution rdist(density);
@@ -97,7 +133,11 @@ int main(int argc, char **argv) {
   std::vector<int> vector1(N), vector2(N), rvector_plus(N), rvector_minus(N);
   boost::dynamic_bitset<> dbitset1(N), dbitset2(N), rdbs_plus(N), rdbs_minus(N);
   std::vector<bool> vb1(N), vb2(N), rvb_plus(N), rvb_minus(N);
-  bool rvalue, rplus, rminus;
+  SpMat spm(N, 4);
+  std::vector<T> triplet_list;
+  triplet_list.reserve(4 * N);
+
+  bool rplus, rminus;
 
   for(int i = 0; i < N; ++i) {
     bool v1 = dist(gen);
@@ -108,6 +148,8 @@ int main(int argc, char **argv) {
     vector2[i] = v2;
     vb1[i] = v1;
     vb2[i] = v2;
+    triplet_list.push_back(T(i, 0, v1));
+    triplet_list.push_back(T(i, 1, v2));
 
     bool nonzero = rdist(gen);
     if(nonzero) {
@@ -121,35 +163,38 @@ int main(int argc, char **argv) {
       rvector_minus[i] = rminus;
       rvb_plus[i] = rplus;
       rvb_minus[i] = rminus;
+      triplet_list.push_back(T(i, 2, rplus));
+      triplet_list.push_back(T(i, 3, rminus));
     }
   }
 
-
-  // if(verbose) {
-  //   for(int i = 0; i < N; ++i) std::cout << vector1[i];
-  //   std::cout << std::endl;
-  //   for(int i = 0; i < N; ++i) std::cout << vector2[i];
-  //   std::cout << std::endl;
-  //  }
-
+  spm.setFromTriplets(triplet_list.begin(), triplet_list.end());
+  SpVec spv1 = spm.col(0), spv2 = spm.col(1);
+  SpVec spv_plus = spm.col(2), spv_minus = spm.col(3);
 
   auto start = omp_get_wtime();
-  int d2 = distance(vector1, vector2);
+  int dist_vecint = distance(vector1, vector2);
   auto end = omp_get_wtime();
-  std::cout << "distance: " << d2 << std::endl;
+  std::cout << "distance: " << dist_vecint << std::endl;
   std::cout << "time for vector<int> version: " << end - start << std::endl;
 
   start = omp_get_wtime();
-  int d4 = distance(vb1, vb2);
+  int dist_vecbool = distance(vb1, vb2);
   end = omp_get_wtime();
-  std::cout << "distance: " << d4 << std::endl;
+  std::cout << "distance: " << dist_vecbool << std::endl;
   std::cout << "time for vector<bool> version: " << end - start << std::endl;
 
   start = omp_get_wtime();
-  int d3 = distance(dbitset1, dbitset2);
+  int d_dynbs = distance(dbitset1, dbitset2);
   end = omp_get_wtime();
-  std::cout << "distance: " << d3 << std::endl;
+  std::cout << "distance: " << d_dynbs << std::endl;
   std::cout << "time for boost::dynamic_bitset version: " << end - start << std::endl;
+
+  start = omp_get_wtime();
+  int dist_eigen = distance(spv1, spv2);
+  end = omp_get_wtime();
+  std::cout << "distance: " << dist_eigen << std::endl;
+  std::cout << "time for Eigen::SparseVector<int> version: " << end - start << std::endl;
 
   std::cout << std::endl;
 
@@ -170,6 +215,12 @@ int main(int argc, char **argv) {
   end = omp_get_wtime();
   std::cout << "projected value: " << proj_dbs << std::endl;
   std::cout << "projection time for dynamic_bitset version: " << end - start << std::endl;
+
+  start = omp_get_wtime();
+  int proj_spv = project(spv1, spv_plus, spv_minus);
+  end = omp_get_wtime();
+  std::cout << "projected value: " << proj_spv << std::endl;
+  std::cout << "projection time for Eigen::SparseVector<int> version: " << end - start << std::endl;
 
   std::cout << std::endl;
 
