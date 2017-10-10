@@ -10,7 +10,7 @@
 #include <Eigen/Dense>
 
 // #define N 133924650
-#define N 23223411
+// #define N 23223411
 // #define N 20
 
 using SpVecI = Eigen::SparseVector<int>;
@@ -19,14 +19,10 @@ using T = Eigen::Triplet<int>;
 using InIterVec = SpVecI::InnerIterator;
 using VecI = Eigen::VectorXi;
 
-int distance(std::bitset<N> x, std::bitset<N> y) {
-  return (x ^ y).count();
-}
-
 int distance(std::vector<int> x, std::vector<int> y) {
   int sum = 0;
   size_t n = x.size();
-  for(int i = 0; i < n; ++i) {
+  for(size_t i = 0; i < n; ++i) {
     sum += std::abs(x[i] - y[i]);
   }
   return sum;
@@ -40,7 +36,7 @@ int distance(std::vector<bool> x, std::vector<bool> y) {
   int sum = 0;
   size_t n = x.size();
   bool xval, yval;
-  for(int i = 0; i < n; ++i) {
+  for(size_t i = 0; i < n; ++i) {
     xval = x[i];
     yval = y[i];
     sum += (xval || yval) && !(xval && yval);
@@ -87,10 +83,15 @@ int distance(SpVecI x, SpVecI y) {
   return sum;
 }
 
+int distance2(SpVecI x, SpVecI y) {
+  SpVecI diff = x - y;
+  return diff.nonZeros();
+}
+
 int distance(VecI x, VecI y) {
   int sum = 0;
   size_t n = x.size();
-  for(int i = 0; i < n; ++i) {
+  for(size_t i = 0; i < n; ++i) {
     sum += std::abs(x[i] - y[i]);
   }
   return sum;
@@ -108,10 +109,6 @@ int distance4(VecI x, VecI y) {
   return (x - y).count();
 }
 
-int project(std::bitset<N> x, std::bitset<N> rv_plus, std::bitset<N> rv_minus) {
-  return (x & rv_plus).count() - (x & rv_minus).count();
-}
-
 int project(boost::dynamic_bitset<> x, boost::dynamic_bitset<> rv_plus, boost::dynamic_bitset<> rv_minus) {
   return (x & rv_plus).count() - (x & rv_minus).count();
 }
@@ -120,7 +117,7 @@ int project(std::vector<int> x, std::vector<int> rv_plus, std::vector<int> rv_mi
   int sum = 0;
   int xval;
   size_t n = x.size();
-  for(int i = 0; i < n; ++i) {
+  for(size_t i = 0; i < n; ++i) {
     xval = x[i];
     sum += (xval * rv_plus[i] - xval * rv_minus[i]);
   }
@@ -131,7 +128,7 @@ int project(std::vector<bool> x, std::vector<bool> rv_plus, std::vector<bool> rv
   int sum = 0;
   bool xval;
   size_t n = x.size();
-  for(int i = 0; i < n; ++i) {
+  for(size_t i = 0; i < n; ++i) {
     xval = x[i];
     sum += (xval && rv_plus[i]) - (xval && rv_minus[i]);
   }
@@ -146,9 +143,13 @@ int project(VecI x, SpVecI spv_plus, SpVecI spv_minus) {
   return spv_plus.dot(x) - spv_minus.dot(x);
 }
 
+int project(VecI x, VecI spv_plus, VecI spv_minus) {
+  return spv_plus.dot(x) - spv_minus.dot(x);
+}
+
 void print_sparse_vector(SpVecI sv1) {
   size_t n = sv1.size();
-  for(int i = 0; i < n; ++i) std::cout << sv1.coeff(i) << " ";
+  for(size_t i = 0; i < n; ++i) std::cout << sv1.coeff(i) << " ";
   std::cout << std::endl;
   std::cout << sv1;
 }
@@ -173,9 +174,11 @@ int main(int argc, char **argv) {
     return -1;
   }
 
+  size_t N = 23223411;
   int seed = atoi(argv[1]);
   double prob1 = 0.25;
-  double density = 0.000021;
+  // double density = 0.000021; // Ecoli data set
+  double density = 1.0 / std::sqrt(784); // mnist data set
   // double density = 0.4;
   std::mt19937 gen(seed);
   std::bernoulli_distribution dist(prob1);
@@ -188,11 +191,11 @@ int main(int argc, char **argv) {
   SpMatI spm(N, 4);
   std::vector<T> triplet_list;
   triplet_list.reserve(4 * N);
-  VecI dv1(N), dv2(N);
+  VecI dv1(N), dv2(N), dpv_plus = VecI::Zero(N), dpv_minus = VecI::Zero(N);
 
   bool rplus, rminus;
 
-  for(int i = 0; i < N; ++i) {
+  for(size_t i = 0; i < N; ++i) {
     bool v1 = dist(gen);
     bool v2 = dist(gen);
     dbitset1.set(i, v1);
@@ -220,6 +223,8 @@ int main(int argc, char **argv) {
       rvb_minus[i] = rminus;
       if(rplus) triplet_list.push_back(T(i, 2, rplus));
       if(rminus) triplet_list.push_back(T(i, 3, rminus));
+      if(rplus) dpv_plus[i] = rplus;
+      if(rminus) dpv_minus[i] = rminus;
     }
   }
 
@@ -250,34 +255,40 @@ int main(int argc, char **argv) {
   std::cout << "time for boost::dynamic_bitset version: " << end - start << std::endl;
 
   start = omp_get_wtime();
-  int dist_eigen_ss = distance(spv1, spv2);
+  int dist_eigen_sparse = distance(spv1, spv2);
   end = omp_get_wtime();
-  std::cout << "distance: " << dist_eigen_ss << std::endl;
-  std::cout << "time for SparseVector<int> / SparseVector<int> version: " << end - start << std::endl;
+  std::cout << "distance: " << dist_eigen_sparse << std::endl;
+  std::cout << "time for SparseVector<int> version: " << end - start << std::endl;
 
   start = omp_get_wtime();
-  int dist_eigen_ds = distance(dv1, dv2);
+  int dist_eigen_sparse2 = distance2(spv1, spv2);
   end = omp_get_wtime();
-  std::cout << "distance: " << dist_eigen_ds << std::endl;
-  std::cout << "time for VectorXi / SparseVector<int> version: " << end - start << std::endl;
+  std::cout << "distance: " << dist_eigen_sparse2 << std::endl;
+  std::cout << "time for count SparseVector<int> version: " << end - start << std::endl;
 
   start = omp_get_wtime();
-  int dist_eigen_ds2 = distance2(dv1, dv2);
+  int dist_eigen_dense = distance(dv1, dv2);
   end = omp_get_wtime();
-  std::cout << "distance: " << dist_eigen_ds2 << std::endl;
-  std::cout << "time for squaredNorm VectorXi / SparseVector<int> version: " << end - start << std::endl;
+  std::cout << "distance: " << dist_eigen_dense << std::endl;
+  std::cout << "time for VectorXi version: " << end - start << std::endl;
 
   start = omp_get_wtime();
-  int dist_eigen_ds3 = distance3(dv1, dv2);
+  int dist_eigen_dense2 = distance2(dv1, dv2);
   end = omp_get_wtime();
-  std::cout << "distance: " << dist_eigen_ds3 << std::endl;
-  std::cout << "time for lpNorm<1> VectorXi / SparseVector<int> version: " << end - start << std::endl;
+  std::cout << "distance: " << dist_eigen_dense2 << std::endl;
+  std::cout << "time for squaredNorm VectorXi version: " << end - start << std::endl;
 
   start = omp_get_wtime();
-  int dist_eigen_ds4 = distance4(dv1, dv2);
+  int dist_eigen_dense3 = distance3(dv1, dv2);
   end = omp_get_wtime();
-  std::cout << "distance: " << dist_eigen_ds4 << std::endl;
-  std::cout << "time for count VectorXi / SparseVector<int> version: " << end - start << std::endl;
+  std::cout << "distance: " << dist_eigen_dense3 << std::endl;
+  std::cout << "time for lpNorm<1> VectorXi version: " << end - start << std::endl;
+
+  start = omp_get_wtime();
+  int dist_eigen_dense4 = distance4(dv1, dv2);
+  end = omp_get_wtime();
+  std::cout << "distance: " << dist_eigen_dense4 << std::endl;
+  std::cout << "time for count VectorXi version: " << end - start << std::endl;
 
   std::cout << std::endl;
 
@@ -313,6 +324,12 @@ int main(int argc, char **argv) {
   end = omp_get_wtime();
   std::cout << "projected value: " << proj_eigen_ds << std::endl;
   std::cout << "projection time for VectorXi / SparseVector<int> version version: " << end - start << std::endl;
+
+  start = omp_get_wtime();
+  int proj_eigen_dd = project(dv1, dpv_plus, dpv_minus);
+  end = omp_get_wtime();
+  std::cout << "projected value: " << proj_eigen_dd << std::endl;
+  std::cout << "projection time for VectorXi / VectorXi version version: " << end - start << std::endl;
 
   std::cout << std::endl;
 
