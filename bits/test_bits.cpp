@@ -9,8 +9,8 @@
 #include <Eigen/Sparse>
 
 // #define N 133924650
-// #define N 23223411
-#define N 20
+#define N 23223411
+// #define N 20
 
 using SpVec = Eigen::SparseVector<int>;
 using SpMat = Eigen::SparseMatrix<int>;
@@ -54,23 +54,27 @@ int distance(SpVec x, SpVec y) {
   if(iter_y) y_idx = iter_y.index();
 
   while(iter_x || iter_y) {
+    // std::cout << "x: " << iter_x.value() << ", y: " << iter_y.value() << "\n";
     if(x_idx < y_idx) {
+      // std::cout << "x_idx < y_idx: " << x_idx << " < " << y_idx << "\n";
       sum += 1;
       if(iter_x) ++iter_x; else ++iter_y;
       if(iter_x) {
         x_idx = iter_x.index();
       } else if(iter_y) {
-         y_idx = iter_y.index();
+        y_idx = iter_y.index();
       }
     } else if(x_idx > y_idx) {
+      // std::cout << "x_idx > y_idx: " << x_idx << " > " << y_idx << "\n";
       sum += 1;
-      if(iter_y) ++iter_y; else ++iter_y;
+      if(iter_y) ++iter_y; else ++iter_x;
       if(iter_y) {
         y_idx = iter_y.index();
       } else if(iter_x) {
         x_idx = iter_x.index();
       }
     } else {
+      // std::cout << "x_idx == y_idx: " << x_idx << " == " << y_idx << "\n";
       if(iter_x) ++iter_x;
       if(iter_y) ++iter_y;
       if(iter_x) x_idx = iter_x.index();
@@ -115,6 +119,27 @@ int project(SpVec x, SpVec spv_plus, SpVec spv_minus){
   return x.dot(spv_plus) - x.dot(spv_minus);
 }
 
+void print_sparse_vector(SpVec sv1) {
+  size_t n = sv1.size();
+  for(int i = 0; i < n; ++i) std::cout << sv1.coeff(i) << " ";
+  std::cout << std::endl;
+  std::cout << sv1;
+}
+
+void print_inner_iterator(SpVec sv1) {
+  for(SpVec::InnerIterator it(sv1); it; ++it) {
+    std::cout << "index: " << it.index() << ", ";
+    std::cout << "value: " << it.value() << std::endl;
+  }
+}
+
+void print(SpVec sv1) {
+  print_sparse_vector(sv1);
+  std::cout << std::endl;
+  print_inner_iterator(sv1);
+  std::cout << std::endl;
+}
+
 int main(int argc, char **argv) {
   if(argc != 2) {
     std::cerr << "Usage " << argv[0] << " <seed>" << std::endl;
@@ -122,9 +147,9 @@ int main(int argc, char **argv) {
   }
 
   int seed = atoi(argv[1]);
-  double prob1 = 0.5;
-  // double density = 0.000021;
-  double density = 0.4;
+  double prob1 = 0.25;
+  double density = 0.000021;
+  // double density = 0.4;
   std::mt19937 gen(seed);
   std::bernoulli_distribution dist(prob1);
   std::bernoulli_distribution rdist(density);
@@ -148,8 +173,8 @@ int main(int argc, char **argv) {
     vector2[i] = v2;
     vb1[i] = v1;
     vb2[i] = v2;
-    triplet_list.push_back(T(i, 0, v1));
-    triplet_list.push_back(T(i, 1, v2));
+    if(v1) triplet_list.push_back(T(i, 0, v1));
+    if(v2) triplet_list.push_back(T(i, 1, v2));
 
     bool nonzero = rdist(gen);
     if(nonzero) {
@@ -163,14 +188,18 @@ int main(int argc, char **argv) {
       rvector_minus[i] = rminus;
       rvb_plus[i] = rplus;
       rvb_minus[i] = rminus;
-      triplet_list.push_back(T(i, 2, rplus));
-      triplet_list.push_back(T(i, 3, rminus));
+      if(rplus) triplet_list.push_back(T(i, 2, rplus));
+      if(rminus) triplet_list.push_back(T(i, 3, rminus));
     }
   }
 
   spm.setFromTriplets(triplet_list.begin(), triplet_list.end());
   SpVec spv1 = spm.col(0), spv2 = spm.col(1);
   SpVec spv_plus = spm.col(2), spv_minus = spm.col(3);
+
+  // print(spv1);
+  // print(spv2);
+  // std::cout << std::endl;
 
   auto start = omp_get_wtime();
   int dist_vecint = distance(vector1, vector2);
