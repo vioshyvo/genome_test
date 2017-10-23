@@ -188,6 +188,134 @@ int project(const VecI &x, const VecI &spv_plus, const VecI &spv_minus) {
   return spv_plus.dot(x) - spv_minus.dot(x);
 }
 
+int project_basic(const std::vector<int> &x, const std::vector<int> &sv_plus, const std::vector<int> &sv_minus) {
+  int sum_plus = 0, sum_minus = 0;
+  size_t n_plus = sv_plus.size(), n_minus = sv_minus.size();
+  for(int i = 0; i < n_plus; ++i) {
+    sum_plus += x[sv_plus[i]];
+  }
+  for(int i = 0; i < n_minus; ++i) {
+    sum_minus += x[sv_minus[i]];
+  }
+  return sum_plus - sum_minus;
+}
+
+int project_basic(const VecI &x, const std::vector<int> &sv_plus, const std::vector<int> &sv_minus) {
+  int sum_plus = 0, sum_minus = 0;
+  size_t n_plus = sv_plus.size(), n_minus = sv_minus.size();
+  for(int i = 0; i < n_plus; ++i) {
+    sum_plus += x[sv_plus[i]];
+  }
+  for(int i = 0; i < n_minus; ++i) {
+    sum_minus += x[sv_minus[i]];
+  }
+  return sum_plus - sum_minus;
+}
+
+int project_basic3(const std::vector<int> &x, const std::vector<int> &sv_plus, const std::vector<int> &sv_minus){
+  int sum_plus = 0, sum_minus = 0;
+  int n_x = x.size(), n_plus = sv_plus.size(), n_minus = sv_minus.size();
+  int idx_plus = 0, idx_minus = 0;
+  int idx_x = 0;
+
+  int plus_val = -1;
+  int x_val = -1;
+  if(idx_plus < n_plus) plus_val = sv_plus[idx_plus];
+  if(idx_x < n_x) x_val = x[idx_x];
+
+  while(idx_plus < n_plus && idx_x < n_x) {
+    if(plus_val < x_val) {
+      ++idx_plus;
+      if(idx_plus < n_plus) plus_val = sv_plus[idx_plus];
+    } else if(plus_val > x_val) {
+      ++idx_x;
+      if(idx_x < n_x) x_val = x[idx_x];
+    } else {
+      ++sum_plus;
+      ++idx_x;
+      ++idx_plus;
+      if(idx_plus < n_plus) plus_val = sv_plus[idx_plus];
+      if(idx_x < n_x) x_val = x[idx_x];
+    }
+  }
+
+  idx_x = 0;
+  int minus_val = -1;
+  x_val = -1;
+  if(idx_minus < n_minus) minus_val = sv_minus[idx_minus];
+  if(idx_x < n_x) x_val = x[idx_x];
+
+  while(idx_minus < n_minus && idx_x < n_x) {
+    if(minus_val < x_val) {
+      ++idx_minus;
+      if(idx_minus < n_minus) minus_val = sv_minus[idx_minus];
+    } else if(minus_val > x_val) {
+      ++idx_x;
+      if(idx_x < n_x) x_val = x[idx_x];
+    } else {
+      ++sum_minus;
+      ++idx_x;
+      ++idx_minus;
+      if(idx_minus < n_minus) minus_val = sv_minus[idx_minus];
+      if(idx_x < n_x) x_val = x[idx_x];
+    }
+  }
+
+  return sum_plus - sum_minus;
+}
+
+int project_basic2(const std::vector<int> &x, const std::vector<int> &sv_plus, const std::vector<int> &sv_minus){
+  int sum_plus = 0, sum_minus = 0;
+  auto iter_plus = sv_plus.cbegin(), iter_minus = sv_minus.cbegin(), iter_x = x.cbegin();
+  auto plus_end = sv_plus.cend(), minus_end = sv_minus.cend(), x_end = x.cend();
+
+  int plus_val = -1;
+  int x_val = -1;
+  if(iter_plus != plus_end) plus_val = *iter_plus;
+  if(iter_x != x_end) x_val = *iter_x;
+
+  while(iter_plus != plus_end && iter_x != x_end) {
+    if(plus_val < x_val) {
+      ++iter_plus;
+      if(iter_plus != plus_end) plus_val = *iter_plus;
+    } else if(plus_val > x_val) {
+      ++iter_x;
+      if(iter_x != x_end) x_val = *iter_x;
+    } else {
+      ++sum_plus;
+      ++iter_x;
+      ++iter_plus;
+      if(iter_plus != plus_end) plus_val = *iter_plus;
+      if(iter_x != x_end) x_val = *iter_x;
+    }
+  }
+
+  iter_x = x.cbegin();
+  int minus_val = -1;
+  x_val = -1;
+  if(iter_minus != minus_end) minus_val = *iter_minus;
+  if(iter_x != x_end) x_val = *iter_x;
+
+  while(iter_minus != minus_end && iter_x != x_end) {
+    if(minus_val < x_val) {
+      ++iter_minus;
+      if(iter_minus != minus_end) minus_val = *iter_minus;
+    } else if(minus_val > x_val) {
+      ++iter_x;
+      if(iter_x != x_end) x_val = *iter_x;
+    } else {
+      ++sum_minus;
+      ++iter_x;
+      ++iter_minus;
+      if(iter_minus != minus_end) minus_val = *iter_minus;
+      if(iter_x != x_end) x_val = *iter_x;
+    }
+  }
+
+  return sum_plus - sum_minus;
+}
+
+
 void print_sparse_vector(SpVecI sv1) {
   size_t n = sv1.size();
   for(size_t i = 0; i < n; ++i) std::cout << sv1.coeff(i) << " ";
@@ -215,6 +343,8 @@ int main(int argc, char **argv) {
     return -1;
   }
 
+  bool projections = true;
+  bool distances = false;
   size_t N = 23223411;
   int seed = atoi(argv[1]);
   double prob1 = 0.25;
@@ -233,7 +363,7 @@ int main(int argc, char **argv) {
   std::vector<T> triplet_list;
   triplet_list.reserve(4 * N);
   VecI dv1(N), dv2(N), dpv_plus = VecI::Zero(N), dpv_minus = VecI::Zero(N);
-  std::vector<int> bv1, bv2;
+  std::vector<int> bv1, bv2, bv_plus, bv_minus;
 
   bool rplus, rminus;
 
@@ -269,10 +399,16 @@ int main(int argc, char **argv) {
       rvector_minus[i] = rminus;
       rvb_plus[i] = rplus;
       rvb_minus[i] = rminus;
-      if(rplus) triplet_list.push_back(T(i, 2, rplus));
-      if(rminus) triplet_list.push_back(T(i, 3, rminus));
-      if(rplus) dpv_plus[i] = rplus;
-      if(rminus) dpv_minus[i] = rminus;
+      if(rplus){
+        triplet_list.push_back(T(i, 2, rplus));
+        dpv_plus[i] = rplus;
+        bv_plus.push_back(i);
+      }
+      if(rminus) {
+        triplet_list.push_back(T(i, 3, rminus));
+        if(rminus) dpv_minus[i] = rminus;
+        bv_minus.push_back(i);
+      }
     }
   }
 
@@ -282,108 +418,139 @@ int main(int argc, char **argv) {
 
   double start, end;
 
-  start = omp_get_wtime();
-  int dist_vecint = distance(vector1, vector2);
-  end = omp_get_wtime();
-  std::cout << "distance: " << dist_vecint << std::endl;
-  std::cout << "time for vector<int> version: " << end - start << std::endl;
+  if(distances) {
+    start = omp_get_wtime();
+    int dist_vecint = distance(vector1, vector2);
+    end = omp_get_wtime();
+    std::cout << "distance: " << dist_vecint << std::endl;
+    std::cout << "time for vector<int> version: " << end - start << std::endl;
 
-  start = omp_get_wtime();
-  int dist_vecbool = distance(vb1, vb2);
-  end = omp_get_wtime();
-  std::cout << "distance: " << dist_vecbool << std::endl;
-  std::cout << "time for vector<bool> version: " << end - start << std::endl;
+    start = omp_get_wtime();
+    int dist_vecbool = distance(vb1, vb2);
+    end = omp_get_wtime();
+    std::cout << "distance: " << dist_vecbool << std::endl;
+    std::cout << "time for vector<bool> version: " << end - start << std::endl;
 
-  start = omp_get_wtime();
-  int d_dynbs = distance(dbitset1, dbitset2);
-  end = omp_get_wtime();
-  std::cout << "distance: " << d_dynbs << std::endl;
-  std::cout << "time for boost::dynamic_bitset version: " << end - start << std::endl;
+    start = omp_get_wtime();
+    int d_dynbs = distance(dbitset1, dbitset2);
+    end = omp_get_wtime();
+    std::cout << "distance: " << d_dynbs << std::endl;
+    std::cout << "time for boost::dynamic_bitset version: " << end - start << std::endl;
 
-  start = omp_get_wtime();
-  int dist_eigen_sparse = distance(spv1, spv2);
-  end = omp_get_wtime();
-  std::cout << "distance: " << dist_eigen_sparse << std::endl;
-  std::cout << "time for SparseVector<int> version: " << end - start << std::endl;
+    start = omp_get_wtime();
+    int dist_eigen_sparse = distance(spv1, spv2);
+    end = omp_get_wtime();
+    std::cout << "distance: " << dist_eigen_sparse << std::endl;
+    std::cout << "time for SparseVector<int> version: " << end - start << std::endl;
 
-  start = omp_get_wtime();
-  int dist_eigen_sparse2 = distance2(spv1, spv2);
-  end = omp_get_wtime();
-  std::cout << "distance: " << dist_eigen_sparse2 << std::endl;
-  std::cout << "time for count SparseVector<int> version: " << end - start << std::endl;
+    start = omp_get_wtime();
+    int dist_eigen_sparse2 = distance2(spv1, spv2);
+    end = omp_get_wtime();
+    std::cout << "distance: " << dist_eigen_sparse2 << std::endl;
+    std::cout << "time for count SparseVector<int> version: " << end - start << std::endl;
 
-  start = omp_get_wtime();
-  int dist_eigen_dense = distance(dv1, dv2);
-  end = omp_get_wtime();
-  std::cout << "distance: " << dist_eigen_dense << std::endl;
-  std::cout << "time for VectorXi version: " << end - start << std::endl;
+    start = omp_get_wtime();
+    int dist_eigen_dense = distance(dv1, dv2);
+    end = omp_get_wtime();
+    std::cout << "distance: " << dist_eigen_dense << std::endl;
+    std::cout << "time for VectorXi version: " << end - start << std::endl;
 
-  start = omp_get_wtime();
-  int dist_eigen_dense2 = distance2(dv1, dv2);
-  end = omp_get_wtime();
-  std::cout << "distance: " << dist_eigen_dense2 << std::endl;
-  std::cout << "time for squaredNorm VectorXi version: " << end - start << std::endl;
+    start = omp_get_wtime();
+    int dist_eigen_dense2 = distance2(dv1, dv2);
+    end = omp_get_wtime();
+    std::cout << "distance: " << dist_eigen_dense2 << std::endl;
+    std::cout << "time for squaredNorm VectorXi version: " << end - start << std::endl;
 
-  start = omp_get_wtime();
-  int dist_eigen_dense3 = distance3(dv1, dv2);
-  end = omp_get_wtime();
-  std::cout << "distance: " << dist_eigen_dense3 << std::endl;
-  std::cout << "time for lpNorm<1> VectorXi version: " << end - start << std::endl;
+    start = omp_get_wtime();
+    int dist_eigen_dense3 = distance3(dv1, dv2);
+    end = omp_get_wtime();
+    std::cout << "distance: " << dist_eigen_dense3 << std::endl;
+    std::cout << "time for lpNorm<1> VectorXi version: " << end - start << std::endl;
 
-  start = omp_get_wtime();
-  int dist_eigen_dense4 = distance4(dv1, dv2);
-  end = omp_get_wtime();
-  std::cout << "distance: " << dist_eigen_dense4 << std::endl;
-  std::cout << "time for count VectorXi version: " << end - start << std::endl;
+    start = omp_get_wtime();
+    int dist_eigen_dense4 = distance4(dv1, dv2);
+    end = omp_get_wtime();
+    std::cout << "distance: " << dist_eigen_dense4 << std::endl;
+    std::cout << "time for count VectorXi version: " << end - start << std::endl;
+    start = omp_get_wtime();
 
-  start = omp_get_wtime();
-  int dist_basic = distance_basic(bv1, bv2);
-  end = omp_get_wtime();
-  std::cout << "distance: " << dist_basic << std::endl;
-  std::cout << "time for own basic version: " << end - start << std::endl;
+    int dist_basic = distance_basic(bv1, bv2);
+    end = omp_get_wtime();
+    std::cout << "distance: " << dist_basic << std::endl;
+    std::cout << "time for own basic version: " << end - start << std::endl;
 
-  std::cout << std::endl;
+    std::cout << std::endl;
+  }
+
+
+
 
   //////////////////////////////////////////////////////////////////////////////
   // projections
 
-  start = omp_get_wtime();
-  int proj_vec = project(vector1, rvector_plus, rvector_minus);
-  end = omp_get_wtime();
-  std::cout << "projected value: " << proj_vec << std::endl;
-  std::cout << "projection time for vector<int> version: " << end - start << std::endl;
+  if(projections) {
+    start = omp_get_wtime();
+    int proj_vec = project(vector1, rvector_plus, rvector_minus);
+    end = omp_get_wtime();
+    std::cout << "projected value: " << proj_vec << std::endl;
+    std::cout << "projection time for vector<int> version: " << end - start << std::endl;
 
-  start = omp_get_wtime();
-  int proj_vbool = project(vb1, rvb_plus, rvb_minus);
-  end = omp_get_wtime();
-  std::cout << "projected value: " << proj_vbool << std::endl;
-  std::cout << "projection time for vector<bool> version: " << end - start << std::endl;
+    start = omp_get_wtime();
+    int proj_vbool = project(vb1, rvb_plus, rvb_minus);
+    end = omp_get_wtime();
+    std::cout << "projected value: " << proj_vbool << std::endl;
+    std::cout << "projection time for vector<bool> version: " << end - start << std::endl;
 
-  start = omp_get_wtime();
-  int proj_dbs = project(dbitset1, rdbs_plus, rdbs_minus);
-  end = omp_get_wtime();
-  std::cout << "projected value: " << proj_dbs << std::endl;
-  std::cout << "projection time for dynamic_bitset version: " << end - start << std::endl;
+    start = omp_get_wtime();
+    int proj_dbs = project(dbitset1, rdbs_plus, rdbs_minus);
+    end = omp_get_wtime();
+    std::cout << "projected value: " << proj_dbs << std::endl;
+    std::cout << "projection time for dynamic_bitset version: " << end - start << std::endl;
 
-  start = omp_get_wtime();
-  int proj_eigen_ss = project(spv1, spv_plus, spv_minus);
-  end = omp_get_wtime();
-  std::cout << "projected value: " << proj_eigen_ss << std::endl;
-  std::cout << "projection time for SparseVector<int> / SparseVector<int> version: " << end - start << std::endl;
+    start = omp_get_wtime();
+    int proj_eigen_ss = project(spv1, spv_plus, spv_minus);
+    end = omp_get_wtime();
+    std::cout << "projected value: " << proj_eigen_ss << std::endl;
+    std::cout << "projection time for SparseVector<int> / SparseVector<int> version: " << end - start << std::endl;
 
-  start = omp_get_wtime();
-  int proj_eigen_ds = project(dv1, spv_plus, spv_minus);
-  end = omp_get_wtime();
-  std::cout << "projected value: " << proj_eigen_ds << std::endl;
-  std::cout << "projection time for VectorXi / SparseVector<int> version version: " << end - start << std::endl;
+    start = omp_get_wtime();
+    int proj_eigen_ds = project(dv1, spv_plus, spv_minus);
+    end = omp_get_wtime();
+    std::cout << "projected value: " << proj_eigen_ds << std::endl;
+    std::cout << "projection time for VectorXi / SparseVector<int> version: " << end - start << std::endl;
 
-  start = omp_get_wtime();
-  int proj_eigen_dd = project(dv1, dpv_plus, dpv_minus);
-  end = omp_get_wtime();
-  std::cout << "projected value: " << proj_eigen_dd << std::endl;
-  std::cout << "projection time for VectorXi / VectorXi version version: " << end - start << std::endl;
+    start = omp_get_wtime();
+    int proj_eigen_dd = project(dv1, dpv_plus, dpv_minus);
+    end = omp_get_wtime();
+    std::cout << "projected value: " << proj_eigen_dd << std::endl;
+    std::cout << "projection time for VectorXi / VectorXi version: " << end - start << std::endl;
 
-  std::cout << std::endl;
+    start = omp_get_wtime();
+    int proj_basic = project_basic(vector1, bv_plus, bv_minus);
+    end = omp_get_wtime();
+    std::cout << "projected value: " << proj_basic << std::endl;
+    std::cout << "projection time for vector<int> / basic version: " << end - start << std::endl;
+
+    start = omp_get_wtime();
+    int proj_dense_basic = project_basic(dv1, bv_plus, bv_minus);
+    end = omp_get_wtime();
+    std::cout << "projected value: " << proj_dense_basic << std::endl;
+    std::cout << "projection time for VectorXi / basic version: " << end - start << std::endl;
+
+    start = omp_get_wtime();
+    int proj_basic_basic = project_basic2(bv1, bv_plus, bv_minus);
+    end = omp_get_wtime();
+    std::cout << "projected value: " << proj_basic_basic << std::endl;
+    std::cout << "projection time for basic / basic version: " << end - start << std::endl;
+
+    start = omp_get_wtime();
+    int proj_basic_basic_idx = project_basic3(bv1, bv_plus, bv_minus);
+    end = omp_get_wtime();
+    std::cout << "projected value: " << proj_basic_basic_idx << std::endl;
+    std::cout << "projection time for basic / basic (non_iterator) version: " << end - start << std::endl;
+
+    std::cout << std::endl;
+  }
 
   return 0;
 }
