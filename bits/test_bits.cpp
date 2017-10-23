@@ -150,11 +150,11 @@ int distance_basic(const std::vector<int> &x, const std::vector<int> &y) {
 }
 
 
-int project(boost::dynamic_bitset<> x, boost::dynamic_bitset<> rv_plus, boost::dynamic_bitset<> rv_minus) {
+int project(const boost::dynamic_bitset<> &x, const boost::dynamic_bitset<> &rv_plus, const boost::dynamic_bitset<> &rv_minus) {
   return (x & rv_plus).count() - (x & rv_minus).count();
 }
 
-int project(std::vector<int> x, std::vector<int> rv_plus, std::vector<int> rv_minus) {
+int project(const std::vector<int> &x, const std::vector<int> &rv_plus, const std::vector<int> &rv_minus) {
   int sum = 0;
   int xval;
   size_t n = x.size();
@@ -165,7 +165,7 @@ int project(std::vector<int> x, std::vector<int> rv_plus, std::vector<int> rv_mi
   return sum;
 }
 
-int project(std::vector<bool> x, std::vector<bool> rv_plus, std::vector<bool> rv_minus) {
+int project(const std::vector<bool> &x, const std::vector<bool> &rv_plus, const std::vector<bool> &rv_minus) {
   int sum = 0;
   bool xval;
   size_t n = x.size();
@@ -176,15 +176,15 @@ int project(std::vector<bool> x, std::vector<bool> rv_plus, std::vector<bool> rv
   return sum;
 }
 
-int project(SpVecI x, SpVecI spv_plus, SpVecI spv_minus){
+int project(const SpVecI &x, const SpVecI &spv_plus, const SpVecI &spv_minus){
   return x.dot(spv_plus) - x.dot(spv_minus);
 }
 
-int project(VecI x, SpVecI spv_plus, SpVecI spv_minus) {
+int project(const VecI &x, const SpVecI &spv_plus, const SpVecI &spv_minus) {
   return spv_plus.dot(x) - spv_minus.dot(x);
 }
 
-int project(VecI x, VecI spv_plus, VecI spv_minus) {
+int project(const VecI &x, const VecI &spv_plus, const VecI &spv_minus) {
   return spv_plus.dot(x) - spv_minus.dot(x);
 }
 
@@ -280,13 +280,11 @@ int main(int argc, char **argv) {
   SpVecI spv1 = spm.col(0), spv2 = spm.col(1);
   SpVecI spv_plus = spm.col(2), spv_minus = spm.col(3);
 
-  // print(spv1);
-  // print(spv2);
-  // std::cout << std::endl;
+  double start, end;
 
-  auto start = omp_get_wtime();
+  start = omp_get_wtime();
   int dist_vecint = distance(vector1, vector2);
-  auto end = omp_get_wtime();
+  end = omp_get_wtime();
   std::cout << "distance: " << dist_vecint << std::endl;
   std::cout << "time for vector<int> version: " << end - start << std::endl;
 
@@ -349,43 +347,43 @@ int main(int argc, char **argv) {
   //////////////////////////////////////////////////////////////////////////////
   // projections
 
-  // start = omp_get_wtime();
-  // int proj_vec = project(vector1, rvector_plus, rvector_minus);
-  // end = omp_get_wtime();
-  // std::cout << "projected value: " << proj_vec << std::endl;
-  // std::cout << "projection time for vector<int> version: " << end - start << std::endl;
-  //
-  // start = omp_get_wtime();
-  // int proj_vbool = project(vb1, rvb_plus, rvb_minus);
-  // end = omp_get_wtime();
-  // std::cout << "projected value: " << proj_vbool << std::endl;
-  // std::cout << "projection time for vector<bool> version: " << end - start << std::endl;
-  //
-  // start = omp_get_wtime();
-  // int proj_dbs = project(dbitset1, rdbs_plus, rdbs_minus);
-  // end = omp_get_wtime();
-  // std::cout << "projected value: " << proj_dbs << std::endl;
-  // std::cout << "projection time for dynamic_bitset version: " << end - start << std::endl;
-  //
-  // start = omp_get_wtime();
-  // int proj_eigen_ss = project(spv1, spv_plus, spv_minus);
-  // end = omp_get_wtime();
-  // std::cout << "projected value: " << proj_eigen_ss << std::endl;
-  // std::cout << "projection time for SparseVector<int> / SparseVector<int> version: " << end - start << std::endl;
-  //
-  // start = omp_get_wtime();
-  // int proj_eigen_ds = project(dv1, spv_plus, spv_minus);
-  // end = omp_get_wtime();
-  // std::cout << "projected value: " << proj_eigen_ds << std::endl;
-  // std::cout << "projection time for VectorXi / SparseVector<int> version version: " << end - start << std::endl;
-  //
-  // start = omp_get_wtime();
-  // int proj_eigen_dd = project(dv1, dpv_plus, dpv_minus);
-  // end = omp_get_wtime();
-  // std::cout << "projected value: " << proj_eigen_dd << std::endl;
-  // std::cout << "projection time for VectorXi / VectorXi version version: " << end - start << std::endl;
-  //
-  // std::cout << std::endl;
+  start = omp_get_wtime();
+  int proj_vec = project(vector1, rvector_plus, rvector_minus);
+  end = omp_get_wtime();
+  std::cout << "projected value: " << proj_vec << std::endl;
+  std::cout << "projection time for vector<int> version: " << end - start << std::endl;
+
+  start = omp_get_wtime();
+  int proj_vbool = project(vb1, rvb_plus, rvb_minus);
+  end = omp_get_wtime();
+  std::cout << "projected value: " << proj_vbool << std::endl;
+  std::cout << "projection time for vector<bool> version: " << end - start << std::endl;
+
+  start = omp_get_wtime();
+  int proj_dbs = project(dbitset1, rdbs_plus, rdbs_minus);
+  end = omp_get_wtime();
+  std::cout << "projected value: " << proj_dbs << std::endl;
+  std::cout << "projection time for dynamic_bitset version: " << end - start << std::endl;
+
+  start = omp_get_wtime();
+  int proj_eigen_ss = project(spv1, spv_plus, spv_minus);
+  end = omp_get_wtime();
+  std::cout << "projected value: " << proj_eigen_ss << std::endl;
+  std::cout << "projection time for SparseVector<int> / SparseVector<int> version: " << end - start << std::endl;
+
+  start = omp_get_wtime();
+  int proj_eigen_ds = project(dv1, spv_plus, spv_minus);
+  end = omp_get_wtime();
+  std::cout << "projected value: " << proj_eigen_ds << std::endl;
+  std::cout << "projection time for VectorXi / SparseVector<int> version version: " << end - start << std::endl;
+
+  start = omp_get_wtime();
+  int proj_eigen_dd = project(dv1, dpv_plus, dpv_minus);
+  end = omp_get_wtime();
+  std::cout << "projected value: " << proj_eigen_dd << std::endl;
+  std::cout << "projection time for VectorXi / VectorXi version version: " << end - start << std::endl;
+
+  std::cout << std::endl;
 
   return 0;
 }
