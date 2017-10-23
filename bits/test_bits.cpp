@@ -1,6 +1,5 @@
 #include <iostream>
 #include <random>
-#include <bitset>
 #include <cstdlib>
 #include <vector>
 #include <cmath>
@@ -8,6 +7,8 @@
 #include <boost/dynamic_bitset.hpp>
 #include <Eigen/Sparse>
 #include <Eigen/Dense>
+#include "distance.h"
+#include "project.h"
 
 // #define N 133924650
 // #define N 23223411
@@ -18,302 +19,6 @@ using SpMatI = Eigen::SparseMatrix<int>;
 using T = Eigen::Triplet<int>;
 using InIterVec = SpVecI::InnerIterator;
 using VecI = Eigen::VectorXi;
-
-int distance(const std::vector<int> &x, const std::vector<int> &y) {
-  int sum = 0;
-  size_t n = x.size();
-  for(size_t i = 0; i < n; ++i) {
-    sum += std::abs(x[i] - y[i]);
-  }
-  return sum;
-}
-
-int distance(const boost::dynamic_bitset<> &x, const boost::dynamic_bitset<> &y) {
-  return (x ^ y).count();
-}
-
-int distance(const std::vector<bool> &x, const std::vector<bool> &y) {
-  int sum = 0;
-  size_t n = x.size();
-  bool xval, yval;
-  for(size_t i = 0; i < n; ++i) {
-    xval = x[i];
-    yval = y[i];
-    sum += (xval || yval) && !(xval && yval);
-  }
-  return sum;
-}
-
-int distance(const SpVecI &x, const SpVecI &y) {
-  int sum = 0;
-  InIterVec iter_x(x), iter_y(y);
-  int x_idx = -1, y_idx = -1;
-  if(iter_x) x_idx = iter_x.index();
-  if(iter_y) y_idx = iter_y.index();
-
-  while(iter_x || iter_y) {
-    // std::cout << "x: " << iter_x.value() << ", y: " << iter_y.value() << "\n";
-    if(x_idx < y_idx) {
-      // std::cout << "x_idx < y_idx: " << x_idx << " < " << y_idx << "\n";
-      sum += 1;
-      if(iter_x) ++iter_x; else ++iter_y;
-      if(iter_x) {
-        x_idx = iter_x.index();
-      } else if(iter_y) {
-        y_idx = iter_y.index();
-      }
-    } else if(x_idx > y_idx) {
-      // std::cout << "x_idx > y_idx: " << x_idx << " > " << y_idx << "\n";
-      sum += 1;
-      if(iter_y) ++iter_y; else ++iter_x;
-      if(iter_y) {
-        y_idx = iter_y.index();
-      } else if(iter_x) {
-        x_idx = iter_x.index();
-      }
-    } else {
-      // std::cout << "x_idx == y_idx: " << x_idx << " == " << y_idx << "\n";
-      if(iter_x) ++iter_x;
-      if(iter_y) ++iter_y;
-      if(iter_x) x_idx = iter_x.index();
-      if(iter_y) y_idx = iter_y.index();
-    }
-  }
-
-  return sum;
-}
-
-int distance2(const SpVecI &x, const SpVecI &y) {
-  SpVecI diff = x - y;
-  return diff.nonZeros();
-}
-
-int distance(const VecI &x, const VecI &y) {
-  int sum = 0;
-  size_t n = x.size();
-  for(size_t i = 0; i < n; ++i) {
-    sum += std::abs(x[i] - y[i]);
-  }
-  return sum;
-}
-
-int distance2(const VecI &x, const VecI &y) {
-  return (x - y).squaredNorm();
-}
-
-int distance3(const VecI &x, const VecI &y) {
-  return (x - y).lpNorm<1>();
-}
-
-int distance4(const VecI &x, const VecI &y) {
-  return (x - y).count();
-}
-
-int distance_basic(const std::vector<int> &x, const std::vector<int> &y) {
-  int sum = 0;
-  auto iter_x = x.cbegin(), iter_y = y.cbegin();
-  auto x_end = x.cend(), y_end = y.cend();
-  int x_idx = -1, y_idx = -1;
-  if(iter_x != x_end) x_idx = *iter_x;
-  if(iter_y != y_end) y_idx = *iter_y;
-
-  while(iter_x != x_end || iter_y != y_end) {
-    // std::cout << "x: " << iter_x.value() << ", y: " << iter_y.value() << "\n";
-    if(x_idx < y_idx) {
-      // std::cout << "x_idx < y_idx: " << x_idx << " < " << y_idx << "\n";
-      sum += 1;
-      if(iter_x != x_end) ++iter_x; else ++iter_y;
-      if(iter_x != x_end) {
-        x_idx = *iter_x;
-      } else if(iter_y != y_end) {
-        y_idx = *iter_y;
-      }
-    } else if(x_idx > y_idx) {
-      // std::cout << "x_idx > y_idx: " << x_idx << " > " << y_idx << "\n";
-      sum += 1;
-      if(iter_y != y_end) ++iter_y; else ++iter_x;
-      if(iter_y != y_end) {
-        y_idx = *iter_y;
-      } else if(iter_x != x_end) {
-        x_idx = *iter_x;
-      }
-    } else {
-      // std::cout << "x_idx == y_idx: " << x_idx << " == " << y_idx << "\n";
-      if(iter_x != x_end) ++iter_x;
-      if(iter_y != y_end) ++iter_y;
-      if(iter_x != x_end) x_idx = *iter_x;
-      if(iter_y != y_end) y_idx = *iter_y;
-    }
-  }
-
-  return sum;
-}
-
-
-int project(const boost::dynamic_bitset<> &x, const boost::dynamic_bitset<> &rv_plus, const boost::dynamic_bitset<> &rv_minus) {
-  return (x & rv_plus).count() - (x & rv_minus).count();
-}
-
-int project(const std::vector<int> &x, const std::vector<int> &rv_plus, const std::vector<int> &rv_minus) {
-  int sum = 0;
-  int xval;
-  size_t n = x.size();
-  for(size_t i = 0; i < n; ++i) {
-    xval = x[i];
-    sum += (xval * rv_plus[i] - xval * rv_minus[i]);
-  }
-  return sum;
-}
-
-int project(const std::vector<bool> &x, const std::vector<bool> &rv_plus, const std::vector<bool> &rv_minus) {
-  int sum = 0;
-  bool xval;
-  size_t n = x.size();
-  for(size_t i = 0; i < n; ++i) {
-    xval = x[i];
-    sum += (xval && rv_plus[i]) - (xval && rv_minus[i]);
-  }
-  return sum;
-}
-
-int project(const SpVecI &x, const SpVecI &spv_plus, const SpVecI &spv_minus){
-  return x.dot(spv_plus) - x.dot(spv_minus);
-}
-
-int project(const VecI &x, const SpVecI &spv_plus, const SpVecI &spv_minus) {
-  return spv_plus.dot(x) - spv_minus.dot(x);
-}
-
-int project(const VecI &x, const VecI &spv_plus, const VecI &spv_minus) {
-  return spv_plus.dot(x) - spv_minus.dot(x);
-}
-
-int project_basic(const std::vector<int> &x, const std::vector<int> &sv_plus, const std::vector<int> &sv_minus) {
-  int sum_plus = 0, sum_minus = 0;
-  size_t n_plus = sv_plus.size(), n_minus = sv_minus.size();
-  for(int i = 0; i < n_plus; ++i) {
-    sum_plus += x[sv_plus[i]];
-  }
-  for(int i = 0; i < n_minus; ++i) {
-    sum_minus += x[sv_minus[i]];
-  }
-  return sum_plus - sum_minus;
-}
-
-int project_basic(const VecI &x, const std::vector<int> &sv_plus, const std::vector<int> &sv_minus) {
-  int sum_plus = 0, sum_minus = 0;
-  size_t n_plus = sv_plus.size(), n_minus = sv_minus.size();
-  for(int i = 0; i < n_plus; ++i) {
-    sum_plus += x[sv_plus[i]];
-  }
-  for(int i = 0; i < n_minus; ++i) {
-    sum_minus += x[sv_minus[i]];
-  }
-  return sum_plus - sum_minus;
-}
-
-int project_basic3(const std::vector<int> &x, const std::vector<int> &sv_plus, const std::vector<int> &sv_minus){
-  int sum_plus = 0, sum_minus = 0;
-  int n_x = x.size(), n_plus = sv_plus.size(), n_minus = sv_minus.size();
-  int idx_plus = 0, idx_minus = 0;
-  int idx_x = 0;
-
-  int plus_val = -1;
-  int x_val = -1;
-  if(idx_plus < n_plus) plus_val = sv_plus[idx_plus];
-  if(idx_x < n_x) x_val = x[idx_x];
-
-  while(idx_plus < n_plus && idx_x < n_x) {
-    if(plus_val < x_val) {
-      ++idx_plus;
-      if(idx_plus < n_plus) plus_val = sv_plus[idx_plus];
-    } else if(plus_val > x_val) {
-      ++idx_x;
-      if(idx_x < n_x) x_val = x[idx_x];
-    } else {
-      ++sum_plus;
-      ++idx_x;
-      ++idx_plus;
-      if(idx_plus < n_plus) plus_val = sv_plus[idx_plus];
-      if(idx_x < n_x) x_val = x[idx_x];
-    }
-  }
-
-  idx_x = 0;
-  int minus_val = -1;
-  x_val = -1;
-  if(idx_minus < n_minus) minus_val = sv_minus[idx_minus];
-  if(idx_x < n_x) x_val = x[idx_x];
-
-  while(idx_minus < n_minus && idx_x < n_x) {
-    if(minus_val < x_val) {
-      ++idx_minus;
-      if(idx_minus < n_minus) minus_val = sv_minus[idx_minus];
-    } else if(minus_val > x_val) {
-      ++idx_x;
-      if(idx_x < n_x) x_val = x[idx_x];
-    } else {
-      ++sum_minus;
-      ++idx_x;
-      ++idx_minus;
-      if(idx_minus < n_minus) minus_val = sv_minus[idx_minus];
-      if(idx_x < n_x) x_val = x[idx_x];
-    }
-  }
-
-  return sum_plus - sum_minus;
-}
-
-int project_basic2(const std::vector<int> &x, const std::vector<int> &sv_plus, const std::vector<int> &sv_minus){
-  int sum_plus = 0, sum_minus = 0;
-  auto iter_plus = sv_plus.cbegin(), iter_minus = sv_minus.cbegin(), iter_x = x.cbegin();
-  auto plus_end = sv_plus.cend(), minus_end = sv_minus.cend(), x_end = x.cend();
-
-  int plus_val = -1;
-  int x_val = -1;
-  if(iter_plus != plus_end) plus_val = *iter_plus;
-  if(iter_x != x_end) x_val = *iter_x;
-
-  while(iter_plus != plus_end && iter_x != x_end) {
-    if(plus_val < x_val) {
-      ++iter_plus;
-      if(iter_plus != plus_end) plus_val = *iter_plus;
-    } else if(plus_val > x_val) {
-      ++iter_x;
-      if(iter_x != x_end) x_val = *iter_x;
-    } else {
-      ++sum_plus;
-      ++iter_x;
-      ++iter_plus;
-      if(iter_plus != plus_end) plus_val = *iter_plus;
-      if(iter_x != x_end) x_val = *iter_x;
-    }
-  }
-
-  iter_x = x.cbegin();
-  int minus_val = -1;
-  x_val = -1;
-  if(iter_minus != minus_end) minus_val = *iter_minus;
-  if(iter_x != x_end) x_val = *iter_x;
-
-  while(iter_minus != minus_end && iter_x != x_end) {
-    if(minus_val < x_val) {
-      ++iter_minus;
-      if(iter_minus != minus_end) minus_val = *iter_minus;
-    } else if(minus_val > x_val) {
-      ++iter_x;
-      if(iter_x != x_end) x_val = *iter_x;
-    } else {
-      ++sum_minus;
-      ++iter_x;
-      ++iter_minus;
-      if(iter_minus != minus_end) minus_val = *iter_minus;
-      if(iter_x != x_end) x_val = *iter_x;
-    }
-  }
-
-  return sum_plus - sum_minus;
-}
 
 
 void print_sparse_vector(SpVecI sv1) {
@@ -344,7 +49,7 @@ int main(int argc, char **argv) {
   }
 
   bool projections = true;
-  bool distances = false;
+  bool distances = true;
   size_t N = 23223411;
   int seed = atoi(argv[1]);
   double prob1 = 0.25;
@@ -542,12 +247,6 @@ int main(int argc, char **argv) {
     end = omp_get_wtime();
     std::cout << "projected value: " << proj_basic_basic << std::endl;
     std::cout << "projection time for basic / basic version: " << end - start << std::endl;
-
-    start = omp_get_wtime();
-    int proj_basic_basic_idx = project_basic3(bv1, bv_plus, bv_minus);
-    end = omp_get_wtime();
-    std::cout << "projected value: " << proj_basic_basic_idx << std::endl;
-    std::cout << "projection time for basic / basic (non_iterator) version: " << end - start << std::endl;
 
     std::cout << std::endl;
   }
