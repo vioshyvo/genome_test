@@ -2,7 +2,12 @@
 #include <random>
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
+#include <omp.h>
+#include "project.h"
+#include "utility.h"
 
+using SpMatI = Eigen::SparseMatrix<int>;
+using SpVecI = Eigen::SparseVector<int>;
 using SpMatIRow = Eigen::SparseMatrix<int, Eigen::RowMajor>;
 using T = Eigen::Triplet<int>;
 
@@ -35,12 +40,52 @@ int main(int argc, char** argv) {
   }
 
   int seed = atoi(argv[1]);
-  int n_pool = 10;
-  int dim = 20;
-  double density = 0.25;
+  int n_pool = 5;
+  int dim = 10;
+  double density = 0.5;
+  double data_density = 0.25;
+  std::mt19937 gen(seed);
+  std::bernoulli_distribution data_dist(data_density);
+
+  std::vector<T> triplets2;
+  SpMatI spmat(dim, 1);
+  for(int i = 0; i < dim; ++i) {
+    if(data_dist(gen)) triplets2.push_back(T(i, 0, 1));
+  }
+
+  spmat.setFromTriplets(triplets2.begin(), triplets2.end());
+  SpVecI query_spvec = spmat.col(0);
 
   SpMatIRow sparse_random_matrix = build_sparse_random_matrix(n_pool, dim, density, seed);
 
-  std::cout << sparse_random_matrix;
+  double start, end;
+
+  start = omp_get_wtime();
+  SpVecI proj_spvec = project(query_spvec, sparse_random_matrix);
+  end = omp_get_wtime();
+  std::cout << "projected values:\n";
+  print_sparse_vector(proj_spvec);
+  std::cout << "projection time for vector<int> version: " << end - start << std::endl;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   return 0;
 }

@@ -8,6 +8,7 @@
 
 using SpVecI = Eigen::SparseVector<int>;
 using VecI = Eigen::VectorXi;
+using SpMatIRow = Eigen::SparseMatrix<int, Eigen::RowMajor>;
 
 
 int project(const boost::dynamic_bitset<> &x, const boost::dynamic_bitset<> &rv_plus, const boost::dynamic_bitset<> &rv_minus) {
@@ -39,6 +40,11 @@ int project(const std::vector<bool> &x, const std::vector<bool> &rv_plus, const 
 int project(const SpVecI &x, const SpVecI &spv_plus, const SpVecI &spv_minus){
   return x.dot(spv_plus) - x.dot(spv_minus);
 }
+
+SpVecI project(const SpVecI &x, const SpMatIRow &random_mat) {
+  return random_mat * x;
+}
+
 
 int project(const VecI &x, const SpVecI &spv_plus, const SpVecI &spv_minus) {
   return spv_plus.dot(x) - spv_minus.dot(x);

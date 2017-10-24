@@ -9,34 +9,13 @@
 #include <Eigen/Dense>
 #include "distance.h"
 #include "project.h"
+#include "utility.h"
 
 using SpVecI = Eigen::SparseVector<int>;
 using SpMatI = Eigen::SparseMatrix<int>;
 using T = Eigen::Triplet<int>;
 using InIterVec = SpVecI::InnerIterator;
 using VecI = Eigen::VectorXi;
-
-
-void print_sparse_vector(SpVecI sv1) {
-  size_t n = sv1.size();
-  for(size_t i = 0; i < n; ++i) std::cout << sv1.coeff(i) << " ";
-  std::cout << std::endl;
-  std::cout << sv1;
-}
-
-void print_inner_iterator(SpVecI sv1) {
-  for(SpVecI::InnerIterator it(sv1); it; ++it) {
-    std::cout << "index: " << it.index() << ", ";
-    std::cout << "value: " << it.value() << std::endl;
-  }
-}
-
-void print(SpVecI sv1) {
-  print_sparse_vector(sv1);
-  std::cout << std::endl;
-  print_inner_iterator(sv1);
-  std::cout << std::endl;
-}
 
 int main(int argc, char **argv) {
   if(argc != 2) {
@@ -46,7 +25,7 @@ int main(int argc, char **argv) {
 
   bool projections = true;
   bool distances = true;
-  size_t N = 23223411;       
+  size_t N = 23223411;
   int seed = atoi(argv[1]);
   double prob1 = 0.25;
   // double density = 0.000021; // Ecoli data set
