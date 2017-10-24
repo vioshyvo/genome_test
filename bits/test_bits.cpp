@@ -10,10 +10,6 @@
 #include "distance.h"
 #include "project.h"
 
-// #define N 133924650
-// #define N 23223411
-// #define N 20
-
 using SpVecI = Eigen::SparseVector<int>;
 using SpMatI = Eigen::SparseMatrix<int>;
 using T = Eigen::Triplet<int>;
@@ -50,7 +46,7 @@ int main(int argc, char **argv) {
 
   bool projections = true;
   bool distances = true;
-  size_t N = 23223411;
+  size_t N = 23223411;       
   int seed = atoi(argv[1]);
   double prob1 = 0.25;
   // double density = 0.000021; // Ecoli data set
