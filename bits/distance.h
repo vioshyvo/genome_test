@@ -8,6 +8,7 @@
 
 using SpVecI = Eigen::SparseVector<int>;
 using VecI = Eigen::VectorXi;
+using InIterVec = SpVecI::InnerIterator;
 
 
 int distance(const std::vector<int> &x, const std::vector<int> &y) {

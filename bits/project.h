@@ -6,13 +6,25 @@
 #include <Eigen/Sparse>
 #include <Eigen/Dense>
 
+using boost::dynamic_bitset;
+
 using SpVecI = Eigen::SparseVector<int>;
 using VecI = Eigen::VectorXi;
 using SpMatIRow = Eigen::SparseMatrix<int, Eigen::RowMajor>;
+using vec_bs = std::vector<dynamic_bitset<>>;
 
-
-int project(const boost::dynamic_bitset<> &x, const boost::dynamic_bitset<> &rv_plus, const boost::dynamic_bitset<> &rv_minus) {
+int project(const dynamic_bitset<> &x, const dynamic_bitset<> &rv_plus, const dynamic_bitset<> &rv_minus) {
   return (x & rv_plus).count() - (x & rv_minus).count();
+}
+
+int project(const dynamic_bitset<> &x, const vec_bs &bitset_plus, const vec_bs &bitset_minus, std::vector<int> &out_vec) {
+  size_t n = bitset_plus.size();
+  int proj_val;
+
+  for(int i = 0; i < n; ++i) {
+    proj_val = (x & bitset_plus[i]).count() - (x & bitset_minus[i]).count();
+    out_vec.push_back(proj_val);
+  }
 }
 
 int project(const std::vector<int> &x, const std::vector<int> &rv_plus, const std::vector<int> &rv_minus) {
