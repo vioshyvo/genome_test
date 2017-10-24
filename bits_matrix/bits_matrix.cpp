@@ -79,6 +79,13 @@ int main(int argc, char** argv) {
   print_VecI(proj_vec);
   std::cout << "\nprojection time for Vector / SparseMatrix version: " << end - start << std::endl << std::endl;
 
+  start = omp_get_wtime();
+  VecI proj_vec2;
+  project2(query_vec, sparse_random_matrix, proj_vec2);
+  end = omp_get_wtime();
+  std::cout << "projected values:\n";
+  print_VecI(proj_vec2);
+  std::cout << "\nprojection time for inline Vector / SparseMatrix version: " << end - start << std::endl << std::endl;
 
 
 

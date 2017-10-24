@@ -53,6 +53,10 @@ VecI project(const VecI &x, const SpMatIRow &random_mat) {
   return random_mat * x;
 }
 
+void project2(const VecI &x, const SpMatIRow &random_mat, VecI &out_vec) {
+  out_vec.noalias() = random_mat * x;
+}
+
 int project(const VecI &x, const VecI &spv_plus, const VecI &spv_minus) {
   return spv_plus.dot(x) - spv_minus.dot(x);
 }
