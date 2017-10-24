@@ -29,8 +29,8 @@ int main(int argc, char** argv) {
   int dim = 23223411;
   // int dim = 10;
 
-  double density = 1.0 / std::sqrt(784); // mnist data set
-  // double density = 0.000021; // Ecoli data set
+  // double density = 1.0 / std::sqrt(784); // mnist data set
+  double density = 0.000021; // Ecoli data set
   // double density = 0.5;
 
   double data_density = 0.25;
@@ -68,19 +68,12 @@ int main(int argc, char** argv) {
   std::cout << "\nprojection time for SparseVector / SparseMatrix version: " << end - start << std::endl << std::endl;
 
   start = omp_get_wtime();
-  VecI proj_vec = project(query_vec, sparse_random_matrix);
+  VecI proj_vec;
+  project(query_vec, sparse_random_matrix, proj_vec);
   end = omp_get_wtime();
   std::cout << "projected values:\n";
   print_VecI(proj_vec);
   std::cout << "\nprojection time for Vector / SparseMatrix version: " << end - start << std::endl << std::endl;
-
-  start = omp_get_wtime();
-  VecI proj_vec2;
-  project2(query_vec, sparse_random_matrix, proj_vec2);
-  end = omp_get_wtime();
-  std::cout << "projected values:\n";
-  print_VecI(proj_vec2);
-  std::cout << "\nprojection time for inline Vector / SparseMatrix version: " << end - start << std::endl << std::endl;
 
   start = omp_get_wtime();
   std::vector<int> proj_vec_dbs;
@@ -89,7 +82,6 @@ int main(int argc, char** argv) {
   std::cout << "projected values:\n";
   print_vector(proj_vec_dbs);
   std::cout << "\nprojection time for bitset / bitset version: " << end - start << std::endl << std::endl;
-
 
 
 
