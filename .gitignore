@@ -44,5 +44,6 @@ eigen/*
 googletest/*
 googletest
 bits/test_bits
+bits_matrix/bits_matrix
 
 *.aalto.fi
