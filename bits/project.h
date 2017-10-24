@@ -45,9 +45,12 @@ SpVecI project(const SpVecI &x, const SpMatIRow &random_mat) {
   return random_mat * x;
 }
 
-
 int project(const VecI &x, const SpVecI &spv_plus, const SpVecI &spv_minus) {
   return spv_plus.dot(x) - spv_minus.dot(x);
+}
+
+VecI project(const VecI &x, const SpMatIRow &random_mat) {
+  return random_mat * x;
 }
 
 int project(const VecI &x, const VecI &spv_plus, const VecI &spv_minus) {

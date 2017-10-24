@@ -4,6 +4,7 @@
 
 using SpMatI = Eigen::SparseMatrix<int>;
 using SpVecI = Eigen::SparseVector<int>;
+using VecI = Eigen::VectorXi;
 
 void print_sparse_vector(SpVecI sv1) {
   size_t n = sv1.size();
@@ -22,4 +23,9 @@ void print(SpVecI sv1) {
   std::cout << std::endl;
   print_inner_iterator(sv1);
   std::cout << std::endl;
+}
+
+void print_VecI(VecI v) {
+  size_t n = v.size();
+  for(int i = 0; i < n; ++i) std::cout << v[i] << " ";
 }

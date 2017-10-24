@@ -48,10 +48,14 @@ int main(int argc, char** argv) {
   std::mt19937 gen(seed);
   std::bernoulli_distribution data_dist(data_density);
 
+  VecI query_vec = VecI::Zero(dim);
   std::vector<T> triplets2;
   SpMatI spmat(dim, 1);
   for(int i = 0; i < dim; ++i) {
-    if(data_dist(gen)) triplets2.push_back(T(i, 0, 1));
+    if(data_dist(gen)) {
+      triplets2.push_back(T(i, 0, 1));
+      query_vec[i] = 1;
+    }
   }
 
   spmat.setFromTriplets(triplets2.begin(), triplets2.end());
@@ -66,16 +70,14 @@ int main(int argc, char** argv) {
   end = omp_get_wtime();
   std::cout << "projected values:\n";
   print_sparse_vector(proj_spvec);
-  std::cout << "\n\nprojection time for vector<int> version: " << end - start << std::endl;
+  std::cout << "\nprojection time for SparseVector / SparseMatrix version: " << end - start << std::endl << std::endl;
 
-
-
-
-
-
-
-
-
+  start = omp_get_wtime();
+  VecI proj_vec = project(query_vec, sparse_random_matrix);
+  end = omp_get_wtime();
+  std::cout << "projected values:\n";
+  print_VecI(proj_vec);
+  std::cout << "\nprojection time for Vector / SparseMatrix version: " << end - start << std::endl << std::endl;
 
 
 
