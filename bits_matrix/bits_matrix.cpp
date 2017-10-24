@@ -3,6 +3,7 @@
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 #include <omp.h>
+#include <cmath>
 #include "project.h"
 #include "utility.h"
 
@@ -34,15 +35,15 @@ SpMatIRow build_sparse_random_matrix(int n_pool, int dim, double density, int se
 }
 
 int main(int argc, char** argv) {
-  if(argc != 2) {
-    std::cerr << "Usage: " << argv[0] << " <seed>." << std::endl;
+  if(argc != 3) {
+    std::cerr << "Usage: " << argv[0] << " <seed> <n>" << std::endl;
     return -1;
   }
 
   int seed = atoi(argv[1]);
-  int n_pool = 5;
-  int dim = 10;
-  double density = 0.5;
+  int n_pool = atoi(argv[2]);
+  int dim = 23223411;
+  double density = 1.0 / std::sqrt(784); // mnist data set
   double data_density = 0.25;
   std::mt19937 gen(seed);
   std::bernoulli_distribution data_dist(data_density);
@@ -65,7 +66,7 @@ int main(int argc, char** argv) {
   end = omp_get_wtime();
   std::cout << "projected values:\n";
   print_sparse_vector(proj_spvec);
-  std::cout << "projection time for vector<int> version: " << end - start << std::endl;
+  std::cout << "\n\nprojection time for vector<int> version: " << end - start << std::endl;
 
 
 
