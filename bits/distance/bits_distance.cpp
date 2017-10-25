@@ -1,3 +1,4 @@
+#include <vector>
 #include <iostream>
 #include <random>
 #include <Eigen/Dense>
@@ -27,14 +28,11 @@ int main(int argc, char** argv) {
   }
 
   int seed = atoi(argv[1]);
-  int n = atoi(argv[2]);
+  size_t n = atoi(argv[2]);
 
-  // int dim = 23223411;
-  int dim = 10;
-
-  // double density = 1.0 / std::sqrt(784); // mnist data set
-  // double density = 0.000021; // Ecoli data set
-  double density = 0.5;
+  // size_t dim = 23223411;
+  size_t dim = 10;
+  bool verbose = dim < 50 && n < 50;
 
   double data_density = 0.25;
   std::mt19937 gen(seed);
@@ -58,15 +56,38 @@ int main(int argc, char** argv) {
   spmat.setFromTriplets(triplets2.begin(), triplets2.end());
   SpVecI query_spvec = spmat.col(0);
 
+  MatI data_matrix;
+  start = omp_get_wtime();
+  generate_data_matrix(n, dim, data_density, seed, data_matrix);
+  end = omp_get_wtime();
+  std::cout << "Data generation time: " << end - start << std::endl;
 
-  MatI data_matrix = generate_data_matrix(n, dim, data_density);
+  start = omp_get_wtime();
+  SpMatI sparse_data_matrix(dim, n);
+  generate_sparse_data_matrix(n, dim, data_density, seed, sparse_data_matrix);
+  end = omp_get_wtime();
+  std::cout << "Data generation time for sparse matrix: " << end - start << std::endl;
 
-  std::cout << query_bitset << std::endl;
-  print_Vec(query_vec);
-  std::cout << "\n\n";
-  print_sparse_vector(query_spvec);
-  std::cout << "\n\n";
-  std::cout << data_matrix << std::endl;
+  start = omp_get_wtime();
+  dynamic_bitset<> bitset_data(n * dim);
+  generate_data_bitset(n, dim, data_density, seed, bitset_data);
+  end = omp_get_wtime();
+  std::cout << "Data generation time for bitset: " << end - start << std::endl;
+
+  std::cout << std::endl;
+
+  if(verbose) {
+    std::cout << query_bitset << std::endl;
+    print_Vec(query_vec);
+    std::cout << "\n\n";
+    print_sparse_vector(query_spvec);
+    std::cout << "\n\n";
+    std::cout << data_matrix << std::endl << std::endl;
+    std::cout << sparse_data_matrix << std::endl;
+    print(bitset_data, n , dim);
+    std::cout << std::endl;
+  }
+
 
 
   // start = omp_get_wtime();
