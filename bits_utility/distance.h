@@ -1,3 +1,6 @@
+#ifndef DISTANCE_H_
+#define DISTANCE_H_
+
 #include <iostream>
 #include <cstdlib>
 #include <vector>
@@ -140,3 +143,5 @@ int distance_basic(const std::vector<int> &x, const std::vector<int> &y) {
 
   return sum;
 }
+
+#endif

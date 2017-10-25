@@ -1,3 +1,6 @@
+#ifndef PROJECT_H_
+#define PROJECT_H_
+
 #include <iostream>
 #include <cstdlib>
 #include <vector>
@@ -143,3 +146,5 @@ int project_basic2(const std::vector<int> &x, const std::vector<int> &sv_plus, c
 
   return sum_plus - sum_minus;
 }
+
+#endif // PROJECT_H_

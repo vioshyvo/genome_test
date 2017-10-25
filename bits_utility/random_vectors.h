@@ -1,3 +1,6 @@
+#ifndef RANDOM_VECTORS_H_
+#define RANDOM_VECTORS_H_
+
 #include <random>
 #include <boost/dynamic_bitset.hpp>
 #include <Eigen/Dense>
@@ -8,6 +11,7 @@ using boost::dynamic_bitset;
 using SpMatIRow = Eigen::SparseMatrix<int, Eigen::RowMajor>;
 using T = Eigen::Triplet<int>;
 using vec_bs = std::vector<dynamic_bitset<>>;
+using MatI = Eigen::MatrixXi;
 
 
 void build_random_bitset(int n_pool, int dim, double density, int seed,
@@ -15,7 +19,6 @@ void build_random_bitset(int n_pool, int dim, double density, int seed,
   std::mt19937 gen(seed);
   std::uniform_real_distribution<float> uni_dist(0, 1);
   std::bernoulli_distribution coinflip(0.5);
-  int rval;
   dynamic_bitset<> bitset_plus(dim), bitset_minus(dim);
 
   for(int i = 0; i < n_pool; ++i) {
@@ -51,3 +54,9 @@ SpMatIRow build_sparse_random_matrix(int n_pool, int dim, double density, int se
         sparse_random_matrix.makeCompressed();
         return sparse_random_matrix;
 }
+
+MatI generate_data_matrix(int n, int dim, double data_density) {
+  return MatI::Zero(n, dim);
+}
+
+#endif // RANDOM_VECTORS_H_

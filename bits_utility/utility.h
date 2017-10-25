@@ -1,3 +1,6 @@
+#ifndef UTILITY_H_
+#define UTILITY_H_
+
 #include<iostream>
 #include<Eigen/Dense>
 #include<Eigen/Sparse>
@@ -25,7 +28,7 @@ void print(SpVecI sv1) {
   std::cout << std::endl;
 }
 
-void print_VecI(VecI v) {
+void print_Vec(Eigen::VectorXi v) {
   size_t n = v.size();
   for(int i = 0; i < n; ++i) std::cout << v[i] << " ";
 }
@@ -35,3 +38,5 @@ void print_vector(const std::vector<T> &v) {
 size_t n = v.size();
   for(int i = 0; i < n; ++i) std::cout << v[i] << " ";
 }
+
+#endif
