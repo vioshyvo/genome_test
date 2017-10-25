@@ -8,6 +8,7 @@
 #include "project.h"
 #include "utility.h"
 #include "random_vectors.h"
+#include "distance.h"
 
 using boost::dynamic_bitset;
 
@@ -23,6 +24,7 @@ int main(int argc, char** argv) {
     return -1;
   }
 
+  bool projections = true;
   int seed = atoi(argv[1]);
   int n_pool = atoi(argv[2]);
 
@@ -36,6 +38,7 @@ int main(int argc, char** argv) {
   double data_density = 0.25;
   std::mt19937 gen(seed);
   std::bernoulli_distribution data_dist(data_density);
+  double start, end;
 
   VecI query_vec = VecI::Zero(dim);
   dynamic_bitset<> query_bitset(dim);
@@ -54,34 +57,35 @@ int main(int argc, char** argv) {
   spmat.setFromTriplets(triplets2.begin(), triplets2.end());
   SpVecI query_spvec = spmat.col(0);
 
-  SpMatIRow sparse_random_matrix = build_sparse_random_matrix(n_pool, dim, density, seed);
-  vec_bs random_bitset_plus, random_bitset_minus;
-  build_random_bitset(n_pool, dim, density, seed, random_bitset_plus, random_bitset_minus);
+  if(projections) {
+    SpMatIRow sparse_random_matrix = build_sparse_random_matrix(n_pool, dim, density, seed);
+    vec_bs random_bitset_plus, random_bitset_minus;
+    build_random_bitset(n_pool, dim, density, seed, random_bitset_plus, random_bitset_minus);
 
-  double start, end;
+    start = omp_get_wtime();
+    SpVecI proj_spvec;
+    project(query_spvec, sparse_random_matrix, proj_spvec);
+    end = omp_get_wtime();
+    std::cout << "projected values:\n";
+    print_sparse_vector(proj_spvec);
+    std::cout << "\nprojection time for SparseVector / SparseMatrix version: " << end - start << std::endl << std::endl;
 
-  start = omp_get_wtime();
-  SpVecI proj_spvec = project(query_spvec, sparse_random_matrix);
-  end = omp_get_wtime();
-  std::cout << "projected values:\n";
-  print_sparse_vector(proj_spvec);
-  std::cout << "\nprojection time for SparseVector / SparseMatrix version: " << end - start << std::endl << std::endl;
+    start = omp_get_wtime();
+    VecI proj_vec;
+    project(query_vec, sparse_random_matrix, proj_vec);
+    end = omp_get_wtime();
+    std::cout << "projected values:\n";
+    print_VecI(proj_vec);
+    std::cout << "\nprojection time for Vector / SparseMatrix version: " << end - start << std::endl << std::endl;
 
-  start = omp_get_wtime();
-  VecI proj_vec;
-  project(query_vec, sparse_random_matrix, proj_vec);
-  end = omp_get_wtime();
-  std::cout << "projected values:\n";
-  print_VecI(proj_vec);
-  std::cout << "\nprojection time for Vector / SparseMatrix version: " << end - start << std::endl << std::endl;
-
-  start = omp_get_wtime();
-  std::vector<int> proj_vec_dbs;
-  project(query_bitset, random_bitset_plus, random_bitset_minus, proj_vec_dbs);
-  end = omp_get_wtime();
-  std::cout << "projected values:\n";
-  print_vector(proj_vec_dbs);
-  std::cout << "\nprojection time for bitset / bitset version: " << end - start << std::endl << std::endl;
+    start = omp_get_wtime();
+    std::vector<int> proj_vec_dbs;
+    project(query_bitset, random_bitset_plus, random_bitset_minus, proj_vec_dbs);
+    end = omp_get_wtime();
+    std::cout << "projected values:\n";
+    print_vector(proj_vec_dbs);
+    std::cout << "\nprojection time for bitset / bitset version: " << end - start << std::endl << std::endl;
+  }
 
 
 

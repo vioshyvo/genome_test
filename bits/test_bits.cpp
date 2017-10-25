@@ -28,8 +28,8 @@ int main(int argc, char **argv) {
   size_t N = 23223411;
   int seed = atoi(argv[1]);
   double data_density = 0.25;
-  // double density = 0.000021; // Ecoli data set
-  double density = 1.0 / std::sqrt(784); // mnist data set
+  double density = 0.000021; // Ecoli data set
+  // double density = 1.0 / std::sqrt(784); // mnist data set
   // double density = 0.4;
   std::mt19937 gen(seed);
   std::bernoulli_distribution dist(data_density);
