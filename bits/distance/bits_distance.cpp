@@ -30,8 +30,8 @@ int main(int argc, char** argv) {
   int seed = atoi(argv[1]);
   size_t n = atoi(argv[2]);
 
-  // size_t dim = 23223411;
-  size_t dim = 10;
+  size_t dim = 23223411;
+  // size_t dim = 10;
   bool verbose = dim < 50 && n < 50;
 
   double data_density = 0.25;
@@ -89,15 +89,21 @@ int main(int argc, char** argv) {
   }
 
 
+  start = omp_get_wtime();
+  VecI distance_vec(n);
+  distance2(query_vec, data_matrix, distance_vec);
+  end = omp_get_wtime();
+  std::cout << "distances:";
+  print_Vec(distance_vec);
+  std::cout << "\ntime for squaredNorm Vector / Matrix version: " << end - start << std::endl;
 
-  // start = omp_get_wtime();
-  // VecF distance_vec(n);
-  // distance(q, data_matrix, distance_vec);
-  // end = omp_get_wtime();
-  // std::cout << "distances:\n";
-  // print_Vec(distance_vec);
-  // std::cout << "Distance time for Matrix / SparseMatrix version: " << end - start << std::endl << std::endl;
-
+  start = omp_get_wtime();
+  VecI distance_vec2(n);
+  distance3(query_vec, data_matrix, distance_vec2);
+  end = omp_get_wtime();
+  std::cout << "distances:";
+  print_Vec(distance_vec2);
+  std::cout << "\ntime for lpNorm<1> VectorXi version: " << end - start << std::endl;
 
 
 
