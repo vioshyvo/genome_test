@@ -43,7 +43,8 @@ images/*
 eigen/*
 googletest/*
 googletest
-bits/test_bits
-bits_matrix/bits_matrix
+bits/vector/test_bits
+bits/projection/bits_matrix
+bits/distance/bits_distance
 
 *.aalto.fi
