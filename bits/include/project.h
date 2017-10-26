@@ -30,6 +30,26 @@ int project(const dynamic_bitset<> &x, const vec_bs &bitset_plus, const vec_bs &
   }
 }
 
+int project_basic(const dynamic_bitset<> &x, const std::vector<int> &sv_plus, const std::vector<int> &sv_minus) {
+  int sum_plus = 0, sum_minus = 0;
+  size_t n = sv_plus.size();
+  size_t n_plus = sv_plus.size(), n_minus = sv_minus.size();
+  for(int i = 0; i < n_plus; ++i) {
+    if(x.test(sv_plus[i])) ++sum_plus;
+  }
+  for(int i = 0; i < n_minus; ++i) {
+    if(x.test(sv_minus[i])) ++sum_minus;
+  }
+  return sum_plus - sum_minus;
+}
+
+void project(const dynamic_bitset<> &q, const std::vector<std::vector<int>> &random_vectors_plus,
+             const std::vector<std::vector<int>> &random_vectors_minus, std::vector<int> &out_projections) {
+    int n_pool = random_vectors_plus.size();
+    for(int i = 0; i < n_pool; ++i)
+      out_projections.push_back(project_basic(q, random_vectors_plus[i], random_vectors_minus[i]));
+}
+
 int project(const std::vector<int> &x, const std::vector<int> &rv_plus, const std::vector<int> &rv_minus) {
   int sum = 0;
   int xval;
@@ -52,7 +72,7 @@ int project(const std::vector<bool> &x, const std::vector<bool> &rv_plus, const 
   return sum;
 }
 
-int project(const SpVecI &x, const SpVecI &spv_plus, const SpVecI &spv_minus){
+int project_vec(const SpVecI &x, const SpVecI &spv_plus, const SpVecI &spv_minus){
   return x.dot(spv_plus) - x.dot(spv_minus);
 }
 

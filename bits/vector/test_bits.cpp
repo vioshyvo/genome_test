@@ -188,7 +188,7 @@ int main(int argc, char **argv) {
     std::cout << "projection time for dynamic_bitset version: " << end - start << std::endl;
 
     start = omp_get_wtime();
-    int proj_eigen_ss = project(spv1, spv_plus, spv_minus);
+    int proj_eigen_ss = project_vec(spv1, spv_plus, spv_minus);
     end = omp_get_wtime();
     std::cout << "projected value: " << proj_eigen_ss << std::endl;
     std::cout << "projection time for SparseVector<int> / SparseVector<int> version: " << end - start << std::endl;
@@ -222,6 +222,13 @@ int main(int argc, char **argv) {
     end = omp_get_wtime();
     std::cout << "projected value: " << proj_basic_basic << std::endl;
     std::cout << "projection time for basic / basic version: " << end - start << std::endl;
+
+    start = omp_get_wtime();
+    int proj_bitset_basic = project_basic(dbitset1, bv_plus, bv_minus);
+    end = omp_get_wtime();
+    std::cout << "projected value: " << proj_bitset_basic << std::endl;
+    std::cout << "projection time for bitset / basic version: " << end - start << std::endl;
+
 
     std::cout << std::endl;
   }

@@ -74,7 +74,34 @@ SpMatIRow build_sparse_random_matrix(int n_pool, int dim, double density, int se
         return sparse_random_matrix;
 }
 
-SpMatI generate_sparse_data_matrix(int n, int dim, double data_density, int seed, SpMatI &out_mat) {
+void build_random_vectors(int n_pool, int dim, double density, int seed,
+                          std::vector<std::vector<int>> &random_vectors_plus,
+                          std::vector<std::vector<int>> &random_vectors_minus) {
+  std::mt19937 gen(seed);
+  std::uniform_real_distribution<float> uni_dist(0, 1);
+  std::bernoulli_distribution coinflip(0.5);
+  int rval;
+
+  for(int j = 0; j < n_pool; ++j) {
+    std::vector<int> vec_plus;
+    std::vector<int> vec_minus;
+    for(int i = 0; i < dim; ++i) {
+      if(uni_dist(gen) > density) continue;
+      if(coinflip(gen)) {
+        vec_plus.push_back(i);
+      } else {
+        vec_minus.push_back(i);
+      }
+    }
+    random_vectors_plus.push_back(vec_plus);
+    random_vectors_minus.push_back(vec_minus);
+  }
+
+
+
+}
+
+void generate_sparse_data_matrix(int n, int dim, double data_density, int seed, SpMatI &out_mat) {
   std::mt19937 gen(seed);
   std::bernoulli_distribution data_dist(data_density);
   std::vector<T> triplets;

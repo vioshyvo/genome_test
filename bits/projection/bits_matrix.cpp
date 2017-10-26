@@ -60,6 +60,10 @@ int main(int argc, char** argv) {
   vec_bs random_bitset_plus, random_bitset_minus;
   build_random_bitset(n_pool, dim, density, seed, random_bitset_plus, random_bitset_minus);
 
+  std::vector<std::vector<int>> random_vectors_minus;
+  std::vector<std::vector<int>> random_vectors_plus;
+  build_random_vectors(n_pool, dim, density, seed, random_vectors_plus, random_vectors_minus);
+
   start = omp_get_wtime();
   SpVecI proj_spvec;
   project(query_spvec, sparse_random_matrix, proj_spvec);
@@ -84,6 +88,13 @@ int main(int argc, char** argv) {
   print_vector(proj_vec_dbs);
   std::cout << "\nprojection time for bitset / bitset version: " << end - start << std::endl << std::endl;
 
+  start = omp_get_wtime();
+  std::vector<int> proj_vec_basic;
+  project(query_bitset, random_vectors_plus, random_vectors_minus, proj_vec_basic);
+  end = omp_get_wtime();
+  std::cout << "projected values:\n";
+  print_vector(proj_vec_basic);
+  std::cout << "\nprojection time for bitset / basic version: " << end - start << std::endl << std::endl;
 
 
 
