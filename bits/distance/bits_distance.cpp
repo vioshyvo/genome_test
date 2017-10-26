@@ -20,6 +20,8 @@ using T = Eigen::Triplet<int>;
 using vec_bs = std::vector<dynamic_bitset<>>;
 using MatI = Eigen::MatrixXi;
 using VecF = Eigen::VectorXf;
+using MatF = Eigen::MatrixXf;
+
 
 int main(int argc, char** argv) {
   if(argc != 3) {
@@ -41,6 +43,7 @@ int main(int argc, char** argv) {
   double start, end;
 
   VecI query_vec = VecI::Zero(dim);
+  VecF query_vec_float = VecF::Zero(dim);
   dynamic_bitset<> query_bitset(dim);
   query_bitset.reset();
 
@@ -50,6 +53,7 @@ int main(int argc, char** argv) {
     if(data_dist(gen)) {
       triplets2.push_back(T(i, 0, 1));
       query_vec[i] = 1;
+      query_vec_float[i] = 1;
       query_bitset.set(i);
     }
   }
@@ -75,6 +79,12 @@ int main(int argc, char** argv) {
   end = omp_get_wtime();
   std::cout << "Data generation time for bitset: " << end - start << std::endl;
 
+  start = omp_get_wtime();
+  MatF float_data_matrix;
+  generate_data_matrix_float(n, dim, data_density, seed, float_data_matrix);
+  end = omp_get_wtime();
+  std::cout << "Data generation time for float matrix: " << end - start << std::endl;
+
   std::cout << std::endl;
 
   if(verbose) {
@@ -86,6 +96,7 @@ int main(int argc, char** argv) {
     std::cout << data_matrix << std::endl << std::endl;
     std::cout << sparse_data_matrix << std::endl;
     print(bitset_data);
+    std::cout << std::endl << float_data_matrix << std::endl;
     std::cout << std::endl;
   }
 
@@ -159,6 +170,28 @@ int main(int argc, char** argv) {
     print_Vec(distance_bitset);
   }
   std::cout << "\ntime for dynamic_bitset version: " << end - start << std::endl;
+
+  start = omp_get_wtime();
+  VecF distance_vec_float(n);
+  distance2(query_vec_float, float_data_matrix, distance_vec_float);
+  end = omp_get_wtime();
+  if(print_distances) {
+    std::cout << "distances:";
+    print(distance_vec_float);
+  }
+  std::cout << "\ntime for float Vector / Matrix version: " << end - start << std::endl;
+
+
+
+
+
+
+
+
+
+
+
+
 
   return 0;
 }

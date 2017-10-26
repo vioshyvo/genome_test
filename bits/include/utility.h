@@ -37,6 +37,12 @@ void print_Vec(Eigen::VectorXi v) {
   for(int i = 0; i < n; ++i) std::cout << v[i] << " ";
 }
 
+void print(Eigen::VectorXf v) {
+  size_t n = v.size();
+  for(int i = 0; i < n; ++i) std::cout << v[i] << " ";
+}
+
+
 template<typename T>
 void print_vector(const std::vector<T> &v) {
 size_t n = v.size();

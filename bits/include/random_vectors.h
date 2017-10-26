@@ -14,6 +14,7 @@ using T = Eigen::Triplet<int>;
 using vec_bs = std::vector<dynamic_bitset<>>;
 using MatI = Eigen::MatrixXi;
 using SpMatI = Eigen::SparseMatrix<int>;
+using MatF = Eigen::MatrixXf;
 
 
 void build_random_bitset(int n_pool, int dim, double density, int seed,
@@ -97,8 +98,6 @@ void build_random_vectors(int n_pool, int dim, double density, int seed,
     random_vectors_minus.push_back(vec_minus);
   }
 
-
-
 }
 
 void generate_sparse_data_matrix(int n, int dim, double data_density, int seed, SpMatI &out_mat) {
@@ -123,6 +122,15 @@ void generate_data_matrix(int n, int dim, double data_density, int seed, MatI &o
       if(data_dist(gen)) out_mat(i, j) = 1;
 }
 
+void generate_data_matrix_float(int n, int dim, double data_density, int seed, MatF &out_mat) {
+  out_mat =  MatF::Zero(dim, n);
+  std::mt19937 gen(seed);
+  std::bernoulli_distribution data_dist(data_density);
+
+  for(int j = 0; j < n; ++j)
+    for(int i = 0; i < dim; ++i)
+      if(data_dist(gen)) out_mat(i, j) = 1;
+}
 
 
 

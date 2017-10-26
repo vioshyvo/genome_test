@@ -17,6 +17,7 @@ using InIterVec = SpVecI::InnerIterator;
 using MatI = Eigen::MatrixXi;
 using VecF = Eigen::VectorXf;
 using SpMatI = Eigen::SparseMatrix<int>;
+using MatF = Eigen::MatrixXf;
 
 
 int distance(const std::vector<int> &x, const std::vector<int> &y) {
@@ -129,11 +130,22 @@ int distance2(const VecI &x, const VecI &y) {
   return (x - y).squaredNorm();
 }
 
+float distance2(const VecF &x, const VecF &y) {
+  return (x - y).squaredNorm();
+}
+
 void distance2(const VecI &q, const MatI &X, VecI &distances) {
   int n = X.cols();
   for(int i = 0; i < n; ++i)
     distances[i] = (X.col(i) - q).squaredNorm();
 }
+
+void distance2(const VecF &q, const MatF &X, VecF &distances) {
+  int n = X.cols();
+  for(int i = 0; i < n; ++i)
+    distances[i] = (X.col(i) - q).squaredNorm();
+}
+
 
 int distance3(const VecI &x, const VecI &y) {
   return (x - y).lpNorm<1>();
