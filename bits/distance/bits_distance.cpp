@@ -30,8 +30,8 @@ int main(int argc, char** argv) {
   int seed = atoi(argv[1]);
   size_t n = atoi(argv[2]);
 
-  size_t dim = 23223411;
-  // size_t dim = 10;
+  // size_t dim = 23223411;
+  size_t dim = 10;
   bool verbose = dim < 50 && n < 50;
 
   double data_density = 0.25;
@@ -69,7 +69,7 @@ int main(int argc, char** argv) {
   std::cout << "Data generation time for sparse matrix: " << end - start << std::endl;
 
   start = omp_get_wtime();
-  dynamic_bitset<> bitset_data(n * dim);
+  std::vector<dynamic_bitset<>> bitset_data;
   generate_data_bitset(n, dim, data_density, seed, bitset_data);
   end = omp_get_wtime();
   std::cout << "Data generation time for bitset: " << end - start << std::endl;
@@ -84,7 +84,7 @@ int main(int argc, char** argv) {
     std::cout << "\n\n";
     std::cout << data_matrix << std::endl << std::endl;
     std::cout << sparse_data_matrix << std::endl;
-    print(bitset_data, n , dim);
+    print(bitset_data);
     std::cout << std::endl;
   }
 
@@ -136,7 +136,14 @@ int main(int argc, char** argv) {
   std::cout << "distances:";
   print_Vec(distance_spvec2);
   std::cout << "\ntime for SparseVector / Matrix version: " << end - start << std::endl;
-  
+
+  // start = omp_get_wtime();
+  // VecI distance_bitset(n);
+  // distance(query_bitset, data_bitset, distance_bitset);
+  // end = omp_get_wtime();
+  // std::cout << "distances:";
+  // print_Vec(distance_bitset);
+  // std::cout << "\ntime for dynamic_bitset version: " << end - start << std::endl;
 
   return 0;
 }

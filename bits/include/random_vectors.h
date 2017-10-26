@@ -35,15 +35,21 @@ void build_random_bitset(int n_pool, int dim, double density, int seed,
   }
 };
 
-void generate_data_bitset(int n, int dim, double data_density, int seed, dynamic_bitset<> &out_bitset) {
-  out_bitset.reset();
-
+void generate_data_bitset(int n, int dim, double data_density, int seed, std::vector<dynamic_bitset<>> &out_vec) {
   std::mt19937 gen(seed);
   std::bernoulli_distribution data_dist(data_density);
+  dynamic_bitset<> x(dim);
 
-  size_t n_total = n * dim;
-  for(int i = 0; i < n_total; ++i)
-    if(data_dist(gen)) out_bitset.set(i);
+  for(int i = 0; i < n; ++i) {
+    x.reset();
+
+    for(int j = 0; j < dim; ++j)
+      if(data_dist(gen)) x.set(j);
+
+    out_vec.push_back(x);
+  }
+
+
 }
 
 SpMatIRow build_sparse_random_matrix(int n_pool, int dim, double density, int seed) {

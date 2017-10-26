@@ -43,10 +43,17 @@ size_t n = v.size();
   for(int i = 0; i < n; ++i) std::cout << v[i] << " ";
 }
 
-void print(dynamic_bitset<> bs, int n, int dim) {
+void print(std::vector<dynamic_bitset<>> &bs_vec) {
+  int n = bs_vec.size();
+  if(n == 0) {
+    std::cout << "Empty vector.";
+    return;
+  }
+  int dim = bs_vec[0].size();
+
   for(int j = 0; j < dim; ++j) {
     for(int i = 0; i < n; ++i) {
-      std::cout << bs[i * dim + j] << " ";
+      std::cout << bs_vec[i][j] << " ";
     }
     std::cout << std::endl;
   }
