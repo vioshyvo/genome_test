@@ -98,7 +98,7 @@ int distance2(const VecI &x, const VecI &y) {
   return (x - y).squaredNorm();
 }
 
-int distance2(const VecI &q, const MatI &X, VecI &distances) {
+void distance2(const VecI &q, const MatI &X, VecI &distances) {
   int n = X.cols();
   for(int i = 0; i < n; ++i)
     distances[i] = (X.col(i) - q).squaredNorm();
@@ -108,7 +108,7 @@ int distance3(const VecI &x, const VecI &y) {
   return (x - y).lpNorm<1>();
 }
 
-int distance3(const VecI &q, const MatI &X, VecI &distances){
+void distance3(const VecI &q, const MatI &X, VecI &distances){
   int n = X.cols();
   for(int i = 0; i < n; ++i)
     distances[i] = (X.col(i) - q).lpNorm<1>();
@@ -116,6 +116,12 @@ int distance3(const VecI &q, const MatI &X, VecI &distances){
 
 int distance4(const VecI &x, const VecI &y) {
   return (x - y).count();
+}
+
+void distance4(const VecI &q, const MatI &X, VecI &distances) {
+  int n = X.cols();
+  for(int i = 0; i < n; ++i)
+    distances[i] = (X.col(i) - q).count();
 }
 
 int distance_basic(const std::vector<int> &x, const std::vector<int> &y) {

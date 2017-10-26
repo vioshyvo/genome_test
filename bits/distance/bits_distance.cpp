@@ -103,8 +103,15 @@ int main(int argc, char** argv) {
   end = omp_get_wtime();
   std::cout << "distances:";
   print_Vec(distance_vec2);
-  std::cout << "\ntime for lpNorm<1> VectorXi version: " << end - start << std::endl;
+  std::cout << "\ntime for lpNorm<1> Vector / Matrix version: " << end - start << std::endl;
 
+  start = omp_get_wtime();
+  VecI distance_vec3(n);
+  distance4(query_vec, data_matrix, distance_vec3);
+  end = omp_get_wtime();
+  std::cout << "distances:";
+  print_Vec(distance_vec3);
+  std::cout << "\ntime for count Vector / Matrix version: " << end - start << std::endl;
 
 
 
