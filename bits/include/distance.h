@@ -9,6 +9,8 @@
 #include <Eigen/Sparse>
 #include <Eigen/Dense>
 
+using boost::dynamic_bitset;
+
 using SpVecI = Eigen::SparseVector<int>;
 using VecI = Eigen::VectorXi;
 using InIterVec = SpVecI::InnerIterator;
@@ -26,8 +28,14 @@ int distance(const std::vector<int> &x, const std::vector<int> &y) {
   return sum;
 }
 
-int distance(const boost::dynamic_bitset<> &x, const boost::dynamic_bitset<> &y) {
+int distance(const dynamic_bitset<> &x, const dynamic_bitset<> &y) {
   return (x ^ y).count();
+}
+
+void distance(const dynamic_bitset<> &q, const std::vector<dynamic_bitset<>> &X, VecI &out_distances) {
+  int n = X.size();
+  for(int i = 0; i < n; ++i)
+    out_distances[i] = distance(q, X[i]);
 }
 
 int distance(const std::vector<bool> &x, const std::vector<bool> &y) {

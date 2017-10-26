@@ -30,9 +30,10 @@ int main(int argc, char** argv) {
   int seed = atoi(argv[1]);
   size_t n = atoi(argv[2]);
 
-  // size_t dim = 23223411;
-  size_t dim = 10;
+  size_t dim = 23223411;
+  // size_t dim = 10;
   bool verbose = dim < 50 && n < 50;
+  bool print_distances = n <= 10;
 
   double data_density = 0.25;
   std::mt19937 gen(seed);
@@ -93,57 +94,71 @@ int main(int argc, char** argv) {
   VecI distance_vec(n);
   distance2(query_vec, data_matrix, distance_vec);
   end = omp_get_wtime();
-  std::cout << "distances:";
-  print_Vec(distance_vec);
+  if(print_distances) {
+    std::cout << "distances:";
+    print_Vec(distance_vec);
+  }
   std::cout << "\ntime for squaredNorm Vector / Matrix version: " << end - start << std::endl;
 
   start = omp_get_wtime();
   VecI distance_vec2(n);
   distance3(query_vec, data_matrix, distance_vec2);
   end = omp_get_wtime();
-  std::cout << "distances:";
-  print_Vec(distance_vec2);
+  if(print_distances) {
+    std::cout << "distances:";
+    print_Vec(distance_vec2);
+  }
   std::cout << "\ntime for lpNorm<1> Vector / Matrix version: " << end - start << std::endl;
 
   start = omp_get_wtime();
   VecI distance_vec3(n);
   distance4(query_vec, data_matrix, distance_vec3);
   end = omp_get_wtime();
-  std::cout << "distances:";
-  print_Vec(distance_vec3);
+  if(print_distances) {
+    std::cout << "distances:";
+    print_Vec(distance_vec3);
+  }
   std::cout << "\ntime for count Vector / Matrix version: " << end - start << std::endl;
 
   start = omp_get_wtime();
   VecI distance_spvec(n);
   distance(query_spvec, sparse_data_matrix, distance_spvec);
   end = omp_get_wtime();
-  std::cout << "distances:";
-  print_Vec(distance_spvec);
+  if(print_distances) {
+    std::cout << "distances:";
+    print_Vec(distance_spvec);
+  }
   std::cout << "\ntime for SparseVector / SparseMatrix version: " << end - start << std::endl;
 
   start = omp_get_wtime();
   VecI distance_vec4(n);
   distance(query_vec, sparse_data_matrix, distance_vec4);
   end = omp_get_wtime();
-  std::cout << "distances:";
-  print_Vec(distance_vec4);
+  if(print_distances) {
+    std::cout << "distances:";
+    print_Vec(distance_vec4);
+  }
   std::cout << "\ntime for Vector / SparseMatrix version: " << end - start << std::endl;
 
   start = omp_get_wtime();
   VecI distance_spvec2(n);
   distance(query_spvec, data_matrix, distance_spvec2);
   end = omp_get_wtime();
-  std::cout << "distances:";
-  print_Vec(distance_spvec2);
+  if(print_distances) {
+    std::cout << "distances:";
+    print_Vec(distance_spvec2);
+  }
   std::cout << "\ntime for SparseVector / Matrix version: " << end - start << std::endl;
 
-  // start = omp_get_wtime();
-  // VecI distance_bitset(n);
-  // distance(query_bitset, data_bitset, distance_bitset);
-  // end = omp_get_wtime();
-  // std::cout << "distances:";
-  // print_Vec(distance_bitset);
-  // std::cout << "\ntime for dynamic_bitset version: " << end - start << std::endl;
+  start = omp_get_wtime();
+  VecI distance_bitset(n);
+  distance(query_bitset, bitset_data, distance_bitset);
+  end = omp_get_wtime();
+  if(print_distances) {
+    std::cout << "distances:";
+    print_Vec(distance_bitset);
+  }
+  std::cout << "\ntime for dynamic_bitset version: " << end - start << std::endl;
 
   return 0;
 }
