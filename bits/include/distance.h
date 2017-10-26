@@ -14,6 +14,7 @@ using VecI = Eigen::VectorXi;
 using InIterVec = SpVecI::InnerIterator;
 using MatI = Eigen::MatrixXi;
 using VecF = Eigen::VectorXf;
+using SpMatI = Eigen::SparseMatrix<int>;
 
 
 int distance(const std::vector<int> &x, const std::vector<int> &y) {
@@ -78,6 +79,28 @@ int distance(const SpVecI &x, const SpVecI &y) {
   }
 
   return sum;
+}
+
+void distance(const SpVecI &q, const SpMatI &X, VecI &distances) {
+  int n = X.cols();
+  for(int i = 0; i < n; ++i)
+    distances[i] = distance(q, X.col(i));
+}
+
+int distance(const VecI &x, const SpVecI &y) {
+  return (x - y).squaredNorm();
+}
+
+void distance(const VecI &q, const SpMatI &X, VecI &distances) {
+  int n = X.cols();
+  for(int i = 0; i < n; ++i)
+    distances[i] = distance(q, X.col(i));
+}
+
+void distance(const SpVecI &q, const MatI &X, VecI &distances) {
+  int n = X.cols();
+  for(int i = 0; i < n; ++i)
+    distances[i] = distance(X.col(i), q);
 }
 
 int distance2(const SpVecI &x, const SpVecI &y) {

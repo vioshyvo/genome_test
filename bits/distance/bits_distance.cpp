@@ -113,11 +113,30 @@ int main(int argc, char** argv) {
   print_Vec(distance_vec3);
   std::cout << "\ntime for count Vector / Matrix version: " << end - start << std::endl;
 
+  start = omp_get_wtime();
+  VecI distance_spvec(n);
+  distance(query_spvec, sparse_data_matrix, distance_spvec);
+  end = omp_get_wtime();
+  std::cout << "distances:";
+  print_Vec(distance_spvec);
+  std::cout << "\ntime for SparseVector / SparseMatrix version: " << end - start << std::endl;
 
+  start = omp_get_wtime();
+  VecI distance_vec4(n);
+  distance(query_vec, sparse_data_matrix, distance_vec4);
+  end = omp_get_wtime();
+  std::cout << "distances:";
+  print_Vec(distance_vec4);
+  std::cout << "\ntime for Vector / SparseMatrix version: " << end - start << std::endl;
 
-
-
-
+  start = omp_get_wtime();
+  VecI distance_spvec2(n);
+  distance(query_spvec, data_matrix, distance_spvec2);
+  end = omp_get_wtime();
+  std::cout << "distances:";
+  print_Vec(distance_spvec2);
+  std::cout << "\ntime for SparseVector / Matrix version: " << end - start << std::endl;
+  
 
   return 0;
 }
