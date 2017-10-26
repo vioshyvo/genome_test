@@ -38,6 +38,7 @@ int main(int argc, char** argv) {
   std::mt19937 gen(seed);
   std::bernoulli_distribution data_dist(data_density);
   double start, end;
+  bool print_projections = n_pool <= 10;
 
   VecI query_vec = VecI::Zero(dim);
   dynamic_bitset<> query_bitset(dim);
@@ -68,33 +69,41 @@ int main(int argc, char** argv) {
   SpVecI proj_spvec;
   project(query_spvec, sparse_random_matrix, proj_spvec);
   end = omp_get_wtime();
-  std::cout << "projected values:\n";
-  print_sparse_vector(proj_spvec);
-  std::cout << "\nprojection time for SparseVector / SparseMatrix version: " << end - start << std::endl << std::endl;
+  if(print_projections) {
+    std::cout << "projected values:\n";
+    print_sparse_vector(proj_spvec);
+  }
+  std::cout << "\nprojection time for SparseVector / SparseMatrix version: " << end - start << std::endl;
 
   start = omp_get_wtime();
   VecI proj_vec;
   project(query_vec, sparse_random_matrix, proj_vec);
   end = omp_get_wtime();
-  std::cout << "projected values:\n";
-  print_Vec(proj_vec);
-  std::cout << "\nprojection time for Vector / SparseMatrix version: " << end - start << std::endl << std::endl;
+  if(print_projections) {
+    std::cout << "projected values:\n";
+    print_Vec(proj_vec);
+  }
+  std::cout << "\nprojection time for Vector / SparseMatrix version: " << end - start << std::endl;
 
   start = omp_get_wtime();
   std::vector<int> proj_vec_dbs;
   project(query_bitset, random_bitset_plus, random_bitset_minus, proj_vec_dbs);
   end = omp_get_wtime();
-  std::cout << "projected values:\n";
-  print_vector(proj_vec_dbs);
-  std::cout << "\nprojection time for bitset / bitset version: " << end - start << std::endl << std::endl;
+  if(print_projections) {
+    std::cout << "projected values:\n";
+    print_vector(proj_vec_dbs);
+  }
+    std::cout << "\nprojection time for bitset / bitset version: " << end - start << std::endl;
 
   start = omp_get_wtime();
   std::vector<int> proj_vec_basic;
   project(query_bitset, random_vectors_plus, random_vectors_minus, proj_vec_basic);
   end = omp_get_wtime();
-  std::cout << "projected values:\n";
-  print_vector(proj_vec_basic);
-  std::cout << "\nprojection time for bitset / basic version: " << end - start << std::endl << std::endl;
+  if(print_projections) {
+    std::cout << "projected values:\n";
+    print_vector(proj_vec_basic);
+  }
+  std::cout << "\nprojection time for bitset / basic version: " << end - start << std::endl;
 
 
 
