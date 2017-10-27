@@ -73,3 +73,9 @@ Scripts that can be used to run the C++ tools in SLURM system are in the directo
     - `legend_label` : which attribute is used for legend; current choices are `sparsity` and `depth`.
     - `show_title` : add title given by the argument `title` to plots.
     - `exact_time` : time of exact search for one query point.
+
+### Misc scripts
+
+`get_mnist.sh`
+  - load mnist data set into `data/mnist/mnist.bin` for testing.
+  - converts it into binary form (float array in saved in col-major form, dimension of data is `d = 784`). 
