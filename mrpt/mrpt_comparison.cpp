@@ -75,7 +75,7 @@ int main(int argc, char **argv) {
     }
 
 
-    const Map<const MatrixXf> *M = new Map<const MatrixXf>(train, dim, n_train);
+    const Map<const MatrixXf> *M = new Map<const MatrixXf>(train, dim, n_points);
 
     Mrpt index_dense(M, n_trees, depth, sparsity);
     index_dense.grow();
@@ -85,20 +85,16 @@ int main(int argc, char **argv) {
         if (votes > n_trees) continue;
 
         std::vector<double> times;
-        std::vector<double> projection_times, exact_times, elect_times;
         double projection_time = 0, exact_time = 0, elect_time = 0;
         std::vector<std::set<int>> idx;
 
         for (int i = 0; i < ntest; ++i) {
                 std::vector<int> result(k);
                 double start = omp_get_wtime();
-                int k_found = index_dense.query(Map<VectorXf>(&test[i * dim], dim), k, votes, &result[0], projection_time, exact_time, elect_time);
-
+                int k_found = index_dense.query(Map<VectorXf>(&test[i * dim], dim), k, votes, &result[0]);
+                
                 double end = omp_get_wtime();
                 times.push_back(end - start);
-                projection_times.push_back(projection_time);
-                exact_times.push_back(exact_time);
-                elect_times.push_back(elect_time);
                 idx.push_back(std::set<int>(result.begin(), result.begin() + k_found)); // k_found (<= k) is the number of k-nn canditates returned
             }
 
@@ -107,7 +103,7 @@ int main(int argc, char **argv) {
         else
             std::cout << k << " " << n_trees << " " << depth << " " << sparsity << " " << votes << " ";
 
-        results(k, times, idx, (result_path + "truth_" + std::to_string(k)).c_str(), verbose, projection_times, exact_times, elect_times);
+        results(k, times, idx, (result_path + "truth_" + std::to_string(k)).c_str(), verbose);
 
     }
 

@@ -33,6 +33,7 @@ Scripts that can be used to run C++ tools locally
   - Wrapper for `exact/tester` and `mrpt/mrpt_comparison`.
   - Assumes that the parameters of the test run are saved in the file `parameters/<data-name><n><postfix>.sh`
   or  `parameters/<data-name><n>.sh` (parameter `<postfix>` is optional).
+  - If data set (such as `mnist`) name has no sample size, you can give empty string (`""`) as the second argument `n`.
   - Saves results into a directory `results/<data-name><n><postfix>` (or into `parameters/<data-name><n>`, respectively).
 
 ### SLURM wrappers
@@ -79,4 +80,4 @@ Scripts that can be used to run the C++ tools in SLURM system are in the directo
 `get_mnist.sh`
   - load mnist data set into `data/mnist/` for testing.
   - converts it into binary form (float array in saved in col-major form, dimension of data is `d = 784`).
-  - loads the whole data set (`data.bin`), and divides it into a training set (`train.bin`) and a test set (`test.bin`); the test set has `TEST_N = 100` points the and training set has 59900 points with this value of `TEST_N`. 
+  - loads the whole data set (`data.bin`), and divides it into a training set (`train.bin`) and a test set (`test.bin`); the test set has `TEST_N = 100` points the and training set has 59900 points with this value of `TEST_N`.

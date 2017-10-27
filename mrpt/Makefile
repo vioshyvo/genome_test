@@ -1,11 +1,12 @@
+BASEPATH=..
 EIGEN_PATH=../eigen
-MRPT_PATH=..
+MRPT_PATH=$(BASEPATH)/../mrpt
 
-CPPFLAGS=-I$(EIGEN_PATH) -I$(MRPT_PATH)
-CXXFLAGS=-O3 -std=c++11 -fexceptions -Wall
+CPPFLAGS=-I$(BASEPATH)/eigen -I$(MRPT_PATH) -I$(BASEPATH)
+CXXFLAGS=-O3 -std=c++11 -fexceptions
 LDLIBS=-lgomp
 
-mrpt_comparison : ../common.h
+mrpt_comparison : $(BASEPATH)/common.h $(MRPT_PATH)/cpp/Mrpt.h
 
 .PHONY: clean
 clean:

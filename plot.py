@@ -40,7 +40,8 @@ def main(k, files):
     legend_label = 'depth' # 'sparsity' or 'depth'
     show_title = True
 
-    ylim = (0,100 / n_test)
+    # ylim = (0,100 / n_test)
+    ylim = (0,.001) # mnist data
     file_name = 'images/depth.png'
     title = 'Ecol data set, n = 1500, d = 23223411'
     exact_time = 21 # 50 test set points x approximately 22 seconds
