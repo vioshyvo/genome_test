@@ -7,7 +7,7 @@
 #SBATCH --mail-type=END
 #SBATCH --mail-user=ville.o.hyvonen@helsinki.fi
 
-BASE_DIR="/scratch/cs/icl/genome_test"  # set to the path of the repo
+BASE_DIR=".."  # set to the path of the repo
 
 if [ "$#" -ne 4 ]; then
    echo "error: Expecting parameters: <data-name> <n_train> <n_test> <counts>" 1>&2
@@ -29,11 +29,17 @@ if [ ! -f "$DATA_DIR/$DATA_FILE" ]; then
   exit
 fi
 
+pushd ../binary_writer
+make clean
+make
+popd
+
 # move data and binary_writer into the local disc of the node
 mkdir -p "$TMP_DIR"
 cp -a "$DATA_DIR/$DATA_FILE" "$BASE_DIR/binary_writer/binary_writer" "$TMP_DIR"
-cd "$TMP_DIR"
 
+pushd "$TMP_DIR"
 srun ./binary_writer "$DATA_NAME" "$DATA_FILE" "$TMP_DIR" "$N_TRAIN" "$N_TEST" "$COUNTS" > dimensions.sh
+popd
 
-cp train.bin test.bin dimensions.sh "$DATA_DIR"
+cp "$TMP_DIR/train.bin" "$TMP_DIR/test.bin" "$TMP_DIR/dimensions.sh" "$DATA_DIR"
