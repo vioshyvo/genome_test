@@ -31,16 +31,6 @@ else
   echo googletest is already installed.
 fi
 
-
-if [ ! -d sdsl-lite ]; then
-  git clone https://github.com/simongog/sdsl-lite.git
-  pushd sdsl-lite
-  ./install.sh .
-  popd
-else
-  echo sdsl-lite is already installed.
-fi
-
 if [ ! -d fsm-lite ]; then
   git clone https://github.com/nvalimak/fsm-lite.git
   PROGRAM=patch
