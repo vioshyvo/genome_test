@@ -47,7 +47,7 @@ Scripts that can be used to run the C++ tools in SLURM system are in the directo
   - Slurm wrapper for `prepare_data.sh`.
 
 `read_kmers_slurm.sh <data-name> <n-points>`
-  - Wrapper for `fsm-lite`, same as `read_kmers.sh`.
+  - Wrapper for `fsm-lite`, has same arguments as `read_kmers.sh`.
 
 `writer_slurm.sh <data-set-name>  <n_train>  <n_test> <counts>`
  - Wrapper for `binary_writer/binary_writer`, same functionality as `writer.sh`.
