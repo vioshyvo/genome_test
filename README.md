@@ -48,7 +48,6 @@ Scripts that can be used to run the C++ tools in SLURM system are in the directo
 
 `read_kmers_slurm.sh <data-name> <n-points>`
   - Wrapper for `fsm-lite`, same as `read_kmers.sh`.
-  - Set variable `FSM_PATH` to the directory where you have compiled `fsm-lite`.
 
 `writer_slurm.sh <data-set-name>  <n_train>  <n_test> <counts>`
  - Wrapper for `binary_writer/binary_writer`, same functionality as `writer.sh`.

@@ -7,7 +7,7 @@
 #SBATCH --mail-type=END
 #SBATCH --mail-user=ville.o.hyvonen@helsinki.fi
 
-BASE_DIR="$WRKDIR/Sanger/genome_test"  # set to the path of the repo
+BASE_DIR="/scratch/cs/icl/genome_test"  # set to the path of the repo
 
 if [ "$#" -ne 4 ]; then
    echo "error: Expecting parameters: <data-name> <n_train> <n_test> <counts>" 1>&2
