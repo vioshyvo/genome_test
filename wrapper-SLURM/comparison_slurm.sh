@@ -13,7 +13,7 @@ if [ "$#" -ne 2 ] && [ "$#" -ne 3 ]; then
    exit
 fi
 
-BASE_DIR="$WRKDIR/Sanger/genome_test"  # set to the path of the repo
+BASE_DIR="/scratch/cs/icl/genome_test"  # set to the path of the repo
 
 DATA_NAME="$1$2"
 INPUT_DIR="$BASE_DIR/data/$DATA_NAME"

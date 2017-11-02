@@ -3,7 +3,7 @@
 
 ### Installing C++ tools
 `./install_fsm.sh`
-  - Installs [`fsm-lite`](https://github.com/nvalimak/fsm-lite "fsm-lite github page") and its dependencies ([`sdsl-lite`](https://github.com/simongog/sdsl-lite "sdsl-lite github page"), which requires [`cmake`](https://cmake.org/download/ "cmake download page")), if not already installed.
+  - Installs [`fsm-lite`](https://github.com/nvalimak/fsm-lite "fsm-lite github page"), if not already installed.
   - Installs [`Eigen 3.3.4`](http://eigen.tuxfamily.org/index.php?title=Main_Page "eigen main page"), if not already installed.
   - Installs [`googletest`](https://github.com/google/googletest "googletest github page"), if not already installed.
 
@@ -48,6 +48,8 @@ Scripts that can be used to run the C++ tools in SLURM system are in the directo
 
 `read_kmers_slurm.sh <data-name> <n-points>`
   - Wrapper for `fsm-lite`, has same arguments as `read_kmers.sh`.
+  - Set variable `BASE_DIR` to your local clone of this repo, for example `BASE_DIR=/home/mydir/genome_test`
+
 
 `writer_slurm.sh <data-set-name>  <n_train>  <n_test> <counts>`
  - Wrapper for `binary_writer/binary_writer`, same functionality as `writer.sh`.
@@ -56,6 +58,8 @@ Scripts that can be used to run the C++ tools in SLURM system are in the directo
 
 `comparison_slurm.sh <data-name> <n> <postfix>`
   - Wrapper for `exact/tester` and `mrpt/mrpt_comparison`, same functionality as `comparison.sh`.
+  - Set variable `BASE_DIR` to your local clone of this repo, for example `BASE_DIR=/home/mydir/genome_test`
+
 
 ### Plot results
 

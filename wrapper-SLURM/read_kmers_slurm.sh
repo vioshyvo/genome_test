@@ -7,8 +7,8 @@
 #SBATCH --mail-type=END
 #SBATCH --mail-user=ville.o.hyvonen@helsinki.fi
 
-FSM_PATH="fsm-lite"     # set to the dir where fsm-lite is installed
-BASE_DIR="$WRKDIR/Sanger/genome_test"  # set to the path of the repo
+FSM_PATH="../fsm-lite"     # set to the dir where fsm-lite is installed
+BASE_DIR="/scratch/cs/icl/genome_test"  # set to the path of the repo
 
 
 if [ "$#" -ne "2" ]; then

@@ -7,7 +7,7 @@
 #SBATCH --mail-type=END
 #SBATCH --mail-user=ville.o.hyvonen@helsinki.fi
 
-BASE_DIR="$WRKDIR/Sanger/genome_test"  # set to the path of the repo
+BASE_DIR="/scratch/cs/icl/genome_test"  # set to the path of the repo
 
 if [ ! -f "$BASE_DIR/data/$1/dimensions.sh" ]; then
     echo "Invalid data set $1">&2
