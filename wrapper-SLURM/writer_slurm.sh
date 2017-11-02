@@ -42,4 +42,4 @@ pushd "$TMP_DIR"
 srun ./binary_writer "$DATA_NAME" "$DATA_FILE" "$TMP_DIR" "$N_TRAIN" "$N_TEST" "$COUNTS" > dimensions.sh
 popd
 
-cp "$TMP_DIR/train.bin" "$TMP_DIR/test.bin" "$TMP_DIR/dimensions.sh" "$DATA_DIR"
+cp "$TMP_DIR/train.bin" "$TMP_DIR/test.bin" "$TMP_DIR/dimensions.sh" "$TMP_DIR/permutations" "$DATA_DIR"
