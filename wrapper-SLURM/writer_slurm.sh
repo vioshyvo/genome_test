@@ -14,10 +14,10 @@ if [ "$#" -ne 4 ]; then
    exit
 fi
 
+DATA_NAME="$1"
 N_TRAIN="$2"
 N_TEST="$3"
 COUNTS="$4"
-DATA_NAME="$1"
 
 DATA_DIR="$BASE_DIR/data/$DATA_NAME"
 DATA_FILE="$DATA_NAME.mat"

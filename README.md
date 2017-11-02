@@ -12,7 +12,7 @@
 Scripts that can be used to run C++ tools locally
 
 `./prepare_data.sh <zip-file> <data-name> `
-  - Unzip data from `zip-file`, preprocess it for `fsm-lite`, and save the files to `data/data-name`
+  - Unzip data from `zip-file` (give full path of the zip file), preprocess it for `fsm-lite`, and save the files to `data/data-name`
   - Removes `spades.fa` - files, and renames rest fasta-files into `f0001`, `f0002`,...
   - Outputs the names of the original files as `data_name_file_list` into the `data` directory.
 
@@ -22,8 +22,7 @@ Scripts that can be used to run C++ tools locally
   - Argument `n_points` controls how many first points you want to read, for example 250.
   - Creates for example file `data/Ecol250/Ecol250.mat`.
 
-`./writer.sh <data-name> <n_train> <n_test> <counts> <data-monicker>`
-  - Data set name is `<data-name> <n_points> - <data-monicker>`, where `n_points = n_train + n_test`, and `<data-monicker>` is optional.
+`./writer.sh <data-name> <n_train> <n_test> <counts>`
   - Divides the data set into a training set with `n_train` points and test set with `n_test` points and writes these to directory `data/data-name/` as files `train.bin` and `test.bin`. Dimensions of the data set are written to `dimensions.sh`. Wrapper for `binary_writer/binary_writer`.
   - Assumes that the data set with `n_points` points is written by `read_kmers`.
   - Argument `counts` controls if the kmer counts (`counts=1`) in samples are written, or only binary (`counts=0`) yes/no (kmer is in sample or not).
@@ -51,7 +50,7 @@ Scripts that can be used to run the C++ tools in SLURM system are in the directo
   - Wrapper for `fsm-lite`, same as `read_kmers.sh`.
   - Set variable `FSM_PATH` to the directory where you have compiled `fsm-lite`.
 
-`writer_slurm.sh <data-set-name>  <n_train>  <n_test> <counts> <data-monicker>`
+`writer_slurm.sh <data-set-name>  <n_train>  <n_test> <counts>`
  - Wrapper for `binary_writer/binary_writer`, same functionality as `writer.sh`.
  - Set variable `BASE_DIR` to your local clone of this repo, for example `BASE_DIR=/home/mydir/genome_test`
  - For `Ecol` data set with 1500 points `#SBATCH --mem=150G` and `#SBATCH --time=02:00:00` are good values.

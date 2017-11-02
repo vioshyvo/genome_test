@@ -20,7 +20,7 @@ tar -zxf "$1" -C "$OUTPUT_DIR" --strip-components 1 # unzip straight into OUTPUT
 rm "$OUTPUT_DIR"/*spades.fa
 
 # print the original file names into the list
-ls "$OUTPUT_DIR" > "data/$2_file_list"
+ls "$OUTPUT_DIR" > "../data/$2_file_list"
 
 # rename the files with a counter
 a=1
