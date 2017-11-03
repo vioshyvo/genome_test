@@ -19,6 +19,11 @@ DATA_NAME="$1"
 INPUT_DIR="$BASE_DIR/data/$DATA_NAME"
 MMAP=0
 
+if [ ! -f "$INPUT_DIR/dimensions.sh" ]; then
+    echo Invalid data set $DATA_NAME 1>&2
+    exit
+fi
+
 . "$INPUT_DIR/dimensions.sh"
 
 if [ "$#" -eq 1 ]; then
@@ -26,12 +31,6 @@ if [ "$#" -eq 1 ]; then
 else
   K="$2"
 fi
-
-if [ ! -f "$INPUT_DIR/dimensions.sh" ]; then
-    echo Invalid data set $DATA_NAME 1>&2
-    exit
-fi
-
 
 pushd ../exact
 make clean

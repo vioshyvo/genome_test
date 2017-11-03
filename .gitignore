@@ -44,5 +44,7 @@ googletest
 bits/vector/test_bits
 bits/projection/bits_matrix
 bits/distance/bits_distance
+file_finder/file_finder
+results/*
 
 *.aalto.fi

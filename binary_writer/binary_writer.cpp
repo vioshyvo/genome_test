@@ -45,7 +45,6 @@ int main(int argc, char **argv) {
     size_t n_train = atoi(argv[4]);
     size_t n_test = atoi(argv[5]);
     bool counts = atoi(argv[6]);
-    std::cout << "counts: " << counts << "\n";
 
     size_t seed = (argc == n_args + 2) ? atoi(argv[n_args + 1]) : std::time(0);
     std::srand(seed);
@@ -211,6 +210,7 @@ int main(int argc, char **argv) {
 
     outfile_perm.close();
 
+    std::cout << "COUNTS=" << counts << "\n";
     std::cout << "N=" << n_train + n_test << "\n";
     std::cout << "N_TEST=" << n_test << "\n";
     std::cout << "DIM=" << kmer_count << "\n";

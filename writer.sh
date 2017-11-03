@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ "$#" -ne 4 ]; then
-   echo "error: Expecting parameters: <data-name> <n_train> <n_test> <counts>"1>&2
+   echo "error: Expecting parameters: <data-name> <n_train> <n_test> <counts>" 1>&2
    exit
 fi
 
