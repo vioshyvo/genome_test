@@ -21,7 +21,7 @@ MMAP=0
 
 . "$INPUT_DIR/dimensions.sh"
 
-if[ "$#" -eq 1 ]; then
+if [ "$#" -eq 1 ]; then
   ((K = $N - $N_TEST))
 else
   K="$2"
