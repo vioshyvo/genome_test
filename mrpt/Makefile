@@ -1,8 +1,8 @@
 BASEPATH=..
 EIGEN_PATH=../eigen
-MRPT_PATH=$(BASEPATH)/../mrpt
+MRPT_PATH=$(BASEPATH)
 
-CPPFLAGS=-I$(BASEPATH)/eigen -I$(MRPT_PATH) -I$(BASEPATH)
+CPPFLAGS=-I$(BASEPATH)/eigen -I$(MRPT_PATH)
 CXXFLAGS=-O3 -std=c++11 -fexceptions
 LDLIBS=-lgomp
 
