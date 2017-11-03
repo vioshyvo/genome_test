@@ -16,6 +16,7 @@
 #include <random>
 #include <string>
 #include <vector>
+#include <omp.h>
 
 #include <Eigen/Dense>
 #include <Eigen/SparseCore>
