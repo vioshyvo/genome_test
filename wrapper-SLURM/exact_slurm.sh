@@ -8,24 +8,30 @@
 #SBATCH --mail-type=END
 #SBATCH --mail-user=ville.o.hyvonen@helsinki.fi
 
-if [ "$#" -ne 2 ]; then
-   echo "error: Expecting parameters: <data-set-name> <k>" 1>&2
+if [ "$#" -ne 1 ] && [ "$#" -ne 2 ]; then
+   echo "error: Expecting parameters: <data-set-name> OR <data-set-name> <k>" 1>&2
    exit
 fi
 
 BASE_DIR=".."  # set to the path of the repo
 
 DATA_NAME="$1"
-K="$2"
 INPUT_DIR="$BASE_DIR/data/$DATA_NAME"
 MMAP=0
 
-if [ ! -f "$INPUT_DIR/dimensions.sh" ]; thene
+. "$INPUT_DIR/dimensions.sh"
+
+if[ "$#" -eq 1 ]; then
+  ((K = $N - $N_TEST))
+else
+  K="$2"
+fi
+
+if [ ! -f "$INPUT_DIR/dimensions.sh" ]; then
     echo Invalid data set $DATA_NAME 1>&2
     exit
 fi
 
-. "$INPUT_DIR/dimensions.sh"
 
 pushd ../exact
 make clean
