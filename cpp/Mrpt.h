@@ -363,7 +363,7 @@ int sparse_elect(VectorXf &projected_query, int k, int votes_required, int *out)
 
         VectorXi idx(n_elected);
         std::iota(idx.data(), idx.data() + n_elected, 0);
-        std::nth_element(idx.data(), idx.data() + mmin, idx.data() + n_elected,
+        std::sort(idx.data(), idx.data() + mmin, idx.data() + n_elected,
                          [&distances](int i1, int i2) {return distances(i1) < distances(i2);});
 
         for (int i = 0; i < mmin; ++i) out[i] = indices(idx(i));
