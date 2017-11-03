@@ -1,7 +1,7 @@
 #!/bin/bash
 
-#SBATCH --time=120:00:00
-#SBATCH --mem=240G
+#SBATCH --time=01:00:00
+#SBATCH --mem=30G
 #SBATCH --cpus-per-task=1
 
 #SBATCH -e "errors_comparison-5depth3.txt"
