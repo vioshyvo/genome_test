@@ -1,0 +1,6 @@
+#!/bin/bash
+
+COUNTS=0
+N=1500
+N_TEST=50
+DIM=23223411
