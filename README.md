@@ -35,6 +35,12 @@ Scripts that can be used to run C++ tools locally
   - If data set (such as `mnist`) name has no sample size, you can give empty string (`""`) as the second argument `n`.
   - Saves results into a directory `results/<data-name><n><postfix>` (or into `parameters/<data-name><n>`, respectively).
 
+`./file_finder.sh <data_name> <k>`
+  - write nearest neighbors of test set to file
+  - `k` is number of nearest neighbors written
+  - exact results should exist in `results/data-name-exact/truth_k`-file
+  - results (one file for each of the point of the test set) are written into  the directory `results/data-name-exact/file_names`
+
 ### SLURM wrappers
 
 For SLURM scripts remember to set
