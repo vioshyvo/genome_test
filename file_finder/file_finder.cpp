@@ -31,9 +31,30 @@ std::vector<int> read_permutations(std::ifstream &infile_permutations) {
   return permutations;
 }
 
+std::vector<std::string> read_names(std::ifstream &infile_list){
+  std::vector<std::string> file_names;
+  std::string str;
+  int j = 0;
+  while (infile_list >> str) {
+    if(j++ < 5) std::cout << str << std::endl;
+    file_names.push_back(str);
+  }
+  return file_names;
+}
+
 void print(std::vector<int> x) {
   for(auto it = x.begin(); it != x.end(); ++it) std::cout << *it << " ";
 }
+
+void head(std::vector<std::string> v, int n = 5) {
+  for(int i = 0; i < v.size() && i < n; ++i) std::cout << v[i] << "\n";
+}
+
+void tail(std::vector<std::string> v, int n = 5) {
+  int start = v.size() > n ? v.size() - n : 0;
+  for(int i = start; i < v.size(); ++i) std::cout << v[i] << "\n";
+}
+
 
 void print(std::vector<std::vector<int>> x) {
   for(int m = 0; m < x.size(); ++m) {
@@ -72,25 +93,23 @@ int main(int argc, char **argv) {
       return -1;
   }
 
-
   std::vector<std::vector<int>> true_indices = read_exact(infile_exact);
   std::vector<int> permutations = read_permutations(infile_permutations);
+  std::vector<std::string> file_names = read_names(infile_list);
 
-  std::string str;
-  int j = 0;
-  while (infile_list && j++ < 5) {
-    infile_list >> str;
-    std::cout << str << std::endl;
-  }
-
-  std::cout << std::endl;
-
+  std::cout << "\n";
   std::cout << "permutations: ";
   print(permutations);
-  std::cout << std::endl;
+  std::cout << "\n\n";
   std::cout << "nearest neighbors:\n";
   print(true_indices);
-  std::cout << std::endl;
+  std::cout << "\n";
+  std::cout << "first file names:\n";
+  head(file_names);
+  std::cout << "\n";
+  std::cout << "last file names:\n";
+  tail(file_names);
+  std::cout << "\n";
 
   return 0;
 }
