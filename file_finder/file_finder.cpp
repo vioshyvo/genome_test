@@ -142,19 +142,27 @@ int main(int argc, char **argv) {
   std::vector<int> permutations_test, permutations_train;
   split_permutations(permutations, permutations_test, permutations_train, n_train, n_test);
 
-  print_vectors(permutations, true_indices, file_names, n_train, n_test,
-    permutations_train, permutations_test);
+  // print_vectors(permutations, true_indices, file_names, n_train, n_test,
+  //   permutations_train, permutations_test);
 
   for(int i = 0; i < permutations_test.size(); ++i) {
     int true_index = permutations_test[i];
     std::string oname(file_names[true_index]);
-    std::cout << true_index << " : " << oname << "\n";
+    // std::cout << true_index << " : " << oname << "\n";
     std::vector<int> nn = true_indices[i];
 
-    for(int j = 0; j < nn.size(); ++j){
-      std::cout << file_names[permutations_train[nn[j]]] << "\n";
+    std::string opath(res_dir + oname);
+    std::ofstream outf(opath);
+    if (!outf) {
+      std::cerr << "File "<< opath << " could not be opened for writing!" << std::endl;
+      return -1;
     }
-    std::cout << "\n";
+
+    for(int j = 0; j < nn.size(); ++j){
+      outf << file_names[permutations_train[nn[j]]] << "\n";
+      // std::cout << file_names[permutations_train[nn[j]]] << "\n";
+    }
+    // std::cout << "\n";
   }
 
   std::cout << "\n";
