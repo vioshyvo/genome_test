@@ -37,11 +37,11 @@ def main(k, files):
     save = False
     log = True
     set_ylim = True
-    legend_label = 'depth' # 'sparsity' or 'depth'
+    legend_label = 'filename' # 'sparsity', 'depth' or 'filename'
     show_title = True
 
     # ylim = (0,100 / n_test)
-    ylim = (0,.001) # mnist data
+    ylim = (0,.01) # mnist data
     file_name = 'images/depth.png'
     title = 'Ecol data set, n = 1500, d = 23223411'
     exact_time = 21 # 50 test set points x approximately 22 seconds
@@ -98,8 +98,9 @@ def main(k, files):
     # ax.set_yticks(np.linspace(0, 1, 100))
 
     legend_idx = 0 if legend_label == 'sparsity' else 3
+    labels = files if legend_label == 'filename' else [a[legend_idx] for a in A] 
     if legend:
-        ax.legend(LSD, labels=[a[legend_idx] for a in A], loc="upper left", title = legend_label)
+        ax.legend(LSD, labels=labels, loc="upper left", title = legend_label)
 
     plt.axhline(y = exact_time, xmin = 0, xmax = 1, hold = None, linestyle = '--', color = 'red')
 
