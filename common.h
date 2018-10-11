@@ -145,7 +145,5 @@ void results(int k, const vector<double> &times, const vector<set<int>> &idx, co
                                 << exact_time << " "
                                 << elect_time << " ";
     }
-             cout << endl;
-
 
 }

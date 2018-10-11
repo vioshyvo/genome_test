@@ -77,8 +77,10 @@ int main(int argc, char **argv) {
 
     const Map<const MatrixXf> *M = new Map<const MatrixXf>(train, dim, n_points);
 
+    double build_start = omp_get_wtime();
     Mrpt index_dense(M, n_trees, depth, sparsity);
     index_dense.grow();
+    double build_time = omp_get_wtime() - build_start;
 
     for (int arg = last_arg + 1; arg < argc; ++arg) {
         int votes = atoi(argv[arg]);
@@ -108,7 +110,7 @@ int main(int argc, char **argv) {
             std::cout << k << " " << n_trees << " " << depth << " " << sparsity << " " << votes << " ";
 
         results(k, times, idx, (result_path + "truth_" + std::to_string(k)).c_str(), verbose, projection_times, exact_times, elect_times);
-
+        std::cout << build_time << endl;
     }
 
     delete[] test;
