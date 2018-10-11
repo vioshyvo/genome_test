@@ -35,7 +35,7 @@ def main(k, files):
     n_test = 50
     legend = True
     save = False
-    log = False
+    log = True
     set_ylim = True
     legend_label = 'depth' # 'sparsity' or 'depth'
     show_title = True

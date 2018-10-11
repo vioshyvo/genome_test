@@ -50,7 +50,7 @@ fi
 
 if [ ! -d eigen ]; then
   echo Installing Eigen.
-  wget http://bitbucket.org/eigen/eigen/get/3.3.4.tar.bz2 -P tmp/
+  wget http://bitbucket.org/eigen/eigen/get/3.3.5.tar.bz2 -P tmp/
   mkdir eigen
   tar xfj tmp/3.3.4.tar.bz2 -C eigen --strip-components=1
   echo Eigen installed.

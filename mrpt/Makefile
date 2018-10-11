@@ -1,3 +1,4 @@
+CXX=g++-8
 BASEPATH=..
 EIGEN_PATH=../eigen
 MRPT_PATH=$(BASEPATH)

@@ -1,3 +1,4 @@
+CXX=g++-8
 EIGEN_PATH=../eigen
 MRPT_PATH=..
 
