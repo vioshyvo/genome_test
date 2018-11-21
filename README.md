@@ -89,3 +89,6 @@ Scripts that can be used to run the C++ tools in SLURM system are in the directo
   - load mnist data set into `data/mnist/` for testing.
   - converts it into binary form (float array in saved in col-major form, dimension of data is `d = 784`).
   - loads the whole data set (`data.bin`), and divides it into a training set (`train.bin`) and a test set (`test.bin`); the test set has `TEST_N = 100` points the and training set has 59900 points with this value of `TEST_N`.
+
+### Test github pages
+Link to the automatically generated [documentation](https://vioshyvo.github.io/genome_test/)
