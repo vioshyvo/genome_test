@@ -46,5 +46,7 @@ bits/projection/bits_matrix
 bits/distance/bits_distance
 file_finder/file_finder
 results/*
+docs/latex
+docs/latex/*
 
 *.aalto.fi
